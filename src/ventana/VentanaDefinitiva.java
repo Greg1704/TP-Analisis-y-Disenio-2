@@ -6,6 +6,10 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,11 +17,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import controlador.Controlador;
+
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.JTextArea;
 
-public class VentanaDefinitiva extends JFrame {
+public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
 
 	private JPanel contentPane;
 	private JTabbedPane tabbedPane;
@@ -29,7 +37,7 @@ public class VentanaDefinitiva extends JFrame {
 	private JTextField textFieldPuerto;
 	private JButton btnConectar;
 	private JPanel panelChat;
-	private JTextPane textPaneChatText;
+	private JTextArea textAreaChatText;
 	private JScrollPane scrollPaneChatText;
 	private JLabel lblMensajeUsuario;
 	private JPanel panelChatBotones;
@@ -38,7 +46,7 @@ public class VentanaDefinitiva extends JFrame {
 	private JButton btnCerrarSesion;
 	private JPanel panelBusquedaComponentes;
 	private JTextField textFieldChatMensajeUsuario;
-
+	private Controlador c;
 	
 
 	/**
@@ -61,6 +69,9 @@ public class VentanaDefinitiva extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaDefinitiva() {
+		
+		this.setVisible(true);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 878, 546);
 		this.contentPane = new JPanel();
@@ -117,10 +128,9 @@ public class VentanaDefinitiva extends JFrame {
 		this.scrollPaneChatText.setBounds(10, 11, 827, 289);
 		this.panelChat.add(this.scrollPaneChatText);
 		
-		this.textPaneChatText = new JTextPane();
-		this.textPaneChatText.setEditable(false);
-		this.scrollPaneChatText.setViewportView(this.textPaneChatText);
-		this.textPaneChatText.setFont(new Font("Arial", Font.PLAIN, 12));
+		this.textAreaChatText = new JTextArea();
+		this.scrollPaneChatText.setViewportView(this.textAreaChatText);
+		this.textAreaChatText.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		this.lblMensajeUsuario = new JLabel("Mensaje:");
 		this.lblMensajeUsuario.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -148,4 +158,61 @@ public class VentanaDefinitiva extends JFrame {
 	}
 	
 
+	public void setControlador(Controlador c) {
+		this.c = c;
+		setDefault();
+	}
+	
+	public void setDefault() {
+		
+		this.btnEnviarMensaje.addMouseListener(this);
+		this.btnEnviarMensaje.addActionListener(c);
+		this.btnEnviarMensaje.setActionCommand(enviarMensaje);
+	}
+	
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource() == this.btnEnviarMensaje) {
+			this.textFieldChatMensajeUsuario.setText("");
+		}
+		
+	}
+
+	public String getTextFieldChatMensajeUsuario() {
+		return textFieldChatMensajeUsuario.getText();
+	}
+	
+	public void agregarMensajeAlChat(String mensaje) {
+		this.textAreaChatText.append(mensaje + "\n");
+	}
+
+	
+	
+	
 }
