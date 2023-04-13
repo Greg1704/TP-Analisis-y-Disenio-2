@@ -165,9 +165,19 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
 	
 	public void setDefault() {
 		
+		this.tabbedPane.setEnabledAt(1, false);
+		
 		this.btnEnviarMensaje.addMouseListener(this);
 		this.btnEnviarMensaje.addActionListener(c);
 		this.btnEnviarMensaje.setActionCommand(enviarMensaje);
+		
+		this.btnConectar.addMouseListener(this);
+		this.btnConectar.addActionListener(c);
+		this.btnConectar.setActionCommand(intentoDeConexion);
+		
+		this.btnCerrarSesion.addMouseListener(this);
+		this.btnCerrarSesion.addActionListener(c);
+		this.btnCerrarSesion.setActionCommand(cerrarSesion);
 	}
 	
 
@@ -198,8 +208,13 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getSource() == this.btnEnviarMensaje) {
+		if(e.getSource() == this.btnConectar) {
+			this.textFieldIp.setText("");
+			this.textFieldPuerto.setText("");
+		}else if(e.getSource() == this.btnEnviarMensaje) {
 			this.textFieldChatMensajeUsuario.setText("");
+		}else if(e.getSource() == this.btnCerrarSesion) {
+			
 		}
 		
 	}

@@ -27,9 +27,14 @@ public class Controlador implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals(IVista.enviarMensaje)) {
+		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
+			
+		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			v.agregarMensajeAlChat(mensaje);
+		}else if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
+			
 		}
+		
 	}
 }
