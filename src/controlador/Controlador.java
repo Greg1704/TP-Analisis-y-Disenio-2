@@ -36,14 +36,16 @@ public class Controlador implements ActionListener{
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
-			
+			cliente.mandarMensaje(mensaje);
 			
 			
 			
 			
 			v.agregarMensajeAlChat(mensaje);
-		}else if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			
+		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
+			server.cerrarConversacion();
+			cliente.cerrarConversacion();
 		}
 		
 	}
