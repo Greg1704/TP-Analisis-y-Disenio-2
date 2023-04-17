@@ -42,8 +42,6 @@ public class Cliente implements Runnable {
 	public void run() {
 
 		try {
-			//InetAddress localHost = InetAddress.getLocalHost(); esto iria en servidor
-		//	cliente = new Socket(localHost.(), puertoAConectar);
 			cliente = new Socket(ipAConectar, puertoAConectar);
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
@@ -53,14 +51,12 @@ public class Cliente implements Runnable {
 			t.start();
 			
 		} catch (IOException e) {
-			System.out.println(e.getLocalizedMessage());
-			//cerrarConversacion();
+			// tratar con alguna pavada como cerrar conexion o algo
 		}
 }
 	
 	public void mandarMensaje(String mensaje) {
-		out.println(mensaje);
-	//	observadores.get(0).mostrarMensajeTextArea(mensaje); // PARA EL CLIENTE 2 (EL Q SOLICITA CONEXION) ESTO ES UTIL. DE LO CONTRARIO NO SE VE SU MENSAJE
+		out.println(mensaje); // SE MANDA DIRECTAMENTE A SERVIDOR. SE VE EN LA VENTANA EL MENSAJE ENVIADO YA QUE SE RECIBE DEL SERVIDOR LUEGO (EN LA PARTE DONDE SE INVOCA REPARTE())
 	}
 	
 	public void cerrarConversacion() {
@@ -85,7 +81,7 @@ public class Cliente implements Runnable {
 				while (!listo) {
 					String mensaje;
 					while ((mensaje = in.readLine()) != null) {
-						observadores.get(0).mostrarMensajeTextArea(mensaje);
+						observadores.get(0).mostrarMensajeTextArea(mensaje); // entra mensaje de servidor, entonces MUESTRO
 					}
 				}
 			} catch (IOException e) {

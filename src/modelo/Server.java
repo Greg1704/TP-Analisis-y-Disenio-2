@@ -24,17 +24,11 @@ public class Server implements Runnable {
 	private boolean listo = false;
 	private List<Observador> observadores = new ArrayList<>();
 	private ExecutorService pool;
-	//private Controlador controlador;
 	
 	public Server(int port) {
 		conexiones = new ArrayList();
 		this.port = port;
 	}
-	/*
-	public void setControlador(Controlador c) {
-		this.controlador = c;
-	}
-	*/
 	
 	@Override
 	public void run() {
@@ -50,7 +44,7 @@ public class Server implements Runnable {
 				pool.execute(m);
 				System.out.println("se conecta");
 				System.out.println(conexiones.size());
-				if (conexiones.size() < 2) {
+				if (conexiones.size() < 2) { // SI ALGUIEN MAS SE QUIERE CONECTAR AL SERVIDOR , AVISAR Q YA HAY DOS PERSONAS HABLANDO. TRATAR ESTE ASUNTO Q CAPAZ LLEVA UN POCO DE TIEMPO
 					observadores.get(0).update(observadores);
 				}
 			}
@@ -60,14 +54,11 @@ public class Server implements Runnable {
 	}
 	
 	public void reparte(String mensaje) {
-		int i = 0;
 		System.out.println("el tamaño de conexiones o sea cant de clientes es " + conexiones.size());
 		for (ManejaConexiones cliente: conexiones) {
-			i++;
 			if (cliente != null) {
 				cliente.mandarMensaje(mensaje);
 			}
-			System.out.println(i);
 		}
 	}
 	
@@ -84,12 +75,6 @@ public class Server implements Runnable {
 			//
 		}
 	}
-	
-	/*
-	public void cerrarConversacion() {
-		m.cerrarConversacion();
-	}
-	*/
 	
 	public class ManejaConexiones implements Runnable {
 		private Socket cliente;
@@ -108,7 +93,6 @@ public class Server implements Runnable {
 				String mensaje;
 				while ((mensaje = in.readLine()) != null) {
 					reparte(mensaje);;
-					System.out.println("se ejecuta reparte");
 				}
 			} catch (IOException e) {
 				cerrarCliente();
@@ -118,7 +102,6 @@ public class Server implements Runnable {
 		
 		public void mandarMensaje(String mensaje) {
 			out.println(mensaje);
-		//	observadores.get(0).mostrarMensajeTextArea(mensaje);
 		}
 		
 		public void cerrarCliente() {
@@ -141,11 +124,4 @@ public class Server implements Runnable {
     public void removeObserver(Observador channel) {
         this.observadores.remove(channel);
     }
-	
-
-	/*
-	public void recibirMensaje(String mensaje) {
-		in.readLine();
-	}
-	*/
 }

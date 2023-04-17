@@ -9,7 +9,7 @@ import modelo.Cliente;
 import modelo.Server;
 import ventana.*;
 
-public class Controlador implements ActionListener,Observador {
+public class Controlador implements ActionListener, Observador {
 
 	VentanaDefinitiva v;
 	VentanaSolicitudDeSesion vs;
@@ -23,9 +23,8 @@ public class Controlador implements ActionListener,Observador {
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
-		server = new Server(1235); // random x ahora
+		server = new Server(1234); // hardcodeado por ahora
 		server.addObserver(this);
-	//	server.setControlador(this);
 		server.run();
 	}
 	
@@ -51,7 +50,7 @@ public class Controlador implements ActionListener,Observador {
 			server.cerrarServidor();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
-			cliente = new Cliente("192.168.0.241", 1234);
+			cliente = new Cliente("192.168.0.241", 1234); // hardcodeado
 			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
