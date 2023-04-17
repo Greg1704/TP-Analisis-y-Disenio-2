@@ -16,9 +16,10 @@ public class Cliente implements Runnable {
 	private PrintWriter out;
 	private boolean listo = false;
 	
-	public Cliente(int puerto, String ipAConectar) {
+	public Cliente(String ipAConectar, int puerto) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
+		this.run();
 	}
 
 	@Override
@@ -44,7 +45,12 @@ public class Cliente implements Runnable {
 		} catch (IOException e) {
 			cerrarConversacion();
 		}
+		
 
+	}
+	
+	public void mandarMensaje(String mensaje) {
+		out.println(mensaje);
 	}
 	
 	public void cerrarConversacion() {

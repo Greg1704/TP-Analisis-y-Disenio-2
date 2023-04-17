@@ -227,6 +227,14 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
 		this.textAreaChatText.append(mensaje + "\n");
 	}
 
+	public String getTextFieldIp() {
+		return textFieldIp.getText();
+	}
+
+	public String getTextFieldPuerto() {
+		return textFieldPuerto.getText();
+	}
+
 	
 	
 	

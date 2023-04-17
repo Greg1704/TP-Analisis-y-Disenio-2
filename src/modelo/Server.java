@@ -13,13 +13,12 @@ public class Server implements Runnable {
 	private ServerSocket server;
 	private Socket cliente;
 	private int port;
-	private boolean listo;
+	private boolean listo = false;
 	private manejaMensajes m;
 	
 	
-	private Server(int port, boolean listo) {
+	public Server(int port) {
 		this.port = port;
-		this.listo = false;
 	}
 
 	@Override
