@@ -15,6 +15,8 @@ public class Cliente implements Runnable {
 	private BufferedReader in;
 	private PrintWriter out;
 	private boolean listo = false;
+	private boolean aceptaConversacion = false;
+	private boolean modoEscucha = true;
 	
 	public Cliente(String ipAConectar, int puerto) {
 		this.puertoAConectar = puerto;
@@ -114,9 +116,9 @@ public class Cliente implements Runnable {
 	//	}
 	
 	
-	/*
-	// TODO ESTO NO SE USARIA
 	
+	// TODO ESTO NO SE USARIA
+	/*
 	public class InputUsuario implements Runnable {
 
 		private BufferedReader input;
@@ -139,8 +141,6 @@ public class Cliente implements Runnable {
 		public void cierraLocalInput() {
 			input.close();
 		}
-		*/
-	}
-	
+		*/ 
 }
-/*
+	

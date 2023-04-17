@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
+
+import controlador.Controlador;
 
 public class Server implements Runnable {
 	
@@ -15,19 +18,27 @@ public class Server implements Runnable {
 	private int port;
 	private boolean listo = false;
 	private manejaMensajes m;
-	
+	//private Controlador controlador;
 	
 	public Server(int port) {
 		this.port = port;
 	}
-
+	/*
+	public void setControlador(Controlador c) {
+		this.controlador = c;
+	}
+	*/
+	
 	@Override
 	public void run() {
 		try {
+		//	InetAddress localHost = InetAddress.getLocalHost();
+		//	System.out.println(localHost.getHostAddress());
 			server = new ServerSocket(port);
 			while (!listo) {
-				cliente = server.accept();
-				m = new manejaMensajes();
+					cliente = server.accept();
+					System.out.println("se conecta");
+					m = new manejaMensajes();
 			}
 		} catch (IOException e) {
 			cerrarConversacion();
