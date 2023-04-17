@@ -21,7 +21,7 @@ public class Cliente implements Runnable {
 		this.ipAConectar = ipAConectar;
 		this.run();
 	}
-
+	
 	@Override
 	public void run() {
 
@@ -32,18 +32,10 @@ public class Cliente implements Runnable {
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 			
-		//	InputUsuario inUsuario = new InputUsuario();
-		//	Thread hiloInput = new Thread(inUsuario);
-		//	hiloInput.start();
-			
-		//	String mensajeEntrante;
-		//	while ((mensajeEntrante = in.readLine()) != null) {
-			//	System.out.println(mensajeEntrante);
-				// aca hacer algo para mostrar en ventana de cliente
-		//	}
 			
 		} catch (IOException e) {
-			cerrarConversacion();
+			System.out.println(e.getLocalizedMessage());
+			//cerrarConversacion();
 		}
 		
 
@@ -65,6 +57,65 @@ public class Cliente implements Runnable {
 			// no tendria que entrar aca ya q es por ventana la interaccion
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//	InputUsuario inUsuario = new InputUsuario();
+	//	Thread hiloInput = new Thread(inUsuario);
+	//	hiloInput.start();
+		
+	//	String mensajeEntrante;
+	//	while ((mensajeEntrante = in.readLine()) != null) {
+		//	System.out.println(mensajeEntrante);
+			// aca hacer algo para mostrar en ventana de cliente
+	//	}
+	
+	
+	/*
+	// TODO ESTO NO SE USARIA
 	
 	public class InputUsuario implements Runnable {
 
@@ -92,3 +143,4 @@ public class Cliente implements Runnable {
 	}
 	
 }
+/*
