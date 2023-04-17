@@ -60,7 +60,7 @@ public class Cliente implements Runnable {
 	
 	public void mandarMensaje(String mensaje) {
 		out.println(mensaje);
-		observadores.get(0).mostrarMensajeTextArea(mensaje);
+	//	observadores.get(0).mostrarMensajeTextArea(mensaje); // PARA EL CLIENTE 2 (EL Q SOLICITA CONEXION) ESTO ES UTIL. DE LO CONTRARIO NO SE VE SU MENSAJE
 	}
 	
 	public void cerrarConversacion() {
@@ -75,18 +75,17 @@ public class Cliente implements Runnable {
 			// no tendria que entrar aca ya q es por ventana la interaccion
 		}
 	}
+	 
 	
 	public class ManejaInput implements Runnable {
 
 		@Override
 		public void run() {
 			try {
-				BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 				while (!listo) {
 					String mensaje;
-					while ((mensaje = input.readLine()) != null) {
-						out.println(mensaje);
-						System.out.println("esto no se ejecuta");
+					while ((mensaje = in.readLine()) != null) {
+						observadores.get(0).mostrarMensajeTextArea(mensaje);
 					}
 				}
 			} catch (IOException e) {
@@ -94,7 +93,6 @@ public class Cliente implements Runnable {
 			}
 		}
 	}
-	
 }
 	
 	

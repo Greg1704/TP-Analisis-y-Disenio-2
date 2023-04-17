@@ -60,10 +60,14 @@ public class Server implements Runnable {
 	}
 	
 	public void reparte(String mensaje) {
+		int i = 0;
+		System.out.println("el tamaño de conexiones o sea cant de clientes es " + conexiones.size());
 		for (ManejaConexiones cliente: conexiones) {
+			i++;
 			if (cliente != null) {
 				cliente.mandarMensaje(mensaje);
 			}
+			System.out.println(i);
 		}
 	}
 	
@@ -114,7 +118,7 @@ public class Server implements Runnable {
 		
 		public void mandarMensaje(String mensaje) {
 			out.println(mensaje);
-			observadores.get(0).mostrarMensajeTextArea(mensaje);
+		//	observadores.get(0).mostrarMensajeTextArea(mensaje);
 		}
 		
 		public void cerrarCliente() {
