@@ -34,14 +34,14 @@ public class Cliente implements Runnable {
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 			
-			
+			ManejaInput m = new ManejaInput();
+			Thread t = new Thread(m);
+			t.start();
 		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 			//cerrarConversacion();
 		}
-		
-
-	}
+}
 	
 	public void mandarMensaje(String mensaje) {
 		out.println(mensaje);
@@ -60,6 +60,25 @@ public class Cliente implements Runnable {
 		}
 	}
 	
+	public class ManejaInput implements Runnable {
+
+		@Override
+		public void run() {
+			try {
+				BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+				while (!listo) {
+					String mensaje;
+					while ((mensaje = input.readLine()) != null) {
+						out.println(mensaje);
+					}
+				}
+			} catch (IOException e) {
+				cerrarConversacion();
+			}
+		}
+	}
+	
+}
 	
 	
 	
@@ -142,5 +161,4 @@ public class Cliente implements Runnable {
 			input.close();
 		}
 		*/ 
-}
 	

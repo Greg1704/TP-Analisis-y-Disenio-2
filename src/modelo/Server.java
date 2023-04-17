@@ -17,14 +17,14 @@ import controlador.Observador;
 public class Server implements Runnable {
 	
 	private ServerSocket server;
-	private Socket cliente;
+	private ArrayList<ManejaConexiones> conexiones;
 	private int port;
 	private boolean listo = false;
-	private manejaMensajes m;
 	private List<Observador> observadores = new ArrayList<>();
 	//private Controlador controlador;
 	
 	public Server(int port) {
+		conexiones = new ArrayList();
 		this.port = port;
 	}
 	/*
@@ -36,29 +36,59 @@ public class Server implements Runnable {
 	@Override
 	public void run() {
 		try {
-		//	InetAddress localHost = InetAddress.getLocalHost();
-		//	System.out.println(localHost.getHostAddress());
+			// InetAddress localHost = InetAddress.getLocalHost();
+			// System.out.println(localHost.getHostAddress());
 			server = new ServerSocket(port);
 			while (!listo) {
-					cliente = server.accept();
-					System.out.println("se conecta");
+				Socket cliente = server.accept();
+				ManejaConexiones m = new ManejaConexiones(cliente);
+				conexiones.add(m);
+				System.out.println("se conecta");
+				if (conexiones.size() < 2) {
 					observadores.get(0).update(observadores);
-					m = new manejaMensajes();
+				}
 			}
 		} catch (IOException e) {
-			cerrarConversacion();
+			//cerrarServidor();
 		}
 	}
 	
+	public void reparte(String mensaje) {
+		for (ManejaConexiones cliente: conexiones) {
+			if (cliente != null) {
+				cliente.mandarMensaje(mensaje);
+			}
+		}
+	}
 	
+	public void cerrarServidor() {
+		try {
+		this.listo = true;
+		if (!server.isClosed()) {
+			server.close();
+		}
+		for (ManejaConexiones cliente: conexiones) {
+			cliente.cerrarCliente();
+		}
+		} catch (IOException e) {
+			//
+		}
+	}
 	
+	/*
 	public void cerrarConversacion() {
 		m.cerrarConversacion();
 	}
+	*/
 	
-	public class manejaMensajes implements Runnable {
+	public class ManejaConexiones implements Runnable {
+		private Socket cliente;
 		private BufferedReader in;
 		private PrintWriter out;
+		
+		public ManejaConexiones(Socket cliente) {
+			this.cliente = cliente;
+		}
 		
 		@Override
 		public void run() {
@@ -67,10 +97,10 @@ public class Server implements Runnable {
 				in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 				String mensaje;
 				while ((mensaje = in.readLine()) != null) {
-					mandarMensaje(mensaje);
+					reparte(mensaje);
 				}
 			} catch (IOException e) {
-				// 
+				cerrarCliente();
 			}
 		}
 		
@@ -79,13 +109,12 @@ public class Server implements Runnable {
 			out.println(mensaje);
 		}
 		
-		public void cerrarConversacion() {
+		public void cerrarCliente() {
 			try {
-				listo = true;
 				in.close();
 				out.close();
-				if (!server.isClosed()) {
-					server.close();
+				if (!cliente.isClosed()) {
+					cliente.close();
 				}
 			} catch (IOException e) {
 				System.out.println("ke carajo"); // esto no deberia pasar

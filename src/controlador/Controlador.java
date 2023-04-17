@@ -15,7 +15,7 @@ public class Controlador implements ActionListener,Observador {
 	VentanaSolicitudDeSesion vs;
 	private static Controlador instancia = null;
 	String mensaje;
-	Cliente cliente, cliente2;
+	Cliente cliente;
 	Server server;
 	
 	private Controlador () {
@@ -23,7 +23,7 @@ public class Controlador implements ActionListener,Observador {
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
-		server = new Server(1234); // random x ahora
+		server = new Server(1235); // random x ahora
 		server.addObserver(this);
 	//	server.setControlador(this);
 		server.run();
@@ -46,16 +46,14 @@ public class Controlador implements ActionListener,Observador {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			cliente.mandarMensaje(mensaje);
 			
-			
-			
-			
-			v.agregarMensajeAlChat(mensaje);
+			this.mostrarMensajeTextArea(mensaje);
 			
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
-			server.cerrarConversacion();
+			server.cerrarServidor();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
-			cliente2 = new Cliente("192.168.0.241", 1234);
+			cliente = new Cliente("192.168.0.241", 1234);
+			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
 			vs.desaparece();
 		} 
@@ -66,4 +64,10 @@ public class Controlador implements ActionListener,Observador {
 	public void update(Object o) {
 		this.vs.aparece();
 	}
+
+	@Override
+	public void mostrarMensajeTextArea(String mensaje) {
+		v.agregarMensajeAlChat(mensaje);
+	}
+	
 }
