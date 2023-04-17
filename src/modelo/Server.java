@@ -40,9 +40,9 @@ public class Server implements Runnable {
 		//	System.out.println(localHost.getHostAddress());
 			server = new ServerSocket(port);
 			while (!listo) {
-					observadores.get(0).update(observadores);
 					cliente = server.accept();
 					System.out.println("se conecta");
+					observadores.get(0).update(observadores);
 					m = new manejaMensajes();
 			}
 		} catch (IOException e) {
