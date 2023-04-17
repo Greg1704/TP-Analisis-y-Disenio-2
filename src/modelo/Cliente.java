@@ -32,9 +32,9 @@ public class Cliente implements Runnable {
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 			
-			InputUsuario inUsuario = new InputUsuario();
-			Thread hiloInput = new Thread(inUsuario);
-			hiloInput.start();
+		//	InputUsuario inUsuario = new InputUsuario();
+		//	Thread hiloInput = new Thread(inUsuario);
+		//	hiloInput.start();
 			
 		//	String mensajeEntrante;
 		//	while ((mensajeEntrante = in.readLine()) != null) {
