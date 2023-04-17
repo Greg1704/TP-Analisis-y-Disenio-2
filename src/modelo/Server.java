@@ -7,9 +7,12 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import controlador.Controlador;
+import controlador.Observador;
 
 public class Server implements Runnable {
 	
@@ -18,6 +21,7 @@ public class Server implements Runnable {
 	private int port;
 	private boolean listo = false;
 	private manejaMensajes m;
+	private List<Observador> observadores = new ArrayList<>();
 	//private Controlador controlador;
 	
 	public Server(int port) {
@@ -36,6 +40,7 @@ public class Server implements Runnable {
 		//	System.out.println(localHost.getHostAddress());
 			server = new ServerSocket(port);
 			while (!listo) {
+					observadores.get(0).update(observadores);
 					cliente = server.accept();
 					System.out.println("se conecta");
 					m = new manejaMensajes();
@@ -44,6 +49,8 @@ public class Server implements Runnable {
 			cerrarConversacion();
 		}
 	}
+	
+	
 	
 	public void cerrarConversacion() {
 		m.cerrarConversacion();
@@ -85,6 +92,14 @@ public class Server implements Runnable {
 			}
 		}
 	}
+	
+	public void addObserver(Observador channel) {
+        this.observadores.add(channel);
+    }
+
+    public void removeObserver(Observador channel) {
+        this.observadores.remove(channel);
+    }
 	
 
 	/*

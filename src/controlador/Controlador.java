@@ -9,7 +9,7 @@ import modelo.Cliente;
 import modelo.Server;
 import ventana.*;
 
-public class Controlador implements ActionListener {
+public class Controlador implements ActionListener,Observador {
 
 	VentanaDefinitiva v;
 	VentanaSolicitudDeSesion vs;
@@ -24,6 +24,7 @@ public class Controlador implements ActionListener {
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
 		server = new Server(1235); // random x ahora
+		
 	//	server.setControlador(this);
 		server.run();
 	}
@@ -34,10 +35,7 @@ public class Controlador implements ActionListener {
 		return instancia;
 	}
 	
-	public void muestraPantallaAceptacion() {
-		this.vs.aparece();
-	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
@@ -57,10 +55,15 @@ public class Controlador implements ActionListener {
 			server.cerrarConversacion();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
-			cliente2 = new Cliente("192.168.0.241", 1235);
+			cliente2 = new Cliente("192.168.0.241", 1234);
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
 			vs.desaparece();
 		} 
 		
+	}
+
+	@Override
+	public void update(Object o) {
+		this.vs.aparece();
 	}
 }
