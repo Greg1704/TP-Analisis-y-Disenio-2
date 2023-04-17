@@ -12,6 +12,7 @@ import ventana.*;
 public class Controlador implements ActionListener{
 
 	VentanaDefinitiva v;
+	VentanaSolicitudDeSesion vs;
 	private static Controlador instancia = null;
 	String mensaje;
 	Cliente cliente;
@@ -19,7 +20,9 @@ public class Controlador implements ActionListener{
 	
 	private Controlador () {
 		this.v = new VentanaDefinitiva();
+		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
+		this.vs.setControlador(this);
 		server = new Server(1234); // random x ahora
 	}
 	
@@ -34,6 +37,7 @@ public class Controlador implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
+			vs.aparece();
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			cliente.mandarMensaje(mensaje);
@@ -46,6 +50,10 @@ public class Controlador implements ActionListener{
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			server.cerrarConversacion();
 			cliente.cerrarConversacion();
+		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
+			vs.desaparece();
+		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
+			vs.desaparece();
 		}
 		
 	}
