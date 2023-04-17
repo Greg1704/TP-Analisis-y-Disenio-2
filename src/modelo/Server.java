@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import controlador.Controlador;
 import controlador.Observador;
@@ -21,6 +23,7 @@ public class Server implements Runnable {
 	private int port;
 	private boolean listo = false;
 	private List<Observador> observadores = new ArrayList<>();
+	private ExecutorService pool;
 	//private Controlador controlador;
 	
 	public Server(int port) {
@@ -39,11 +42,14 @@ public class Server implements Runnable {
 			// InetAddress localHost = InetAddress.getLocalHost();
 			// System.out.println(localHost.getHostAddress());
 			server = new ServerSocket(port);
+			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m);
+				pool.execute(m);
 				System.out.println("se conecta");
+				System.out.println(conexiones.size());
 				if (conexiones.size() < 2) {
 					observadores.get(0).update(observadores);
 				}
@@ -97,7 +103,8 @@ public class Server implements Runnable {
 				in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 				String mensaje;
 				while ((mensaje = in.readLine()) != null) {
-					reparte(mensaje);
+					reparte(mensaje);;
+					System.out.println("se ejecuta reparte");
 				}
 			} catch (IOException e) {
 				cerrarCliente();
@@ -107,6 +114,7 @@ public class Server implements Runnable {
 		
 		public void mandarMensaje(String mensaje) {
 			out.println(mensaje);
+			observadores.get(0).mostrarMensajeTextArea(mensaje);
 		}
 		
 		public void cerrarCliente() {

@@ -5,6 +5,11 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+import controlador.Observador;
+
 import java.net.InetAddress;
 
 public class Cliente implements Runnable {
@@ -17,12 +22,21 @@ public class Cliente implements Runnable {
 	private boolean listo = false;
 	private boolean aceptaConversacion = false;
 	private boolean modoEscucha = true;
+	private List<Observador> observadores = new ArrayList<>();
 	
 	public Cliente(String ipAConectar, int puerto) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
 		this.run();
 	}
+	
+	public void addObserver(Observador channel) {
+        this.observadores.add(channel);
+    }
+
+    public void removeObserver(Observador channel) {
+        this.observadores.remove(channel);
+    }
 	
 	@Override
 	public void run() {
@@ -37,6 +51,7 @@ public class Cliente implements Runnable {
 			ManejaInput m = new ManejaInput();
 			Thread t = new Thread(m);
 			t.start();
+			
 		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 			//cerrarConversacion();
@@ -45,6 +60,7 @@ public class Cliente implements Runnable {
 	
 	public void mandarMensaje(String mensaje) {
 		out.println(mensaje);
+		observadores.get(0).mostrarMensajeTextArea(mensaje);
 	}
 	
 	public void cerrarConversacion() {
@@ -70,6 +86,7 @@ public class Cliente implements Runnable {
 					String mensaje;
 					while ((mensaje = input.readLine()) != null) {
 						out.println(mensaje);
+						System.out.println("esto no se ejecuta");
 					}
 				}
 			} catch (IOException e) {

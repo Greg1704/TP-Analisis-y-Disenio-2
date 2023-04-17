@@ -41,18 +41,18 @@ public class Controlador implements ActionListener,Observador {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
+			cliente.addObserver(this);
 		//	vs.aparece();
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			cliente.mandarMensaje(mensaje);
-			
-			this.mostrarMensajeTextArea(mensaje);
 			
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			server.cerrarServidor();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			cliente = new Cliente("192.168.0.241", 1234);
+			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
 			vs.desaparece();
