@@ -14,9 +14,8 @@ public class Server implements Runnable {
 	private Socket cliente;
 	private int port;
 	private boolean listo;
+	private manejaMensajes m;
 	
-	private PrintWriter out;
-	private BufferedReader in;
 	
 	private Server(int port, boolean listo) {
 		this.port = port;
@@ -27,32 +26,53 @@ public class Server implements Runnable {
 	public void run() {
 		try {
 			server = new ServerSocket(port);
-			if (!listo) {
+			while (!listo) {
 				cliente = server.accept();
-				PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
-				BufferedReader in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+				m = new manejaMensajes();
 			}
 		} catch (IOException e) {
-			this.cerrarConversacion();
+			cerrarConversacion();
 		}
 	}
 	
 	public void cerrarConversacion() {
-		try {
-			listo = true;
-			in.close();
-			out.close();
-			if (!server.isClosed()) {
-				server.close();
+		m.cerrarConversacion();
+	}
+	
+	public class manejaMensajes implements Runnable {
+		private BufferedReader in;
+		private PrintWriter out;
+		
+		@Override
+		public void run() {
+			try {
+				out = new PrintWriter(cliente.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+			} catch (IOException e) {
+				
 			}
-		} catch (IOException e) {
-			System.out.println("ke carajo"); // esto no deberia pasar
+		}
+		
+		
+		public void mandarMensaje(String mensaje) {
+			out.println(mensaje);
+		}
+		
+		public void cerrarConversacion() {
+			try {
+				listo = true;
+				in.close();
+				out.close();
+				if (!server.isClosed()) {
+					server.close();
+				}
+			} catch (IOException e) {
+				System.out.println("ke carajo"); // esto no deberia pasar
+			}
 		}
 	}
 	
-	public void mandarMensaje(String mensaje) {
-		out.println(mensaje);
-	}
+
 	/*
 	public void recibirMensaje(String mensaje) {
 		in.readLine();
