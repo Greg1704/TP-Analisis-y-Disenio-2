@@ -24,7 +24,7 @@ public class Controlador implements ActionListener,Observador {
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
 		server = new Server(1235); // random x ahora
-		
+		server.addObserver(this);
 	//	server.setControlador(this);
 		server.run();
 	}
