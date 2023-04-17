@@ -10,16 +10,24 @@ import java.net.InetAddress;
 public class Cliente implements Runnable {
 	
 	private Socket cliente;
+	private int puertoAConectar;
+	private String ipAConectar;
 	private BufferedReader in;
 	private PrintWriter out;
 	private boolean listo = false;
+	
+	public Cliente(int puerto, String ipAConectar) {
+		this.puertoAConectar = puerto;
+		this.ipAConectar = ipAConectar;
+	}
 
 	@Override
 	public void run() {
 
 		try {
-			InetAddress localHost = InetAddress.getLocalHost();
-			cliente = new Socket(localHost.getHostAddress(), 1234);
+			//InetAddress localHost = InetAddress.getLocalHost(); esto iria en servidor
+		//	cliente = new Socket(localHost.(), puertoAConectar);
+			cliente = new Socket(ipAConectar, puertoAConectar);
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 			
@@ -27,11 +35,11 @@ public class Cliente implements Runnable {
 			Thread hiloInput = new Thread(inUsuario);
 			hiloInput.start();
 			
-			String mensajeEntrante;
-			while ((mensajeEntrante = in.readLine()) != null) {
+		//	String mensajeEntrante;
+		//	while ((mensajeEntrante = in.readLine()) != null) {
 			//	System.out.println(mensajeEntrante);
 				// aca hacer algo para mostrar en ventana de cliente
-			}
+		//	}
 			
 		} catch (IOException e) {
 			cerrarConversacion();

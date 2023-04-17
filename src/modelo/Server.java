@@ -48,8 +48,12 @@ public class Server implements Runnable {
 			try {
 				out = new PrintWriter(cliente.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+				String mensaje;
+				while ((mensaje = in.readLine()) != null) {
+					mandarMensaje(mensaje);
+				}
 			} catch (IOException e) {
-				
+				// 
 			}
 		}
 		
