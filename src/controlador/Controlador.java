@@ -43,7 +43,7 @@ public class Controlador implements ActionListener, Observador {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), server);
 			server.setModoEscucha(false);
-			server.cambiaModoEscucha(false);
+		//	server.cambiaModoEscucha(false);
 			cliente.addObserver(this);
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
@@ -55,11 +55,14 @@ public class Controlador implements ActionListener, Observador {
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			cliente = new Cliente("localhost", 1234, server); // hardcodeado
-			//cliente.setServer(server);
-			server.cambiaModoEscucha(false);
+			cliente.setServer(server);
+			server.setModoEscucha(false);
+		//	server.cambiaModoEscucha(false);
 			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
+			server.rechaza(); // si rechazo deberia mostrarle al otro q no se pudo establecer la conex (y esta linea no anda)
+			this.muestraConexionInvalida(); // esto iria para el que solicita.. no para el q rechaza
 			vs.desaparece();
 		} 
 		

@@ -45,7 +45,6 @@ public class Server implements Runnable {
 			while (!listo) {
 				Socket cliente = server.accept();
 				if (this.modoEscucha == true) {
-					
 					ManejaConexiones m = new ManejaConexiones(cliente);
 					conexiones.add(m);
 					pool.execute(m);
@@ -73,6 +72,12 @@ public class Server implements Runnable {
 				cliente.mandarMensaje(mensaje);
 			}
 		}
+	}
+	
+	public void rechaza() {
+		conexiones.get(0).cerrarCliente();
+		conexiones.remove(0);
+		this.cambiaModoEscucha(true);
 	}
 	
 	public void cerrarServidor() {
