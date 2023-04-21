@@ -50,7 +50,7 @@ public class Controlador implements ActionListener, Observador {
 			server.cerrarServidor();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
-			cliente = new Cliente("192.168.0.241", 1234); // hardcodeado
+			cliente = new Cliente("localhost", 1234); // hardcodeado
 			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
