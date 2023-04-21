@@ -22,12 +22,14 @@ public class Server implements Runnable {
 	private ArrayList<ManejaConexiones> conexiones;
 	private int port;
 	private boolean listo = false;
+	private boolean modoEscucha;
 	private List<Observador> observadores = new ArrayList<>();
 	private ExecutorService pool;
 	
 	public Server(int port) {
 		conexiones = new ArrayList();
 		this.port = port;
+		this.modoEscucha = true;
 	}
 	
 	@Override

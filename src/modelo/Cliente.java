@@ -20,8 +20,6 @@ public class Cliente implements Runnable {
 	private BufferedReader in;
 	private PrintWriter out;
 	private boolean listo = false;
-	private boolean aceptaConversacion = false;
-	private boolean modoEscucha = true;
 	private List<Observador> observadores = new ArrayList<>();
 	
 	public Cliente(String ipAConectar, int puerto) {
