@@ -155,8 +155,18 @@ public class Server implements Runnable {
 	public ArrayList<Cliente> getClientes() {
 		return clientes;
 	}
+	
+	public void agregaCliente(Cliente cliente) {
+		this.clientes.add(cliente);
+	}
 
 	public List<Observador> getObservadores() {
 		return observadores;
 	}
+	
+	public String getIpSolicitante() {
+		InetAddress aux = this.conexiones.get(1).cliente.getLocalAddress();
+		return (aux.toString());
+	}
+	
 }

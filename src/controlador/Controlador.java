@@ -67,7 +67,7 @@ public class Controlador implements ActionListener, Observador {
 
 	@Override
 	public void update(Object o) {
-		this.vs.setLblIp(server.getClientes().get(1).getIpLocal()); 
+		this.vs.setLblIp(server.getIpSolicitante()); 
 		this.vs.aparece();
 	}
 
