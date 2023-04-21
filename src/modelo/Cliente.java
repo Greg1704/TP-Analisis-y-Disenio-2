@@ -14,6 +14,7 @@ import java.net.InetAddress;
 
 public class Cliente implements Runnable {
 	
+	private Server servidor;
 	private Socket cliente;
 	private int puertoAConectar;
 	private String ipAConectar;
@@ -35,6 +36,14 @@ public class Cliente implements Runnable {
     public void removeObserver(Observador channel) {
         this.observadores.remove(channel);
     }
+    
+    public Server getServer() {
+    	return this.servidor;
+    }
+    
+    public void setServer(Server servidor) {
+    	this.servidor = servidor;
+    }
 	
 	@Override
 	public void run() {
@@ -43,7 +52,6 @@ public class Cliente implements Runnable {
 			cliente = new Socket(ipAConectar, puertoAConectar);
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
-			
 			ManejaInput m = new ManejaInput();
 			Thread t = new Thread(m);
 			t.start();

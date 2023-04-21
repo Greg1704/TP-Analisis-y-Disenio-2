@@ -17,9 +17,10 @@ import controlador.Controlador;
 import controlador.Observador;
 
 public class Server implements Runnable {
-	
+
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
+	private ArrayList<Cliente> clientes;
 	private int port;
 	private boolean listo = false;
 	private boolean modoEscucha;
@@ -41,20 +42,27 @@ public class Server implements Runnable {
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
-				ManejaConexiones m = new ManejaConexiones(cliente);
-				conexiones.add(m);
-				pool.execute(m);
-				System.out.println("se conecta");
-				System.out.println(conexiones.size());
-				if (conexiones.size() < 2) { // SI ALGUIEN MAS SE QUIERE CONECTAR AL SERVIDOR , AVISAR Q YA HAY DOS PERSONAS HABLANDO. TRATAR ESTE ASUNTO Q CAPAZ LLEVA UN POCO DE TIEMPO
-					observadores.get(0).update(observadores);
+				if (this.conexiones.size() < 2 || this.modoEscucha == true) {
+					ManejaConexiones m = new ManejaConexiones(cliente);
+					conexiones.add(m);
+					pool.execute(m);
+					System.out.println("se conecta");
+					System.out.println(conexiones.size());
+					if (conexiones.size() < 2) { // SI ALGUIEN MAS SE QUIERE CONECTAR AL SERVIDOR , AVISAR Q YA HAY DOS
+													// PERSONAS HABLANDO. TRATAR ESTE ASUNTO Q CAPAZ LLEVA UN POCO DE
+													// TIEMPO
+						observadores.get(0).update(observadores);
+					}
+				} else {
+					observadores.get(0).muestraConexionInvalida();
+					cliente.close();
 				}
 			}
 		} catch (IOException e) {
-			//cerrarServidor();
+			// cerrarServidor();
 		}
 	}
-	
+
 	public void reparte(String mensaje) {
 		System.out.println("el tamaño de conexiones o sea cant de clientes es " + conexiones.size());
 		for (ManejaConexiones cliente: conexiones) {
@@ -128,7 +136,18 @@ public class Server implements Runnable {
         this.observadores.remove(channel);
     }
     
-    public void cambiaModoEscucha(boolean modo) {
+    public void setModoEscucha(boolean modo) {
     	this.modoEscucha = modo;
     }
+    
+    public void cambiaModoEscucha(boolean modo) {
+    	for (Cliente cliente: clientes) {
+    		cliente.getServer().setModoEscucha(modo);
+    	}
+    }
+
+	public boolean isModoEscucha() {
+		return modoEscucha;
+	}
+    
 }

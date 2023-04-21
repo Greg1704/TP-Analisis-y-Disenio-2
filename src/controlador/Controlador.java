@@ -37,12 +37,13 @@ public class Controlador implements ActionListener, Observador {
 		return instancia;
 	}
 	
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			server.cambiaModoEscucha(false);
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
+			cliente.setServer(server);
 			cliente.addObserver(this);
 		//	vs.aparece();
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
@@ -50,6 +51,7 @@ public class Controlador implements ActionListener, Observador {
 			cliente.mandarMensaje(mensaje);
 			
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
+			server.cambiaModoEscucha(true);
 			server.cerrarServidor();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
@@ -71,6 +73,12 @@ public class Controlador implements ActionListener, Observador {
 	@Override
 	public void mostrarMensajeTextArea(String mensaje) {
 		v.agregarMensajeAlChat(mensaje);
+	}
+
+	@Override
+	public void muestraConexionInvalida() {
+		
+		
 	}
 	
 }
