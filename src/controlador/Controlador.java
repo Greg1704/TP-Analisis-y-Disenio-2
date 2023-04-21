@@ -4,6 +4,7 @@ package controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 
 import modelo.Cliente;
 import modelo.Server;
@@ -15,15 +16,17 @@ public class Controlador implements ActionListener, Observador {
 	VentanaSolicitudDeSesion vs;
 	private static Controlador instancia = null;
 	String mensaje;
+	int puerto;
 	Cliente cliente;
 	Server server;
 	
 	private Controlador () {
+		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
 		this.v = new VentanaDefinitiva();
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
-		server = new Server(1234); // hardcodeado por ahora
+		server = new Server(puerto); 
 		server.addObserver(this);
 		server.run();
 	}
