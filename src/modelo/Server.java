@@ -126,4 +126,8 @@ public class Server implements Runnable {
     public void removeObserver(Observador channel) {
         this.observadores.remove(channel);
     }
+    
+    public void cambiaModoEscucha() {
+    	
+    }
 }
