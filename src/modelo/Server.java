@@ -73,6 +73,7 @@ public class Server implements Runnable {
 		for (ManejaConexiones cliente: conexiones) {
 			cliente.cerrarCliente();
 		}
+		this.cambiaModoEscucha(true);
 		} catch (IOException e) {
 			//
 		}
@@ -127,7 +128,7 @@ public class Server implements Runnable {
         this.observadores.remove(channel);
     }
     
-    public void cambiaModoEscucha() {
-    	
+    public void cambiaModoEscucha(boolean modo) {
+    	this.modoEscucha = modo;
     }
 }

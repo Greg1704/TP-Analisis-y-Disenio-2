@@ -41,7 +41,7 @@ public class Controlador implements ActionListener, Observador {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
-			
+			server.cambiaModoEscucha(false);
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
 			cliente.addObserver(this);
 		//	vs.aparece();
@@ -53,6 +53,7 @@ public class Controlador implements ActionListener, Observador {
 			server.cerrarServidor();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
+			server.cambiaModoEscucha(false);
 			cliente = new Cliente("localhost", 1234); // hardcodeado
 			cliente.addObserver(this);
 			this.vs.desaparece();
