@@ -18,6 +18,7 @@ import controlador.Observador;
 
 public class Server implements Runnable {
 
+
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Cliente> clientes;
@@ -149,5 +150,13 @@ public class Server implements Runnable {
 	public boolean isModoEscucha() {
 		return modoEscucha;
 	}
-    
+	
+	
+	public ArrayList<Cliente> getClientes() {
+		return clientes;
+	}
+
+	public List<Observador> getObservadores() {
+		return observadores;
+	}
 }

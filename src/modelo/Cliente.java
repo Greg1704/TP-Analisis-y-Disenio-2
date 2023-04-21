@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +14,12 @@ import controlador.Observador;
 import java.net.InetAddress;
 
 public class Cliente implements Runnable {
-	
+
+
 	private Server servidor;
 	private Socket cliente;
 	private int puertoAConectar;
-	private String ipAConectar;
+	private String ipAConectar,ipLocal;
 	private BufferedReader in;
 	private PrintWriter out;
 	private boolean listo = false;
@@ -26,6 +28,13 @@ public class Cliente implements Runnable {
 	public Cliente(String ipAConectar, int puerto) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
+		try {
+			InetAddress localHost = InetAddress.getLocalHost();
+			this.ipLocal = localHost.getHostAddress();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.run();
 	}
 	
@@ -44,6 +53,10 @@ public class Cliente implements Runnable {
     public void setServer(Server servidor) {
     	this.servidor = servidor;
     }
+    
+	public String getIpLocal() {
+		return ipLocal;
+	}
 	
 	@Override
 	public void run() {

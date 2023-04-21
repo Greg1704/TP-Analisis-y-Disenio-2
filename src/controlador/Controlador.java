@@ -67,6 +67,7 @@ public class Controlador implements ActionListener, Observador {
 
 	@Override
 	public void update(Object o) {
+		this.vs.setLblIp(server.getClientes().get(1).getIpLocal()); 
 		this.vs.aparece();
 	}
 
@@ -77,7 +78,7 @@ public class Controlador implements ActionListener, Observador {
 
 	@Override
 	public void muestraConexionInvalida() {
-		
+		JOptionPane.showMessageDialog(null, "No se ha podido conectar al servidor");
 		
 	}
 	

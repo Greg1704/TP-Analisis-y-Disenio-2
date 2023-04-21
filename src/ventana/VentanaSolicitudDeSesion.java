@@ -17,6 +17,14 @@ import javax.swing.JButton;
 
 public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IVista{
 
+	public JLabel getLblIp() {
+		return lblIp;
+	}
+
+	public void setLblIp(String string) {
+		this.lblIp.setText(string);
+	}
+
 	private JPanel contentPane;
 	private JPanel panel;
 	private JLabel lblIp;
@@ -129,4 +137,6 @@ public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IV
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 }
