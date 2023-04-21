@@ -41,11 +41,10 @@ public class Controlador implements ActionListener, Observador {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
+			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), server);
+			server.setModoEscucha(false);
 			server.cambiaModoEscucha(false);
-			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
-			cliente.setServer(server);
 			cliente.addObserver(this);
-		//	vs.aparece();
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			cliente.mandarMensaje(mensaje);
@@ -55,8 +54,9 @@ public class Controlador implements ActionListener, Observador {
 			server.cerrarServidor();
 			cliente.cerrarConversacion();
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
+			cliente = new Cliente("localhost", 1234, server); // hardcodeado
+			//cliente.setServer(server);
 			server.cambiaModoEscucha(false);
-			cliente = new Cliente("localhost", 1234); // hardcodeado
 			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {

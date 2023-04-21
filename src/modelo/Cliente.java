@@ -25,9 +25,10 @@ public class Cliente implements Runnable {
 	private boolean listo = false;
 	private List<Observador> observadores = new ArrayList<>();
 	
-	public Cliente(String ipAConectar, int puerto) {
+	public Cliente(String ipAConectar, int puerto, Server server) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
+		this.servidor = server;
 		try {
 			InetAddress localHost = InetAddress.getLocalHost();
 			this.ipLocal = localHost.getHostAddress();
@@ -63,6 +64,9 @@ public class Cliente implements Runnable {
 
 		try {
 			cliente = new Socket(ipAConectar, puertoAConectar);
+			if (cliente.getPort() != 0) {
+				servidor.agregaCliente(this);
+			}
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 			ManejaInput m = new ManejaInput();

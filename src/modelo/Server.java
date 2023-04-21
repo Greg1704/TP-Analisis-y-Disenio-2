@@ -30,6 +30,7 @@ public class Server implements Runnable {
 	
 	public Server(int port) {
 		conexiones = new ArrayList();
+		clientes = new ArrayList();
 		this.port = port;
 		this.modoEscucha = true;
 	}
@@ -43,7 +44,8 @@ public class Server implements Runnable {
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
-				if (this.conexiones.size() < 2 || this.modoEscucha == true) {
+				if (this.modoEscucha == true) {
+					
 					ManejaConexiones m = new ManejaConexiones(cliente);
 					conexiones.add(m);
 					pool.execute(m);
@@ -142,8 +144,10 @@ public class Server implements Runnable {
     }
     
     public void cambiaModoEscucha(boolean modo) {
+    	System.out.println(clientes.size());
     	for (Cliente cliente: clientes) {
     		cliente.getServer().setModoEscucha(modo);
+    		System.out.println(cliente.getServer().isModoEscucha());
     	}
     }
 
@@ -165,7 +169,7 @@ public class Server implements Runnable {
 	}
 	
 	public String getIpSolicitante() {
-		InetAddress aux = this.conexiones.get(1).cliente.getLocalAddress();
+		InetAddress aux = this.conexiones.get(0).cliente.getLocalAddress();
 		return (aux.toString());
 	}
 	
