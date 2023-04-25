@@ -64,9 +64,6 @@ public class Cliente implements Runnable {
 
 		try {
 			cliente = new Socket(ipAConectar, puertoAConectar);
-			if (cliente.getPort() != 0) {
-				servidor.agregaCliente(this);
-			}
 			out = new PrintWriter(cliente.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 			ManejaInput m = new ManejaInput();
@@ -91,7 +88,8 @@ public class Cliente implements Runnable {
 				cliente.close();
 			}
 		} catch (IOException e) {
-			// no tendria que entrar aca ya q es por ventana la interaccion
+			System.out.println("no cierra cliente porque hay una excepcion");
+			System.out.println(e.getLocalizedMessage());
 		}
 	}
 	 
@@ -104,7 +102,12 @@ public class Cliente implements Runnable {
 				while (!listo) {
 					String mensaje;
 					while ((mensaje = in.readLine()) != null) {
-						observadores.get(0).mostrarMensajeTextArea(mensaje); // entra mensaje de servidor, entonces MUESTRO
+						if (mensaje == "/cerrar/" || mensaje == "/enCharla/") {
+							observadores.get(0).mostrarUsuarioOcupado();
+							cerrarConversacion();
+						} else {
+							observadores.get(0).mostrarMensajeTextArea(mensaje); // entra mensaje de servidor, entonces MUESTRO
+						}
 					}
 				}
 			} catch (IOException e) {

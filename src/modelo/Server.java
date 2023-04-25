@@ -18,10 +18,8 @@ import controlador.Observador;
 
 public class Server implements Runnable {
 
-
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
-	private ArrayList<Cliente> clientes;
 	private int port;
 	private boolean listo = false;
 	private boolean modoEscucha;
@@ -30,7 +28,6 @@ public class Server implements Runnable {
 	
 	public Server(int port) {
 		conexiones = new ArrayList();
-		clientes = new ArrayList();
 		this.port = port;
 		this.modoEscucha = true;
 	}
@@ -44,24 +41,30 @@ public class Server implements Runnable {
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
+				ManejaConexiones m = new ManejaConexiones(cliente);
+				conexiones.add(m);
+				pool.execute(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle que su pedido de conexion es rechazado
+				System.out.println("se añade cliente al servidor");
 				if (this.modoEscucha == true) {
-					ManejaConexiones m = new ManejaConexiones(cliente);
-					conexiones.add(m);
-					pool.execute(m);
 					System.out.println("se conecta");
 					System.out.println(conexiones.size());
 					if (conexiones.size() < 2) { // SI ALGUIEN MAS SE QUIERE CONECTAR AL SERVIDOR , AVISAR Q YA HAY DOS
 													// PERSONAS HABLANDO. TRATAR ESTE ASUNTO Q CAPAZ LLEVA UN POCO DE
 													// TIEMPO
 						observadores.get(0).update(observadores);
+					} else if (conexiones.size() == 2) {
+						this.modoEscucha = false;
 					}
 				} else {
-					observadores.get(0).muestraConexionInvalida();
+					PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
+					out.println("/enCharla/");
+					int ultimoElemento = conexiones.size() - 1;
+					conexiones.remove(ultimoElemento);
 					cliente.close();
 				}
 			}
 		} catch (IOException e) {
-			// cerrarServidor();
+			cerrarServidor();
 		}
 	}
 
@@ -77,22 +80,7 @@ public class Server implements Runnable {
 	public void rechaza() {
 		conexiones.get(0).cerrarCliente();
 		conexiones.remove(0);
-		this.cambiaModoEscucha(true);
-	}
-	
-	public void cerrarServidor() {
-		try {
-		this.listo = true;
-		if (!server.isClosed()) {
-			server.close();
-		}
-		for (ManejaConexiones cliente: conexiones) {
-			cliente.cerrarCliente();
-		}
-		this.cambiaModoEscucha(true);
-		} catch (IOException e) {
-			//
-		}
+	//	this.cambiaModoEscucha(true);
 	}
 	
 	public class ManejaConexiones implements Runnable {
@@ -111,13 +99,15 @@ public class Server implements Runnable {
 				in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 				String mensaje;
 				while ((mensaje = in.readLine()) != null) {
-					reparte(mensaje);;
+					reparte(mensaje);
+					if (mensaje == "/cerrar/") {
+						cerrarServidor();
+					}
 				}
 			} catch (IOException e) {
-				cerrarCliente();
+				System.out.println(e.getLocalizedMessage());
 			}
 		}
-		
 		
 		public void mandarMensaje(String mensaje) {
 			out.println(mensaje);
@@ -134,6 +124,23 @@ public class Server implements Runnable {
 				System.out.println("ke carajo"); // esto no deberia pasar
 			}
 		}
+		
+		public void cerrarServidor() {
+			try {
+				listo = true;
+				in.close();
+				out.close();
+				if (!server.isClosed()) {
+					server.close();
+				}
+				for (ManejaConexiones cliente : conexiones) {
+					cliente.cerrarCliente();
+				}
+			} catch (IOException e) {
+				//
+			}
+		}
+
 	}
 	
 	public void addObserver(Observador channel) {
@@ -148,26 +155,11 @@ public class Server implements Runnable {
     	this.modoEscucha = modo;
     }
     
-    public void cambiaModoEscucha(boolean modo) {
-    	System.out.println(clientes.size());
-    	for (Cliente cliente: clientes) {
-    		cliente.getServer().setModoEscucha(modo);
-    		System.out.println(cliente.getServer().isModoEscucha());
-    	}
-    }
 
 	public boolean isModoEscucha() {
 		return modoEscucha;
 	}
 	
-	
-	public ArrayList<Cliente> getClientes() {
-		return clientes;
-	}
-	
-	public void agregaCliente(Cliente cliente) {
-		this.clientes.add(cliente);
-	}
 
 	public List<Observador> getObservadores() {
 		return observadores;

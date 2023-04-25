@@ -50,9 +50,7 @@ public class Controlador implements ActionListener, Observador {
 			cliente.mandarMensaje(mensaje);
 			
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
-			server.cambiaModoEscucha(true);
-			server.cerrarServidor();
-			cliente.cerrarConversacion();
+			cliente.mandarMensaje("/cerrar/");
 		}else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			cliente = new Cliente("localhost", 1234, server); // hardcodeado
 			cliente.setServer(server);
@@ -61,9 +59,11 @@ public class Controlador implements ActionListener, Observador {
 			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
+			/*
 			server.rechaza(); // si rechazo deberia mostrarle al otro q no se pudo establecer la conex (y esta linea no anda)
-			this.muestraConexionInvalida(); // esto iria para el que solicita.. no para el q rechaza
+			this.mostrarUsuarioOcupado(); // esto iria para el que solicita.. no para el q rechaza
 			vs.desaparece();
+			*/
 		} 
 		
 	}
@@ -80,8 +80,8 @@ public class Controlador implements ActionListener, Observador {
 	}
 
 	@Override
-	public void muestraConexionInvalida() {
-		JOptionPane.showMessageDialog(null, "No se ha podido conectar al servidor");
+	public void mostrarUsuarioOcupado() {
+		JOptionPane.showMessageDialog(null, "El usuario con el que se quiere contactar está en conversación");
 		
 	}
 	
