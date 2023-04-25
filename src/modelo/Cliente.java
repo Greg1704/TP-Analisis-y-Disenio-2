@@ -91,11 +91,13 @@ public class Cliente implements Runnable {
 				while (!listo) {
 					String mensaje;
 					while ((mensaje = in.readLine()) != null) {
-						if (mensaje.equals("/cerrar/") || mensaje.equals("/enCharla/")) {
+						if (mensaje.equals("/enCharla/")) {
 							observadores.get(0).mostrarUsuarioOcupado();
+						} else if (mensaje.equals("cerrar")){
+							observadores.get(0).mostrarMensajeTextArea(mensaje); // entra mensaje de servidor, entonces MUESTRO
 							cerrarConversacion();
 						} else {
-							observadores.get(0).mostrarMensajeTextArea(mensaje); // entra mensaje de servidor, entonces MUESTRO
+							observadores.get(0).mostrarMensajeTextArea(mensaje);
 						}
 					}
 				}

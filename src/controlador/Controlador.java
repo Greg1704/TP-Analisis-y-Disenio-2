@@ -52,9 +52,9 @@ public class Controlador implements ActionListener, Observador {
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			cliente.mandarMensaje("/cerrar/");
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
+			server.setListo();
 			cliente = new Cliente("localhost", puerto); 
 			server.setModoEscucha(false);
-			server.setListo();
 		//	server.cambiaModoEscucha(false);
 			cliente.addObserver(this);
 			this.vs.desaparece();
@@ -82,6 +82,11 @@ public class Controlador implements ActionListener, Observador {
 	@Override
 	public void mostrarUsuarioOcupado() {
 		JOptionPane.showMessageDialog(null, "El usuario con el que se quiere contactar está en conversación");
+	}
+
+	@Override
+	public void mostrarCierreSesion() {
+		JOptionPane.showMessageDialog(null, "La sesión ha sido cerrada");
 		
 	}
 	
