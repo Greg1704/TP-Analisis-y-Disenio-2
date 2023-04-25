@@ -15,8 +15,6 @@ import java.net.InetAddress;
 
 public class Cliente implements Runnable {
 
-
-	private Server servidor;
 	private Socket cliente;
 	private int puertoAConectar;
 	private String ipAConectar,ipLocal;
@@ -25,10 +23,9 @@ public class Cliente implements Runnable {
 	private boolean listo = false;
 	private List<Observador> observadores = new ArrayList<>();
 	
-	public Cliente(String ipAConectar, int puerto, Server server) {
+	public Cliente(String ipAConectar, int puerto) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
-		this.servidor = server;
 		try {
 			InetAddress localHost = InetAddress.getLocalHost();
 			this.ipLocal = localHost.getHostAddress();
@@ -45,14 +42,6 @@ public class Cliente implements Runnable {
 
     public void removeObserver(Observador channel) {
         this.observadores.remove(channel);
-    }
-    
-    public Server getServer() {
-    	return this.servidor;
-    }
-    
-    public void setServer(Server servidor) {
-    	this.servidor = servidor;
     }
     
 	public String getIpLocal() {
@@ -102,7 +91,7 @@ public class Cliente implements Runnable {
 				while (!listo) {
 					String mensaje;
 					while ((mensaje = in.readLine()) != null) {
-						if (mensaje == "/cerrar/" || mensaje == "/enCharla/") {
+						if (mensaje.equals("/cerrar/") || mensaje.equals("/enCharla/")) {
 							observadores.get(0).mostrarUsuarioOcupado();
 							cerrarConversacion();
 						} else {

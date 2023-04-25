@@ -52,9 +52,7 @@ public class Server implements Runnable {
 													// PERSONAS HABLANDO. TRATAR ESTE ASUNTO Q CAPAZ LLEVA UN POCO DE
 													// TIEMPO
 						observadores.get(0).update(observadores);
-					} else if (conexiones.size() == 2) {
-						this.modoEscucha = false;
-					}
+					} 
 				} else {
 					PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
 					out.println("/enCharla/");
@@ -64,7 +62,7 @@ public class Server implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			cerrarServidor();
+			
 		}
 	}
 
@@ -100,9 +98,10 @@ public class Server implements Runnable {
 				String mensaje;
 				while ((mensaje = in.readLine()) != null) {
 					reparte(mensaje);
-					if (mensaje == "/cerrar/") {
+					if (mensaje.equals("/cerrar/")) {
+						System.out.println("se ejecuta cerrar servidor");
 						cerrarServidor();
-					}
+					} 
 				}
 			} catch (IOException e) {
 				System.out.println(e.getLocalizedMessage());
@@ -128,14 +127,20 @@ public class Server implements Runnable {
 		public void cerrarServidor() {
 			try {
 				listo = true;
+				modoEscucha = true;
 				in.close();
 				out.close();
-				if (!server.isClosed()) {
-					server.close();
-				}
+			//	if (!server.isClosed()) {
+				//	server.close();
+				//}
 				for (ManejaConexiones cliente : conexiones) {
 					cliente.cerrarCliente();
 				}
+				int i = 0;
+				while (i < conexiones.size()) {
+					conexiones.remove(i);
+				}
+			//	pool.shutdown();
 			} catch (IOException e) {
 				//
 			}
@@ -170,4 +175,7 @@ public class Server implements Runnable {
 		return (aux.toString());
 	}
 	
-}
+	public void setListo() {
+		listo = false;
+	}
+ }
