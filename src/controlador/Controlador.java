@@ -42,28 +42,23 @@ public class Controlador implements ActionListener, Observador {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
-			server.setModoEscucha(false);
 		//	server.cambiaModoEscucha(false);
 			cliente.addObserver(this);
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			cliente.mandarMensaje(mensaje);
-			
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			cliente.mandarMensaje("/cerrar/");
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			server.setListo();
 			cliente = new Cliente("localhost", puerto); 
-			server.setModoEscucha(false);
+			cliente.mandarMensaje("/modoEscuchaFalse/");
 		//	server.cambiaModoEscucha(false);
 			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
-			/*
 			server.rechaza(); // si rechazo deberia mostrarle al otro q no se pudo establecer la conex (y esta linea no anda)
-			this.mostrarUsuarioOcupado(); // esto iria para el que solicita.. no para el q rechaza
 			vs.desaparece();
-			*/
 		} 
 		
 	}
@@ -87,6 +82,12 @@ public class Controlador implements ActionListener, Observador {
 	@Override
 	public void mostrarCierreSesion() {
 		JOptionPane.showMessageDialog(null, "La sesión ha sido cerrada");
+	}
+
+	@Override
+	public void cierraInstancia() {
+		v.setVisible(false);
+        System.exit(0); // finaliza el proceso
 	}
 	
 }

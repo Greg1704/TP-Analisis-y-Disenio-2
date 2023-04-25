@@ -93,8 +93,13 @@ public class Cliente implements Runnable {
 					while ((mensaje = in.readLine()) != null) {
 						if (mensaje.equals("/enCharla/")) {
 							observadores.get(0).mostrarUsuarioOcupado();
+							cerrarConversacion();
 						} else if (mensaje.equals("/cerrar/")){
 							observadores.get(0).mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
+							cerrarConversacion();
+							observadores.get(0).cierraInstancia();
+						}  else if (mensaje.equals("/rechaza/")) {
+							observadores.get(0).mostrarUsuarioOcupado();
 							cerrarConversacion();
 						} else {
 							observadores.get(0).mostrarMensajeTextArea(mensaje);

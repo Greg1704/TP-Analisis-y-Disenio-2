@@ -76,9 +76,9 @@ public class Server implements Runnable {
 	}
 	
 	public void rechaza() {
+		reparte("/rechaza/");
 		conexiones.get(0).cerrarCliente();
 		conexiones.remove(0);
-	//	this.cambiaModoEscucha(true);
 	}
 	
 	public class ManejaConexiones implements Runnable {
@@ -97,17 +97,21 @@ public class Server implements Runnable {
 				in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
 				String mensaje;
 				while ((mensaje = in.readLine()) != null) {
-					reparte(mensaje);
-					if (mensaje.equals("/cerrar/")) {
+					if (mensaje.equals("/modoEscuchaFalse/")) {
+						modoEscucha = false;
+					} else if (mensaje.equals("/cerrar/")) {
+						reparte(mensaje);
 						System.out.println("se ejecuta cerrar servidor");
 						cerrarServidor();
-					} 
+					} else {
+						reparte(mensaje);
+					}
 				}
 			} catch (IOException e) {
 				System.out.println(e.getLocalizedMessage());
 			}
 		}
-		
+
 		public void mandarMensaje(String mensaje) {
 			out.println(mensaje);
 		}
@@ -144,6 +148,10 @@ public class Server implements Runnable {
 			} catch (IOException e) {
 				//
 			}
+		}
+		
+		public void ponerModoEscuchaFalse(String mensaje) {
+			out.println(mensaje);
 		}
 
 	}

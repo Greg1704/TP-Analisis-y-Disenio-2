@@ -5,4 +5,5 @@ public interface Observador {
 	 public void mostrarMensajeTextArea(String mensaje);
 	 public void mostrarUsuarioOcupado();
 	 public void mostrarCierreSesion();
+	 public void cierraInstancia();
 }
