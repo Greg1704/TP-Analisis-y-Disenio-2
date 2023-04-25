@@ -87,7 +87,6 @@ public class Controlador implements ActionListener, Observador {
 	@Override
 	public void mostrarCierreSesion() {
 		JOptionPane.showMessageDialog(null, "La sesión ha sido cerrada");
-		
 	}
 	
 }
