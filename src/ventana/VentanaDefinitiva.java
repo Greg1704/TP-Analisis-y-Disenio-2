@@ -50,7 +50,6 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,Ke
 	private JTextField textFieldChatMensajeUsuario;
 	private Controlador c;
 	
-
 	/**
 	 * Launch the application.
 	 */
@@ -170,6 +169,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,Ke
 		//this.tabbedPane.setEnabledAt(1, false);
 		
 		this.btnEnviarMensaje.addMouseListener(this);
+		this.btnEnviarMensaje.setEnabled(false);
 		this.btnEnviarMensaje.addActionListener(c);
 		this.btnEnviarMensaje.setActionCommand(enviarMensaje);
 		
@@ -221,7 +221,6 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,Ke
 		}else if(e.getSource() == this.btnCerrarSesion) {
 			
 		}
-		
 	}
 
 	public String getTextFieldChatMensajeUsuario() {
@@ -267,7 +266,4 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,Ke
 		}
 
 	}
-	
-	
-	
 }

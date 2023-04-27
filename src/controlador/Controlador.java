@@ -1,7 +1,5 @@
 package controlador;
 
-
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
@@ -26,8 +24,7 @@ public class Controlador implements ActionListener, Observador {
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
-		server = new Server(puerto); 
-		server.addObserver(this);
+		server = new Server(puerto, this); 
 		server.run();
 	}
 	
@@ -41,9 +38,7 @@ public class Controlador implements ActionListener, Observador {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
-			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()));
-		//	server.cambiaModoEscucha(false);
-			cliente.addObserver(this);
+			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			mensaje = "ip: " +cliente.getIpLocal() + " puerto: " + this.puerto + " : " + mensaje;
@@ -51,22 +46,18 @@ public class Controlador implements ActionListener, Observador {
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			cliente.mandarMensaje("/cerrar/");
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
-			server.setListo();
-			cliente = new Cliente("localhost", puerto); 
+			cliente = new Cliente("localhost", puerto, this); 
 			cliente.mandarMensaje("/modoEscuchaFalse/");
 			cliente.mandarMensaje("/aceptaInicioSesion/");
-		//	server.cambiaModoEscucha(false);
-			cliente.addObserver(this);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
 			server.rechaza(); // si rechazo deberia mostrarle al otro q no se pudo establecer la conex (y esta linea no anda)
 			vs.desaparece();
 		} 
-		
 	}
 
 	@Override
-	public void update(Object o) {
+	public void mostrarIntentoDeConexion() {
 		this.vs.setLblIp(server.getIpSolicitante()); 
 		this.vs.aparece();
 	}
@@ -87,7 +78,7 @@ public class Controlador implements ActionListener, Observador {
 	}
 
 	@Override
-	public void cierraInstancia() {
+	public void cerrarInstancia() {
 		v.setVisible(false);
         System.exit(0); // finaliza el proceso
 	}

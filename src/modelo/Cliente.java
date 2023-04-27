@@ -17,15 +17,16 @@ public class Cliente implements Runnable {
 
 	private Socket cliente;
 	private int puertoAConectar;
-	private String ipAConectar,ipLocal;
+	private String ipAConectar, ipLocal;
 	private BufferedReader in;
 	private PrintWriter out;
 	private boolean listo = false;
-	private List<Observador> observadores = new ArrayList<>();
+	private Observador observador;
 	
-	public Cliente(String ipAConectar, int puerto) {
+	public Cliente(String ipAConectar, int puerto, Observador observador) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
+		this.observador = observador;
 		try {
 			InetAddress localHost = InetAddress.getLocalHost();
 			this.ipLocal = localHost.getHostAddress();
@@ -35,20 +36,10 @@ public class Cliente implements Runnable {
 		}
 		this.run();
 	}
-	
-	public void addObserver(Observador channel) {
-        this.observadores.add(channel);
-    }
-
-    public void removeObserver(Observador channel) {
-        this.observadores.remove(channel);
-    }
     
 	public String getIpLocal() {
 		return ipLocal;
 	}
-	
-	
 	
 	@Override
 	public void run() {
@@ -94,19 +85,19 @@ public class Cliente implements Runnable {
 					String mensaje;
 					while ((mensaje = in.readLine()) != null) {
 						if (mensaje.equals("/enCharla/")) {
-							observadores.get(0).mostrarUsuarioOcupado();
+							observador.mostrarUsuarioOcupado();
 							cerrarConversacion();
 						} else if (mensaje.equals("/cerrar/")){
-							observadores.get(0).mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
+							observador.mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
 							cerrarConversacion();
-							observadores.get(0).cierraInstancia();
+							observador.cerrarInstancia();
 						}  else if (mensaje.equals("/rechaza/")) {
-							observadores.get(0).mostrarUsuarioOcupado();
+							observador.mostrarUsuarioOcupado();
 							cerrarConversacion();
 						} else if (mensaje.equals("/aceptaInicioSesion/")) {
-							observadores.get(0).aceptaInicioSesion();
+							observador.aceptaInicioSesion();
 						} else {
-							observadores.get(0).mostrarMensajeTextArea(mensaje);
+							observador.mostrarMensajeTextArea(mensaje);
 						}
 					}
 				}
@@ -121,86 +112,3 @@ public class Cliente implements Runnable {
 		return cliente;
 	}
 }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//	InputUsuario inUsuario = new InputUsuario();
-	//	Thread hiloInput = new Thread(inUsuario);
-	//	hiloInput.start();
-		
-	//	String mensajeEntrante;
-	//	while ((mensajeEntrante = in.readLine()) != null) {
-		//	System.out.println(mensajeEntrante);
-			// aca hacer algo para mostrar en ventana de cliente
-	//	}
-	
-	
-	
-	// TODO ESTO NO SE USARIA
-	/*
-	public class InputUsuario implements Runnable {
-
-		private BufferedReader input;
-		
-		@Override
-		public void run() {
-			try {
-			input = new BufferedReader(new InputStreamReader(System.in));
-			while (!listo) {
-				String mensaje = input.readLine(); // esto hay q cerrarlo
-				out.println(mensaje);
-			}
-			input.close(); // esto habria q fijarse , porq quiero ver si se cierra cuando sale del while
-			} catch (IOException e) {
-				cerrarConversacion();
-			}
-			
-		}
-		/* 
-		public void cierraLocalInput() {
-			input.close();
-		}
-		*/ 
-	

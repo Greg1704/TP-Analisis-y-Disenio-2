@@ -23,11 +23,12 @@ public class Server implements Runnable {
 	private int port;
 	private boolean listo = false;
 	private boolean modoEscucha;
-	private List<Observador> observadores = new ArrayList<>();
+	private Observador observador;
 	private ExecutorService pool;
 	
-	public Server(int port) {
-		conexiones = new ArrayList();
+	public Server(int port, Observador observador) {
+		conexiones = new ArrayList(); // arrayList de 2 max por ahora
+		this.observador = observador;
 		this.port = port;
 		this.modoEscucha = true;
 	}
@@ -35,27 +36,23 @@ public class Server implements Runnable {
 	@Override
 	public void run() {
 		try {
-			// InetAddress localHost = InetAddress.getLocalHost();
-			// System.out.println(localHost.getHostAddress());
 			server = new ServerSocket(port);
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
 				ManejaConexiones m = new ManejaConexiones(cliente);
-				conexiones.add(m);
-				pool.execute(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle que su pedido de conexion es rechazado
+				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle que su pedido de conexion es rechazado
+				pool.execute(m);
 				System.out.println("se añade cliente al servidor");
 				if (this.modoEscucha == true) {
 					System.out.println("se conecta");
 					System.out.println(conexiones.size());
-					if (conexiones.size() < 2) { // SI ALGUIEN MAS SE QUIERE CONECTAR AL SERVIDOR , AVISAR Q YA HAY DOS
-													// PERSONAS HABLANDO. TRATAR ESTE ASUNTO Q CAPAZ LLEVA UN POCO DE
-													// TIEMPO
-						observadores.get(0).update(observadores);
+					if (conexiones.size() < 2) { 
+						observador.mostrarIntentoDeConexion(); // hay menos de 2 personas charlando entonces popea ventana de intento de conexión
 					} 
 				} else {
 					PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
-					out.println("/enCharla/");
+					out.println("/enCharla/"); // le mando al que se quiso conectar que no se puede conectar con este servidor
 					int ultimoElemento = conexiones.size() - 1;
 					conexiones.remove(ultimoElemento);
 					cliente.close();
@@ -149,33 +146,6 @@ public class Server implements Runnable {
 				//
 			}
 		}
-		
-		public void ponerModoEscuchaFalse(String mensaje) {
-			out.println(mensaje);
-		}
-
-	}
-	
-	public void addObserver(Observador channel) {
-        this.observadores.add(channel);
-    }
-
-    public void removeObserver(Observador channel) {
-        this.observadores.remove(channel);
-    }
-    
-    public void setModoEscucha(boolean modo) {
-    	this.modoEscucha = modo;
-    }
-    
-
-	public boolean isModoEscucha() {
-		return modoEscucha;
-	}
-	
-
-	public List<Observador> getObservadores() {
-		return observadores;
 	}
 	
 	public String getIpSolicitante() {
@@ -183,7 +153,4 @@ public class Server implements Runnable {
 		return (aux.toString());
 	}
 	
-	public void setListo() {
-		listo = false;
-	}
  }
