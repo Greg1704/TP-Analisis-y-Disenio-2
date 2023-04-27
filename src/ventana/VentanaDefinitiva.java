@@ -258,14 +258,15 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,Ke
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getSource() == this.textFieldChatMensajeUsuario) {
-			if(this.textFieldChatMensajeUsuario.getText().isEmpty())
+		if (e.getSource() == this.textFieldChatMensajeUsuario) {
+			if (this.textFieldChatMensajeUsuario.getText().isEmpty()) {
 				this.btnEnviarMensaje.setEnabled(false);
-			this.btnEnviarMensaje.setEnabled(true);
+			} else {
+				this.btnEnviarMensaje.setEnabled(true);
+			}
 		}
-		
-	}
 
+	}
 	
 	
 	
