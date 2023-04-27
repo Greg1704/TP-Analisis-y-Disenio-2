@@ -96,6 +96,7 @@ public class Controlador implements ActionListener, Observador {
 	public void aceptaInicioSesion() {
 		v.getTabbedPane().setEnabledAt(0, false);
 		v.getTabbedPane().setEnabledAt(1, true);
+		v.getTabbedPane().setSelectedIndex(1);
 	}
 	
 }
