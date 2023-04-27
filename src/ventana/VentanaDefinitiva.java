@@ -171,7 +171,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	
 	public void setDefault() {
 		
-		//this.tabbedPane.setEnabledAt(1, false);
+		this.tabbedPane.setEnabledAt(1, false);
 		
 		this.btnEnviarMensaje.addMouseListener(this);
 		this.btnEnviarMensaje.setEnabled(false);
