@@ -1,14 +1,19 @@
 package controlador;
 
+import java.awt.AWTEvent;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
 import javax.swing.JOptionPane;
 
 import modelo.Cliente;
 import modelo.Server;
 import ventana.*;
 
-public class Controlador implements ActionListener, Observador {
+public class Controlador implements ActionListener, Observador, WindowListener {
 
 	VentanaDefinitiva v;
 	VentanaSolicitudDeSesion vs;
@@ -88,6 +93,46 @@ public class Controlador implements ActionListener, Observador {
 		v.getTabbedPane().setEnabledAt(0, false);
 		v.getTabbedPane().setEnabledAt(1, true);
 		v.getTabbedPane().setSelectedIndex(1);
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		cliente.mandarMensaje("/cerrar/");
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

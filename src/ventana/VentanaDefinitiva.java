@@ -1,11 +1,14 @@
 package ventana;
 
 
+import java.awt.AWTEvent;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.ActionListener;
@@ -27,7 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 
-public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,KeyListener {
+public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, KeyListener  {
 
 	private JPanel contentPane;
 	private JTabbedPane tabbedPane;
@@ -156,11 +159,13 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,Ke
 		this.textFieldChatMensajeUsuario.setBounds(95, 317, 723, 31);
 		this.panelChat.add(this.textFieldChatMensajeUsuario);
 		this.textFieldChatMensajeUsuario.setColumns(10);
+		
 	}
 	
 
 	public void setControlador(Controlador c) {
 		this.c = c;
+		this.addWindowListener(c);
 		setDefault();
 	}
 	
