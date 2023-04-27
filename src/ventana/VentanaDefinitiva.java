@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,7 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 
-public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
+public class VentanaDefinitiva extends JFrame implements MouseListener,IVista,KeyListener {
 
 	private JPanel contentPane;
 	private JTabbedPane tabbedPane;
@@ -178,6 +180,8 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
 		this.btnCerrarSesion.addMouseListener(this);
 		this.btnCerrarSesion.addActionListener(c);
 		this.btnCerrarSesion.setActionCommand(cerrarSesion);
+		
+		this.textFieldChatMensajeUsuario.addKeyListener(this);
 	}
 	
 
@@ -213,6 +217,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
 			this.textFieldPuerto.setText("");
 		}else if(e.getSource() == this.btnEnviarMensaje) {
 			this.textFieldChatMensajeUsuario.setText("");
+			this.btnEnviarMensaje.setEnabled(false);
 		}else if(e.getSource() == this.btnCerrarSesion) {
 			
 		}
@@ -233,6 +238,32 @@ public class VentanaDefinitiva extends JFrame implements MouseListener,IVista {
 
 	public String getTextFieldPuerto() {
 		return textFieldPuerto.getText();
+	}
+
+	public JTabbedPane getTabbedPane() {
+		return tabbedPane;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getSource() == this.textFieldChatMensajeUsuario) {
+			if(this.textFieldChatMensajeUsuario.getText().isEmpty())
+				this.btnEnviarMensaje.setEnabled(false);
+			this.btnEnviarMensaje.setEnabled(true);
+		}
+		
 	}
 
 	

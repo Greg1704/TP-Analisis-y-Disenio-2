@@ -93,8 +93,8 @@ public class Controlador implements ActionListener, Observador {
 
 	@Override
 	public void aceptaInicioSesion() {
-		
-		
+		v.getTabbedPane().setEnabledAt(0, false);
+		v.getTabbedPane().setEnabledAt(1, true);
 	}
 	
 }
