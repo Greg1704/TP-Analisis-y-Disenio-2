@@ -48,6 +48,8 @@ public class Cliente implements Runnable {
 		return ipLocal;
 	}
 	
+	
+	
 	@Override
 	public void run() {
 
@@ -112,6 +114,11 @@ public class Cliente implements Runnable {
 				cerrarConversacion();
 			}
 		}
+	}
+
+
+	public Socket getCliente() {
+		return cliente;
 	}
 }
 	

@@ -46,6 +46,7 @@ public class Controlador implements ActionListener, Observador {
 			cliente.addObserver(this);
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
+			mensaje = "ip: " +cliente.getIpLocal() + " puerto: " + cliente.getCliente().getPort() + " : " + mensaje;
 			cliente.mandarMensaje(mensaje);
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			cliente.mandarMensaje("/cerrar/");
