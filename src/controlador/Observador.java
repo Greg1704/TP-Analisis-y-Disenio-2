@@ -6,4 +6,5 @@ public interface Observador {
 	 public void mostrarUsuarioOcupado();
 	 public void mostrarCierreSesion();
 	 public void cierraInstancia();
+	 public void aceptaInicioSesion();
 }

@@ -53,6 +53,7 @@ public class Controlador implements ActionListener, Observador {
 			server.setListo();
 			cliente = new Cliente("localhost", puerto); 
 			cliente.mandarMensaje("/modoEscuchaFalse/");
+			cliente.mandarMensaje("/aceptaInicioSesion/");
 		//	server.cambiaModoEscucha(false);
 			cliente.addObserver(this);
 			this.vs.desaparece();
@@ -88,6 +89,12 @@ public class Controlador implements ActionListener, Observador {
 	public void cierraInstancia() {
 		v.setVisible(false);
         System.exit(0); // finaliza el proceso
+	}
+
+	@Override
+	public void aceptaInicioSesion() {
+		
+		
 	}
 	
 }
