@@ -178,6 +178,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		this.btnEnviarMensaje.addActionListener(c);
 		this.btnEnviarMensaje.setActionCommand(enviarMensaje);
 		
+		this.btnConectar.setEnabled(false);
 		this.btnConectar.addMouseListener(this);
 		this.btnConectar.addActionListener(c);
 		this.btnConectar.setActionCommand(intentoDeConexion);
@@ -187,6 +188,8 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		this.btnCerrarSesion.setActionCommand(cerrarSesion);
 		
 		this.textFieldChatMensajeUsuario.addKeyListener(this);
+		this.textFieldIp.addKeyListener(this);
+		this.textFieldPuerto.addKeyListener(this);
 	}
 	
 
@@ -220,6 +223,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		if(e.getSource() == this.btnConectar) {
 			this.textFieldIp.setText("");
 			this.textFieldPuerto.setText("");
+			this.btnConectar.setEnabled(false);
 		}else if(e.getSource() == this.btnEnviarMensaje) {
 			this.textFieldChatMensajeUsuario.setText("");
 			this.btnEnviarMensaje.setEnabled(false);
@@ -268,6 +272,11 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 			} else {
 				this.btnEnviarMensaje.setEnabled(true);
 			}
+		}else if(e.getSource() == this.textFieldIp || e.getSource() == this.textFieldPuerto) {
+			if(this.textFieldIp.getText().isEmpty() || this.textFieldPuerto.getText().isEmpty()) {
+				this.btnConectar.setEnabled(false);
+			}else
+				this.btnConectar.setEnabled(true);
 		}
 
 	}
