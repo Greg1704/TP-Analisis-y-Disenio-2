@@ -43,8 +43,13 @@ public class Controlador implements ActionListener, Observador, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
-			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
-			server.setModoEscucha(false);
+			//Faltan verificaciones
+			try {
+				cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
+				server.setModoEscucha(false);
+			}catch(NumberFormatException nfe){
+		         JOptionPane.showMessageDialog(null,"El puerto debe ser un numero entero positivo");
+		    }
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			mensaje = "ip: " +cliente.getIpLocal() + " puerto: " + this.puerto + " : " + mensaje;
