@@ -44,6 +44,7 @@ public class Controlador implements ActionListener, Observador, WindowListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
+			server.setModoEscucha(false);
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			mensaje = "ip: " +cliente.getIpLocal() + " puerto: " + this.puerto + " : " + mensaje;
@@ -75,6 +76,7 @@ public class Controlador implements ActionListener, Observador, WindowListener {
 	@Override
 	public void mostrarUsuarioOcupado() {
 		JOptionPane.showMessageDialog(null, "El usuario con el que se quiere contactar está en conversación");
+		server.setModoEscucha(true); // te rechazan la sesion entonces volves a escuchar en tu servidor
 	}
 
 	@Override
@@ -103,7 +105,9 @@ public class Controlador implements ActionListener, Observador, WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		cliente.mandarMensaje("/cerrar/");
+		if (cliente != null) {
+			cliente.mandarMensaje("/cerrar/");
+		}
 	}
 
 	@Override

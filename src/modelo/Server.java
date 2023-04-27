@@ -78,6 +78,12 @@ public class Server implements Runnable {
 		conexiones.remove(0);
 	}
 	
+	
+	
+	public void setModoEscucha(boolean modoEscucha) {
+		this.modoEscucha = modoEscucha;
+	}
+	
 	public class ManejaConexiones implements Runnable {
 		private Socket cliente;
 		private BufferedReader in;
