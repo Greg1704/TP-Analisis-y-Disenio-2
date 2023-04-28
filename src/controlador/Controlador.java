@@ -49,7 +49,6 @@ public class Controlador implements ActionListener, Observador, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
-			//Faltan verificaciones
 			try {
 				cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
 				server.setModoEscucha(false);

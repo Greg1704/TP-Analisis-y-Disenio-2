@@ -188,8 +188,13 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		this.btnCerrarSesion.setActionCommand(cerrarSesion);
 		
 		this.textFieldChatMensajeUsuario.addKeyListener(this);
+		
 		this.textFieldIp.addKeyListener(this);
+		this.textFieldIp.setText("localhost");
+		this.textFieldIp.setEnabled(false);
+		
 		this.textFieldPuerto.addKeyListener(this);
+		
 	}
 	
 
