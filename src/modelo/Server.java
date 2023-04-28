@@ -85,7 +85,7 @@ public class Server implements Runnable {
 		this.modoEscucha = modoEscucha;
 	}
 	
-	public class ManejaConexiones implements Runnable {
+	private class ManejaConexiones implements Runnable {
 		private Socket cliente;
 		private BufferedReader in;
 		private PrintWriter out;

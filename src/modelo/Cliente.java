@@ -75,7 +75,7 @@ public class Cliente implements Runnable {
 		}
 	}
 	
-	public class ManejaInput implements Runnable {
+	private class ManejaInput implements Runnable {
 
 		@Override
 		public void run() {
