@@ -74,7 +74,6 @@ public class Cliente implements Runnable {
 			System.out.println(e.getLocalizedMessage());
 		}
 	}
-	 
 	
 	public class ManejaInput implements Runnable {
 
@@ -106,7 +105,6 @@ public class Cliente implements Runnable {
 			}
 		}
 	}
-
 
 	public Socket getCliente() {
 		return cliente;
