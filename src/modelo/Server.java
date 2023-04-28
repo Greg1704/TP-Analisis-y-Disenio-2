@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -155,7 +156,7 @@ public class Server implements Runnable {
 	}
 	
 	public String getIpSolicitante() {
-		InetAddress aux = this.conexiones.get(0).cliente.getLocalAddress();
+		SocketAddress aux = this.conexiones.get(0).cliente.get);
 		return (aux.toString());
 	}
 	

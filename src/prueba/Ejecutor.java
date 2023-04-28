@@ -2,7 +2,7 @@ package prueba;
 
 import controlador.Controlador;
 
-public class testVentana {
+public class Ejecutor {
 
 	public static void main(String[] args) {
 		Controlador c=Controlador.getInstancia();
