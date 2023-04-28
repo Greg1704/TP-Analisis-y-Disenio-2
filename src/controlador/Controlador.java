@@ -25,6 +25,12 @@ public class Controlador implements ActionListener, Observador, WindowListener {
 	
 	private Controlador () {
 		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
+		while (puerto<1025 || puerto>65535) {
+			if(puerto<1025)
+				puerto = Integer.parseInt(JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor mayor a 1024)"));
+			else
+				puerto = Integer.parseInt(JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor menor a 65536)"));
+		}
 		this.v = new VentanaDefinitiva();
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
