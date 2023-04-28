@@ -15,13 +15,13 @@ import ventana.*;
 
 public class Controlador implements ActionListener, IObservador, WindowListener {
 
-	VentanaDefinitiva v;
-	VentanaSolicitudDeSesion vs;
+	private VentanaDefinitiva v;
+	private VentanaSolicitudDeSesion vs;
 	private static Controlador instancia = null;
-	String mensaje;
-	int puerto;
-	Cliente cliente;
-	Server server;
+	private String mensaje;
+	private int puerto;
+	private Cliente cliente;
+	private Server server;
 	
 	private Controlador () {
 		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));

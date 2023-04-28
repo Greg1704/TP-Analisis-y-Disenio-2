@@ -70,8 +70,7 @@ public class Cliente implements Runnable {
 				cliente.close();
 			}
 		} catch (IOException e) {
-			System.out.println("no cierra cliente porque hay una excepcion");
-			System.out.println(e.getLocalizedMessage());
+			System.out.println(e.getLocalizedMessage()); // no deberia suceder nunca
 		}
 	}
 	

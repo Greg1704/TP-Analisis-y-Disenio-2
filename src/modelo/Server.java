@@ -14,6 +14,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.JOptionPane;
+
 import controlador.Controlador;
 import controlador.IObservador;
 
@@ -44,11 +46,8 @@ public class Server implements Runnable {
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle que su pedido de conexion es rechazado
 				pool.execute(m);
-				System.out.println("se añade cliente al servidor");
 				if (this.modoEscucha == true) {
-					System.out.println("se conecta");
-					System.out.println(conexiones.size());
-					if (conexiones.size() < 2) { 
+					if (conexiones.size() < 2) { // redundante xq se verifica bien el modo escucha
 						observador.mostrarIntentoDeConexion(); // hay menos de 2 personas charlando entonces popea ventana de intento de conexión
 					} 
 				} else {
@@ -65,7 +64,6 @@ public class Server implements Runnable {
 	}
 
 	public void reparte(String mensaje) {
-		System.out.println("el tamaño de conexiones o sea cant de clientes es " + conexiones.size());
 		for (ManejaConexiones cliente: conexiones) {
 			if (cliente != null) {
 				cliente.mandarMensaje(mensaje);
@@ -78,8 +76,6 @@ public class Server implements Runnable {
 		conexiones.get(0).cerrarCliente();
 		conexiones.remove(0);
 	}
-	
-	
 	
 	public void setModoEscucha(boolean modoEscucha) {
 		this.modoEscucha = modoEscucha;
@@ -105,14 +101,13 @@ public class Server implements Runnable {
 						modoEscucha = false;
 					} else if (mensaje.equals("/cerrar/")) {
 						reparte(mensaje);
-						System.out.println("se ejecuta cerrar servidor");
 						cerrarServidor();
 					} else {
 						reparte(mensaje);
 					}
 				}
 			} catch (IOException e) {
-				System.out.println(e.getLocalizedMessage());
+				JOptionPane.showMessageDialog(null, e.getLocalizedMessage());
 			}
 		}
 
@@ -128,7 +123,7 @@ public class Server implements Runnable {
 					cliente.close();
 				}
 			} catch (IOException e) {
-				System.out.println("ke carajo"); // esto no deberia pasar
+				// try x obligacion, no deberia pasar
 			}
 		}
 		
@@ -138,9 +133,6 @@ public class Server implements Runnable {
 				modoEscucha = true;
 				in.close();
 				out.close();
-			//	if (!server.isClosed()) {
-				//	server.close();
-				//}
 				for (ManejaConexiones cliente : conexiones) {
 					cliente.cerrarCliente();
 				}
@@ -148,7 +140,6 @@ public class Server implements Runnable {
 				while (i < conexiones.size()) {
 					conexiones.remove(i);
 				}
-			//	pool.shutdown();
 			} catch (IOException e) {
 				//
 			}
