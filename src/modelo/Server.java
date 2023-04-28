@@ -156,7 +156,7 @@ public class Server implements Runnable {
 	}
 	
 	public String getIpSolicitante() {
-		InetAddress aux = this.conexiones.get(0).cliente.getLocalAddress();
+		SocketAddress aux = this.conexiones.get(0).cliente.get);
 		return (aux.toString());
 	}
 	
