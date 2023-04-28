@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import controlador.Observador;
+import controlador.IObservador;
 
 import java.net.InetAddress;
 
@@ -21,9 +21,9 @@ public class Cliente implements Runnable {
 	private BufferedReader in;
 	private PrintWriter out;
 	private boolean listo = false;
-	private Observador observador;
+	private IObservador observador;
 	
-	public Cliente(String ipAConectar, int puerto, Observador observador) {
+	public Cliente(String ipAConectar, int puerto, IObservador observador) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
 		this.observador = observador;

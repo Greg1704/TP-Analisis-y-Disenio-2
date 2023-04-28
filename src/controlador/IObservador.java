@@ -1,6 +1,6 @@
 package controlador;
 
-public interface Observador {
+public interface IObservador {
 	 public void mostrarIntentoDeConexion();
 	 public void mostrarMensajeTextArea(String mensaje);
 	 public void mostrarUsuarioOcupado();

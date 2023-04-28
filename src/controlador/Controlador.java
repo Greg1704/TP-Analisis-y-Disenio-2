@@ -13,7 +13,7 @@ import modelo.Cliente;
 import modelo.Server;
 import ventana.*;
 
-public class Controlador implements ActionListener, Observador, WindowListener {
+public class Controlador implements ActionListener, IObservador, WindowListener {
 
 	VentanaDefinitiva v;
 	VentanaSolicitudDeSesion vs;

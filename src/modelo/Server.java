@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import controlador.Controlador;
-import controlador.Observador;
+import controlador.IObservador;
 
 public class Server implements Runnable {
 
@@ -24,10 +24,10 @@ public class Server implements Runnable {
 	private int port;
 	private boolean listo = false;
 	private boolean modoEscucha;
-	private Observador observador;
+	private IObservador observador;
 	private ExecutorService pool;
 	
-	public Server(int port, Observador observador) {
+	public Server(int port, IObservador observador) {
 		conexiones = new ArrayList(); // arrayList de 2 max por ahora
 		this.observador = observador;
 		this.port = port;
