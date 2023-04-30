@@ -1,4 +1,4 @@
-package prueba;
+package ejecutor;
 
 import controlador.Controlador;
 

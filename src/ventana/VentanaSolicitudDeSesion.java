@@ -12,7 +12,6 @@ import javax.swing.border.EmptyBorder;
 import controlador.Controlador;
 
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import javax.swing.JButton;
 
 public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IVista{
