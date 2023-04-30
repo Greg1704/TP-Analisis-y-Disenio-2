@@ -185,7 +185,6 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		
 		this.textFieldIp.addKeyListener(this);
 		this.textFieldIp.setText("localhost");
-		this.textFieldIp.setEnabled(false);
 		
 		this.textFieldPuerto.addKeyListener(this);
 		
