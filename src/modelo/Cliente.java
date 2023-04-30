@@ -88,7 +88,7 @@ public class Cliente implements Runnable {
 							cerrarConversacion();
 							observador.cerrarInstancia();
 						}  else if (mensaje.equals("/rechaza/")) {
-							observador.mostrarUsuarioOcupado();
+							observador.mostrarUsuarioNoDisponible();
 							cerrarConversacion();
 						} else if (mensaje.equals("/aceptaInicioSesion/")) {
 							observador.aceptaInicioSesion();

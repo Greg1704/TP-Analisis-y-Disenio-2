@@ -46,13 +46,17 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals(IVista.intentoDeConexion)) {
+		if (e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			try {
-				cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
-				server.setModoEscucha(false);
-			}catch(NumberFormatException nfe){
-		         JOptionPane.showMessageDialog(null,"El puerto debe ser un numero entero positivo");
-		    }
+				if (Integer.parseInt(v.getTextFieldPuerto()) != puerto) {
+					cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
+					server.setModoEscucha(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "Ingrese un puerto diferente al suyo");
+				}
+			} catch (NumberFormatException nfe) {
+				JOptionPane.showMessageDialog(null, "El puerto debe ser un numero entero positivo");
+			}
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			mensaje = v.getTextFieldChatMensajeUsuario();
 			mensaje = "ip: " +cliente.getIpLocal() + " puerto: " + this.puerto + " : " + mensaje;
@@ -85,6 +89,12 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	public void mostrarUsuarioOcupado() {
 		JOptionPane.showMessageDialog(null, "El usuario con el que se quiere contactar está en conversación");
 		server.setModoEscucha(true); // te rechazan la sesion entonces volves a escuchar en tu servidor
+	}
+	
+	@Override
+	public void mostrarUsuarioNoDisponible() {
+		JOptionPane.showMessageDialog(null, "El usuario con el que se quiere contactar no está disponible");
+		server.setModoEscucha(true);
 	}
 
 	@Override

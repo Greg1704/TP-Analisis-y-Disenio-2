@@ -222,7 +222,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 			this.textFieldIp.setText("");
 			this.textFieldPuerto.setText("");
 			this.btnConectar.setEnabled(false);
-		}else if(e.getSource() == this.btnEnviarMensaje) {
+		} else if(e.getSource() == this.btnEnviarMensaje) {
 			this.textFieldChatMensajeUsuario.setText("");
 			this.btnEnviarMensaje.setEnabled(false);
 		}else if(e.getSource() == this.btnCerrarSesion) {
