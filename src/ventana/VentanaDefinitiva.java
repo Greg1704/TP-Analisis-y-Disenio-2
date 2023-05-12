@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import controlador.Controlador;
+import modelo.Mensaje;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
@@ -234,8 +235,8 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		return textFieldChatMensajeUsuario.getText();
 	}
 	
-	public void agregarMensajeAlChat(String mensaje) {
-		this.textAreaChatText.append(mensaje + "\n");
+	public void agregarMensajeAlChat(Mensaje mensaje) {
+		this.textAreaChatText.append(mensaje.getIpEmisor() + ":" + mensaje.getPuertoEmisor() + ": " + mensaje.getMensaje() + "\n");
 	}
 
 	public String getTextFieldIp() {

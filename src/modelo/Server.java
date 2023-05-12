@@ -3,6 +3,8 @@ package modelo;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -19,6 +21,7 @@ public class Server implements Runnable {
 
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
+	private Chat chat = new Chat();
 	private int port;
 	private boolean listo = false;
 	private boolean modoEscucha;
@@ -47,8 +50,9 @@ public class Server implements Runnable {
 						observador.mostrarIntentoDeConexion(); // hay menos de 2 personas charlando entonces popea ventana de intento de conexión
 					} 
 				} else {
-					PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
-					out.println("/enCharla/"); // le mando al que se quiso conectar que no se puede conectar con este servidor
+					Mensaje mensaje = new Mensaje("/enCharla/", "100.000.000.000", "1500"); // no importa la info acá, va hardcodeada. solo importa q no se puede conectar
+					ObjectOutputStream os = new ObjectOutputStream(cliente.getOutputStream());
+					os.writeObject(mensaje);
 					int ultimoElemento = conexiones.size() - 1;
 					conexiones.remove(ultimoElemento);
 					cliente.close();
@@ -59,16 +63,21 @@ public class Server implements Runnable {
 		}
 	}
 
-	public void reparte(String mensaje) {
+	public void reparte(Mensaje mensaje) {
 		for (ManejaConexiones cliente: conexiones) {
 			if (cliente != null) {
-				cliente.mandarMensaje(mensaje);
+				try {
+					cliente.mandarMensaje(mensaje);
+				} catch (IOException e) {
+					System.out.println(e.getLocalizedMessage() + "mandando mensaje");
+				}
 			}
 		}
 	}
 	
 	public void rechaza() {
-		reparte("/rechaza/");
+		Mensaje mensaje = new Mensaje("/rechaza/", "100.000.000.000", "1500");
+			reparte(mensaje);
 		conexiones.get(0).cerrarCliente();
 		conexiones.remove(0);
 	}
@@ -79,8 +88,8 @@ public class Server implements Runnable {
 	
 	private class ManejaConexiones implements Runnable {
 		private Socket cliente;
-		private BufferedReader in;
-		private PrintWriter out;
+		private ObjectOutputStream os;
+		private ObjectInputStream is;
 		
 		public ManejaConexiones(Socket cliente) {
 			this.cliente = cliente;
@@ -89,32 +98,35 @@ public class Server implements Runnable {
 		@Override
 		public void run() {
 			try {
-				out = new PrintWriter(cliente.getOutputStream(), true);
-				in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
-				String mensaje;
-				while ((mensaje = in.readLine()) != null) {
-					if (mensaje.equals("/modoEscuchaFalse/")) {
+		        os = new ObjectOutputStream(cliente.getOutputStream());
+		    	is = new ObjectInputStream(cliente.getInputStream());
+				Mensaje mensaje;
+				while ((mensaje = (Mensaje) is.readObject()) != null) {
+					if (mensaje.getMensaje().equals("/modoEscuchaFalse/")) {
 						modoEscucha = false;
-					} else if (mensaje.equals("/cerrar/")) {
+					} else if (mensaje.getMensaje().equals("/cerrar/")) {
 						reparte(mensaje);
 						cerrarServidor();
 					} else {
 						reparte(mensaje);
+						chat.agregarMensajes(mensaje);
 					}
 				}
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, e.getLocalizedMessage());
+			} catch (ClassNotFoundException e) {
+				System.out.println(e.getLocalizedMessage() + "run de server manejaconex");
 			}
 		}
 
-		public void mandarMensaje(String mensaje) {
-			out.println(mensaje);
+		public void mandarMensaje(Mensaje mensaje) throws IOException {
+			os.writeObject(mensaje);
 		}
 		
 		public void cerrarCliente() {
 			try {
-				in.close();
-				out.close();
+				is.close();
+				os.close();
 				if (!cliente.isClosed()) {
 					cliente.close();
 				}
@@ -127,8 +139,8 @@ public class Server implements Runnable {
 			try {
 				listo = true;
 				modoEscucha = true;
-				in.close();
-				out.close();
+				is.close();
+				os.close();
 				for (ManejaConexiones cliente : conexiones) {
 					cliente.cerrarCliente();
 				}

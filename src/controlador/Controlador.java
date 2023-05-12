@@ -8,6 +8,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JOptionPane;
 
 import modelo.Cliente;
+import modelo.Mensaje;
 import modelo.Server;
 import ventana.*;
 
@@ -58,15 +59,17 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 				JOptionPane.showMessageDialog(null, "El puerto debe ser un numero entero positivo");
 			}
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
-			mensaje = v.getTextFieldChatMensajeUsuario();
-			mensaje = "ip: " +cliente.getIpLocal() + " puerto: " + this.puerto + " : " + mensaje;
+			Mensaje mensaje = new Mensaje(v.getTextFieldChatMensajeUsuario(), cliente.getIpLocal(), Integer.toString(this.puerto));
 			cliente.mandarMensaje(mensaje);
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
-			cliente.mandarMensaje("/cerrar/");
+			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), Integer.toString(this.puerto));
+			cliente.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			cliente = new Cliente("localhost", puerto, this); 
-			cliente.mandarMensaje("/modoEscuchaFalse/");
-			cliente.mandarMensaje("/aceptaInicioSesion/");
+			Mensaje mensaje = new Mensaje("/modoEscuchaFalse/", cliente.getIpLocal(), Integer.toString(this.puerto));
+			cliente.mandarMensaje(mensaje);
+			Mensaje mensaje2 = new Mensaje("/aceptaInicioSesion/", cliente.getIpLocal(), Integer.toString(this.puerto));
+			cliente.mandarMensaje(mensaje2);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
 			server.rechaza(); // si rechazo deberia mostrarle al otro q no se pudo establecer la conex (y esta linea no anda)
@@ -81,7 +84,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	}
 
 	@Override
-	public void mostrarMensajeTextArea(String mensaje) {
+	public void mostrarMensajeTextArea(Mensaje mensaje) {
 		v.agregarMensajeAlChat(mensaje);
 	}
 
@@ -124,7 +127,8 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	@Override
 	public void windowClosing(WindowEvent e) {
 		if (cliente != null) {
-			cliente.mandarMensaje("/cerrar/");
+			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), Integer.toString(this.puerto));
+			cliente.mandarMensaje(mensaje);
 		}
 	}
 

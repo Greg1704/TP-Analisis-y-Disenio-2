@@ -2,6 +2,8 @@ package modelo;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -16,8 +18,8 @@ public class Cliente implements Runnable {
 	private Socket cliente;
 	private int puertoAConectar;
 	private String ipAConectar, ipLocal;
-	private BufferedReader in;
-	private PrintWriter out;
+	private ObjectOutputStream os;
+	private ObjectInputStream is;
 	private boolean listo = false;
 	private IObservador observador;
 	
@@ -44,26 +46,30 @@ public class Cliente implements Runnable {
 
 		try {
 			cliente = new Socket(ipAConectar, puertoAConectar);
-			out = new PrintWriter(cliente.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+			os = new ObjectOutputStream(cliente.getOutputStream());
+			is = new ObjectInputStream(cliente.getInputStream());
 			ManejaInput m = new ManejaInput();
 			Thread t = new Thread(m);
 			t.start();
 			
 		} catch (IOException e) {
-			// tratar con alguna pavada como cerrar conexion o algo
+			System.out.println(e.getLocalizedMessage());
 		}
 }
 	
-	public void mandarMensaje(String mensaje) {
-		out.println(mensaje); // SE MANDA DIRECTAMENTE A SERVIDOR. SE VE EN LA VENTANA EL MENSAJE ENVIADO YA QUE SE RECIBE DEL SERVIDOR LUEGO (EN LA PARTE DONDE SE INVOCA REPARTE())
+	public void mandarMensaje(Mensaje mensaje) {
+		try {
+			os.writeObject(mensaje);
+		} catch (IOException e) {
+			System.out.println(e.getLocalizedMessage());
+		} // SE MANDA DIRECTAMENTE A SERVIDOR. SE VE EN LA VENTANA EL MENSAJE ENVIADO YA QUE SE RECIBE DEL SERVIDOR LUEGO (EN LA PARTE DONDE SE INVOCA REPARTE())
 	}
 	
 	public void cerrarConversacion() {
 		listo = true;
 		try {
-			in.close();
-			out.close();
+			is.close();
+			os.close();
 			if (!cliente.isClosed()) {
 				cliente.close();
 			}
@@ -78,23 +84,27 @@ public class Cliente implements Runnable {
 		public void run() {
 			try {
 				while (!listo) {
-					String mensaje;
-					while ((mensaje = in.readLine()) != null) {
-						if (mensaje.equals("/enCharla/")) {
-							observador.mostrarUsuarioOcupado();
-							cerrarConversacion();
-						} else if (mensaje.equals("/cerrar/")){
-							observador.mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
-							cerrarConversacion();
-							observador.cerrarInstancia();
-						}  else if (mensaje.equals("/rechaza/")) {
-							observador.mostrarUsuarioNoDisponible();
-							cerrarConversacion();
-						} else if (mensaje.equals("/aceptaInicioSesion/")) {
-							observador.aceptaInicioSesion();
-						} else {
-							observador.mostrarMensajeTextArea(mensaje);
+					Mensaje mensaje;
+					try {
+						while ((mensaje = (Mensaje) is.readObject()) != null) {
+							if (mensaje.getMensaje().equals("/enCharla/")) {
+								observador.mostrarUsuarioOcupado();
+								cerrarConversacion();
+							} else if (mensaje.getMensaje().equals("/cerrar/")){
+								observador.mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
+								cerrarConversacion();
+								observador.cerrarInstancia();
+							}  else if (mensaje.getMensaje().equals("/rechaza/")) {
+								observador.mostrarUsuarioNoDisponible();
+								cerrarConversacion();
+							} else if (mensaje.getMensaje().equals("/aceptaInicioSesion/")) {
+								observador.aceptaInicioSesion();
+							} else {
+								observador.mostrarMensajeTextArea(mensaje);
+							}
 						}
+					} catch (ClassNotFoundException e) {
+						System.out.println(e.getLocalizedMessage());
 					}
 				}
 			} catch (IOException e) {
