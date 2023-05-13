@@ -126,7 +126,7 @@ public class Server implements Runnable, ConsultaEstado {
 						cerrarServidor();
 					} else if (mensaje.getMensaje().contains("/puerto/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
-						//this.puerto = ; // el puerto que me pasen ahora
+						this.puerto = Integer.parseInt(cadena[1]);
 					} else {
 						reparte(mensaje);
 						chat.agregarMensajes(mensaje);
