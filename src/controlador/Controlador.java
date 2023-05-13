@@ -34,8 +34,6 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
-		server = new Server(puerto, this); 
-		server.run();
 	}
 	
 	public static Controlador getInstancia() {
