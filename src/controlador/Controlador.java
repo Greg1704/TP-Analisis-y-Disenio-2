@@ -24,8 +24,6 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private int puertoServidor = 1234;
 	
 	private Controlador () {
-		server = new Server(puertoServidor, this);
-		server.run();
 		cliente = new Cliente("localhost", puertoServidor, this);
 		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
 		while (puerto<1025 || puerto>65535) {
@@ -62,16 +60,18 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 			cliente.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/aceptar/", cliente.getIpLocal(), this.puerto);
+			cliente.mandarMensaje(mensaje);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/rechazar/", cliente.getIpLocal(), this.puerto);
+			cliente.mandarMensaje(mensaje);
 			vs.desaparece();
 		} 
 	}
 
 	@Override
-	public void mostrarIntentoDeConexion() {
-		this.vs.setLblIp(server.getIpSolicitante()); 
+	public void mostrarIntentoDeConexion(String ip) {
+		this.vs.setLblIp(ip); 
 		this.vs.aparece();
 	}
 

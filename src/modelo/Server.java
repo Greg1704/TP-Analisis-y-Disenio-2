@@ -43,10 +43,11 @@ public class Server implements Runnable, ConsultaEstado {
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				cliente = server.accept();
-				System.out.println("se conecto una persona");
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle
 									// que su pedido de conexion es rechazado
+				System.out.println("se conecto una persona");
+				System.out.println(conexiones.size());
 				pool.execute(m);
 			}
 		} catch (IOException e) {
@@ -66,12 +67,12 @@ public class Server implements Runnable, ConsultaEstado {
 			}
 		}
 		if (encontrado == true) {
-			Mensaje mensaje2 = new Mensaje("/solicitud/", conexiones.get(i).getCliente().getInetAddress().getHostAddress(), conexiones.get(i).getPuerto());
+			Mensaje mensaje2 = new Mensaje("/solicitud/", mensaje.getIpEmisor(), mensaje.getPuertoEmisor());
 			conexiones.get(i).setHablando(true);
 			conexiones.get(i).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
 			System.out.println("andara esto?");
 			try {
-				conexiones.get(i).mandarMensaje(mensaje);
+				conexiones.get(i).mandarMensaje(mensaje2);
 			} catch (IOException e) {
 				System.out.println("hay error al mandar mensaje");
 				System.out.println(e.getLocalizedMessage());
@@ -112,7 +113,6 @@ public class Server implements Runnable, ConsultaEstado {
 			if (cliente != null) {
 				try {
 					if (cliente.puerto == mensaje.getPuertoEmisor() || cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) {
-						System.out.println();
 						cliente.mandarMensaje(mensaje);
 					}
 				} catch (IOException e) {

@@ -10,7 +10,7 @@ public class ControladorServer implements IObservador{
 		server.run();
 	}
 	@Override
-	public void mostrarIntentoDeConexion() {
+	public void mostrarIntentoDeConexion(String ip) {
 		// TODO Auto-generated method stub
 		
 	}
