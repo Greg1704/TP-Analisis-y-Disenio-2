@@ -5,9 +5,9 @@ import java.io.Serializable;
 public class Mensaje implements Serializable{
 	private String mensaje;
 	private String ipEmisor;
-	private String puertoEmisor;
+	private int puertoEmisor;
 	
-	public Mensaje(String mensaje, String ipEmisor, String puertoEmisor) {
+	public Mensaje(String mensaje, String ipEmisor, int puertoEmisor) {
 		this.mensaje = mensaje;
 		this.ipEmisor = ipEmisor;
 		this.puertoEmisor = puertoEmisor;
@@ -21,7 +21,7 @@ public class Mensaje implements Serializable{
 		return ipEmisor;
 	}
 
-	public String getPuertoEmisor() {
+	public int getPuertoEmisor() {
 		return puertoEmisor;
 	}
 	

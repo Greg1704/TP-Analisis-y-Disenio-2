@@ -24,6 +24,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private int puertoServidor = 1234;
 	
 	private Controlador () {
+		server = new Server(puertoServidor, this);
 		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
 		while (puerto<1025 || puerto>65535) {
 			if(puerto<1025)
@@ -36,7 +37,8 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
 		cliente = new Cliente(v.getTextFieldIp(), puertoServidor, this);
-		Mensaje mensaje = new Mensaje("/puerto/ " + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), Integer.toString(this.puerto));
+		Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
+		cliente.mandarMensaje(mensaje);
 	}
 	
 	public static Controlador getInstancia() {
@@ -49,31 +51,19 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals(IVista.intentoDeConexion)) {
-			try {
-				if (Integer.parseInt(v.getTextFieldPuerto()) != puerto) {
-					cliente = new Cliente(v.getTextFieldIp(), Integer.parseInt(v.getTextFieldPuerto()), this);
-					server.setModoEscucha(false);
-				} else {
-					JOptionPane.showMessageDialog(null, "Ingrese un puerto diferente al suyo");
-				}
-			} catch (NumberFormatException nfe) {
-				JOptionPane.showMessageDialog(null, "El puerto debe ser un numero entero positivo");
-			}
+			Mensaje mensaje = new Mensaje("/intentoConexion/ " + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), this.puerto);
+			cliente.mandarMensaje(mensaje);
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
-			Mensaje mensaje = new Mensaje(v.getTextFieldChatMensajeUsuario(), cliente.getIpLocal(), Integer.toString(this.puerto));
+			Mensaje mensaje = new Mensaje(v.getTextFieldChatMensajeUsuario(), cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
-			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), Integer.toString(this.puerto));
+			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
-			cliente = new Cliente("localhost", puerto, this); 
-			Mensaje mensaje = new Mensaje("/modoEscuchaFalse/", cliente.getIpLocal(), Integer.toString(this.puerto));
-			cliente.mandarMensaje(mensaje);
-			Mensaje mensaje2 = new Mensaje("/aceptaInicioSesion/", cliente.getIpLocal(), Integer.toString(this.puerto));
-			cliente.mandarMensaje(mensaje2);
+			Mensaje mensaje = new Mensaje("/aceptar/", cliente.getIpLocal(), this.puerto);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
-			server.rechaza(); // si rechazo deberia mostrarle al otro q no se pudo establecer la conex (y esta linea no anda)
+			Mensaje mensaje = new Mensaje("/rechazar/", cliente.getIpLocal(), this.puerto);
 			vs.desaparece();
 		} 
 	}
@@ -133,7 +123,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	@Override
 	public void windowClosing(WindowEvent e) {
 		if (cliente != null && cliente.getCliente() != null) {
-			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), Integer.toString(this.puerto));
+			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 		}
 	}

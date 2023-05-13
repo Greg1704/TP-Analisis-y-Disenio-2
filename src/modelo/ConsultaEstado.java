@@ -1,5 +1,5 @@
 package modelo;
 
 public interface ConsultaEstado {
-	public void consultoDisponibilidad();
+	public void consultaDisponibilidad(Mensaje mensaje, int puerto);
 }

@@ -53,6 +53,7 @@ public class Cliente implements Runnable {
 			t.start();
 			
 		} catch (IOException e) {
+			System.out.println(e.getLocalizedMessage());
 			observador.mostrarConexionErronea();
 		}
 }
@@ -94,11 +95,13 @@ public class Cliente implements Runnable {
 								observador.mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
 								cerrarConversacion();
 								observador.cerrarInstancia();
-							}  else if (mensaje.getMensaje().equals("/rechaza/")) {
+							}  else if (mensaje.getMensaje().equals("/rechazar/")) {
 								observador.mostrarUsuarioNoDisponible();
 								cerrarConversacion();
-							} else if (mensaje.getMensaje().equals("/aceptaInicioSesion/")) {
+							} else if (mensaje.getMensaje().equals("/aceptar/")) {
 								observador.aceptaInicioSesion();
+							} else if (mensaje.getMensaje().equals("/solicitud/")) {
+								observador.mostrarIntentoDeConexion(); // aca deberia mostrar con el campo de ip del emisor que contiene el mensaje
 							} else {
 								observador.mostrarMensajeTextArea(mensaje);
 							}

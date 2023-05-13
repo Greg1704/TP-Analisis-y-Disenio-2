@@ -47,7 +47,6 @@ public class Server implements Runnable, ConsultaEstado {
 				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle
 									// que su pedido de conexion es rechazado
 				pool.execute(m);
-				consultoDisponibilidad();
 			}
 		} catch (IOException e) {
 
@@ -55,47 +54,68 @@ public class Server implements Runnable, ConsultaEstado {
 	}
 	
 	@Override
-	public void consultoDisponibilidad() {
-		if (this.modoEscucha == true) {
-			if (conexiones.size() < 2) { // redundante xq se verifica bien el modo escucha
-				observador.mostrarIntentoDeConexion(); // hay menos de 2 personas charlando entonces popea ventana de
-														// intento de conexión
+	public void consultaDisponibilidad(Mensaje mensaje, int puerto) {
+		int i = 0;
+		boolean encontrado = false, encontrado2 = false;
+		while (i < conexiones.size() && encontrado == false) { // busco hasta encontrar la persona a la que le solicito la conexion
+			if (conexiones.get(i).getPuerto() == puerto && conexiones.get(i).isHablando() == false) {
+				encontrado = true;
+			} else {
+				i++;
 			}
-		} else {
+		}
+		if (encontrado == true) {
+			Mensaje mensaje2 = new Mensaje("/solicitud/", conexiones.get(i).getCliente().getInetAddress().getHostAddress(), conexiones.get(i).getPuerto());
+			conexiones.get(i).setHablando(true);
+			conexiones.get(i).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
+			i = 0;
+			while (i < conexiones.size() && encontrado2 == false) { // me busco a mi mismo asi ya no me puede contactar ninguna otra persona ya que estoy esperando respuesta
+				if (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) {
+					encontrado2 = true;
+				} else {
+					i++;
+				}
+			}
+			if (encontrado2 == true) {
+				conexiones.get(i).setHablando(true);
+				conexiones.get(i).setPuertoOtroUsuario(puerto);
+			}
 			try {
-				Mensaje mensaje = new Mensaje("/enCharla/", "100.000.000.000", "1500"); // no importa la info acá, va
-																						// hardcodeada. solo importa q
-																						// no se puede conectar
-				ObjectOutputStream os = new ObjectOutputStream(cliente.getOutputStream());
-				os.writeObject(mensaje);
-				int ultimoElemento = conexiones.size() - 1;
-				conexiones.remove(ultimoElemento);
-				cliente.close();
+				conexiones.get(i).mandarMensaje(mensaje);
 			} catch (IOException e) {
 				System.out.println(e.getLocalizedMessage());
 			}
+		} else { // no se encontró o estaba charlando
+			
 		}
-
+	}
+	
+	public void cierraChat(Mensaje mensaje) {
+		int i=0;
+		int cerrados = 0;
+		while (i < conexiones.size() && cerrados < 2) {
+			if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor() || conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) {
+				conexiones.get(i).setPuertoOtroUsuario(0);
+				conexiones.get(i).setHablando(false);
+				cerrados++;
+			} else {
+				i++;
+			}
+		}
 	}
 
 	public void reparte(Mensaje mensaje) {
 		for (ManejaConexiones cliente: conexiones) {
 			if (cliente != null) {
 				try {
-					if (cliente.puerto == 0) // el que me pasen ahora
+					if (cliente.puerto == mensaje.getPuertoEmisor() || cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) {
 						cliente.mandarMensaje(mensaje);
+					}
 				} catch (IOException e) {
 					System.out.println(e.getLocalizedMessage() + "mandando mensaje");
 				}
 			}
 		}
-	}
-	
-	public void rechaza() {
-		Mensaje mensaje = new Mensaje("/rechaza/", "100.000.000.000", "1500");
-			reparte(mensaje);
-		conexiones.get(0).cerrarCliente();
-		conexiones.remove(0);
 	}
 	
 	public void setModoEscucha(boolean modoEscucha) {
@@ -105,6 +125,8 @@ public class Server implements Runnable, ConsultaEstado {
 	private class ManejaConexiones implements Runnable {
 		private Socket cliente;
 		private int puerto = 0;
+		private boolean hablando;
+		private int puertoOtroUsuario;
 		private ObjectOutputStream os;
 		private ObjectInputStream is;
 		
@@ -119,14 +141,20 @@ public class Server implements Runnable, ConsultaEstado {
 				is = new ObjectInputStream(cliente.getInputStream());
 				Mensaje mensaje;
 				while ((mensaje = (Mensaje) is.readObject()) != null) {
-					if (mensaje.getMensaje().equals("/modoEscuchaFalse/")) {
-						modoEscucha = false;
-					} else if (mensaje.getMensaje().equals("/cerrar/")) { 
+					if (mensaje.getMensaje().equals("/cerrar/")) { 
 						reparte(mensaje);
-						cerrarServidor();
+						cierraChat(mensaje);
 					} else if (mensaje.getMensaje().contains("/puerto/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
 						this.puerto = Integer.parseInt(cadena[1]);
+					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
+						String[] cadena = mensaje.getMensaje().split(" ");
+						int puertoAConectar = Integer.parseInt(cadena[1]); 
+						consultaDisponibilidad(mensaje, puertoAConectar);
+					} else if (mensaje.getMensaje().contains("/aceptar/")) {
+						reparte(mensaje);
+					} else if (mensaje.getMensaje().contains("/rechazar/")) {
+						cierraChat(mensaje);
 					} else {
 						reparte(mensaje);
 						chat.agregarMensajes(mensaje);
@@ -172,6 +200,31 @@ public class Server implements Runnable, ConsultaEstado {
 				//
 			}
 		}
+		
+		public int getPuerto() {
+			return this.puerto;
+		}
+
+		public boolean isHablando() {
+			return hablando;
+		}
+
+		public int getPuertoOtroUsuario() {
+			return puertoOtroUsuario;
+		}
+
+		public Socket getCliente() {
+			return cliente;
+		}
+
+		public void setHablando(boolean hablando) {
+			this.hablando = hablando;
+		}
+
+		public void setPuertoOtroUsuario(int puertoOtroUsuario) {
+			this.puertoOtroUsuario = puertoOtroUsuario;
+		}
+		
 	}
 	
 	public String getIpSolicitante() {
