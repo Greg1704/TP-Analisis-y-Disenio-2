@@ -24,6 +24,9 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private int puertoServidor = 1234;
 	
 	private Controlador () {
+		server = new Server(puertoServidor, this);
+		server.run();
+		cliente = new Cliente("localhost", puertoServidor, this);
 		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
 		while (puerto<1025 || puerto>65535) {
 			if(puerto<1025)
@@ -35,7 +38,6 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
-		cliente = new Cliente(v.getTextFieldIp(), puertoServidor, this);
 		Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
 		cliente.mandarMensaje(mensaje);
 	}

@@ -6,7 +6,7 @@ import controlador.ControladorServer;
 public class Ejecutor {
 
 	public static void main(String[] args) {
-		ControladorServer cServer = new ControladorServer();
+		//ControladorServer cServer = new ControladorServer();
 		Controlador c=Controlador.getInstancia();
 	}
 }

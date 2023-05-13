@@ -43,6 +43,7 @@ public class Server implements Runnable, ConsultaEstado {
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				cliente = server.accept();
+				System.out.println("se conecto una persona");
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle
 									// que su pedido de conexion es rechazado
@@ -65,10 +66,16 @@ public class Server implements Runnable, ConsultaEstado {
 			}
 		}
 		if (encontrado == true) {
-			System.out.println("entró acá");
 			Mensaje mensaje2 = new Mensaje("/solicitud/", conexiones.get(i).getCliente().getInetAddress().getHostAddress(), conexiones.get(i).getPuerto());
 			conexiones.get(i).setHablando(true);
 			conexiones.get(i).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
+			System.out.println("andara esto?");
+			try {
+				conexiones.get(i).mandarMensaje(mensaje);
+			} catch (IOException e) {
+				System.out.println("hay error al mandar mensaje");
+				System.out.println(e.getLocalizedMessage());
+			}
 			i = 0;
 			while (i < conexiones.size() && encontrado2 == false) { // me busco a mi mismo asi ya no me puede contactar ninguna otra persona ya que estoy esperando respuesta
 				if (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) {
@@ -80,11 +87,6 @@ public class Server implements Runnable, ConsultaEstado {
 			if (encontrado2 == true) {
 				conexiones.get(i).setHablando(true);
 				conexiones.get(i).setPuertoOtroUsuario(puerto);
-			}
-			try {
-				conexiones.get(i).mandarMensaje(mensaje);
-			} catch (IOException e) {
-				System.out.println(e.getLocalizedMessage());
 			}
 		} else { // no se encontró o estaba charlando
 			
@@ -110,6 +112,7 @@ public class Server implements Runnable, ConsultaEstado {
 			if (cliente != null) {
 				try {
 					if (cliente.puerto == mensaje.getPuertoEmisor() || cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) {
+						System.out.println();
 						cliente.mandarMensaje(mensaje);
 					}
 				} catch (IOException e) {
@@ -150,8 +153,7 @@ public class Server implements Runnable, ConsultaEstado {
 						this.puerto = Integer.parseInt(cadena[1]);
 					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
-						int puertoAConectar = Integer.parseInt(cadena[1]); 
-						System.out.println("al menos entra en intento de conex");
+						int puertoAConectar = Integer.parseInt(cadena[1]);
 						consultaDisponibilidad(mensaje, puertoAConectar);
 					} else if (mensaje.getMensaje().contains("/aceptar/")) {
 						reparte(mensaje);
