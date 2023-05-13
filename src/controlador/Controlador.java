@@ -26,11 +26,11 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private Controlador () {
 		cliente = new Cliente("localhost", puertoServidor, this);
 		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
-		while (puerto<1025 || puerto>65535) {
+		while (puerto<1025 || puerto>65534) {
 			if(puerto<1025)
 				puerto = Integer.parseInt(JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor mayor a 1024)"));
 			else
-				puerto = Integer.parseInt(JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor menor a 65536)"));
+				puerto = Integer.parseInt(JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor menor a 65535)"));
 		}
 		this.v = new VentanaDefinitiva();
 		this.vs = new VentanaSolicitudDeSesion();

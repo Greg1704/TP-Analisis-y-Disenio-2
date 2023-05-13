@@ -6,11 +6,20 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controlador.Controlador;
+import controlador.ControladorServer;
+
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JButton;
 
-public class VentanaServidor extends JFrame {
+public class VentanaServidor extends JFrame implements MouseListener, KeyListener {
 
 	private JPanel contentPane;
 	private JPanel panelServer;
@@ -18,6 +27,7 @@ public class VentanaServidor extends JFrame {
 	private JLabel lblCantidadConectados;
 	private JLabel lblEstadoServidor;
 	private JButton btnCerrarServidor;
+	ControladorServer c;
 
 	/**
 	 * Launch the application.
@@ -39,6 +49,9 @@ public class VentanaServidor extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaServidor() {
+		
+		this.setVisible(true);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 385, 233);
 		this.contentPane = new JPanel();
@@ -68,5 +81,63 @@ public class VentanaServidor extends JFrame {
 		this.btnCerrarServidor = new JButton("Cerrar");
 		this.btnCerrarServidor.setBounds(124, 157, 89, 23);
 		this.panelServer.add(this.btnCerrarServidor);
+	}
+	
+	public void setControlador(ControladorServer c) {
+		this.c = c;
+		this.addWindowListener(c);
+		setDefault();
+	}
+	
+	public void setDefault() {
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
