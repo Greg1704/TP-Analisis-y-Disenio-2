@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 
 import javax.swing.JOptionPane;
 
+import controlador.ControladorServer;
 import controlador.IObservador;
 
 public class Server implements Runnable, ConsultaEstado {
@@ -28,6 +29,7 @@ public class Server implements Runnable, ConsultaEstado {
 	private boolean modoEscucha;
 	private IObservador observador;
 	private ExecutorService pool;
+	private ControladorServer cs;
 	
 	public Server(int port, IObservador observador) {
 		conexiones = new ArrayList(); // arrayList de 2 max por ahora
@@ -46,6 +48,7 @@ public class Server implements Runnable, ConsultaEstado {
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle
 									// que su pedido de conexion es rechazado
+				this.cs.cambioCantConectados(1);
 				System.out.println("se conecto una persona");
 				System.out.println(conexiones.size());
 				pool.execute(m);
@@ -125,6 +128,8 @@ public class Server implements Runnable, ConsultaEstado {
 	public void setModoEscucha(boolean modoEscucha) {
 		this.modoEscucha = modoEscucha;
 	}
+	
+	
 	
 	private class ManejaConexiones implements Runnable {
 		private Socket cliente;
@@ -234,6 +239,10 @@ public class Server implements Runnable, ConsultaEstado {
 	public String getIpSolicitante() {
 		InetAddress aux = this.conexiones.get(0).cliente.getLocalAddress();
 		return (aux.toString());
+	}
+
+	public void setCs(ControladorServer cs) {
+		this.cs = cs;
 	}
 	
  }

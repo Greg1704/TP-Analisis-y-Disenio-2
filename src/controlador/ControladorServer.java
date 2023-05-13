@@ -16,6 +16,7 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 	
 	public ControladorServer() {
 		server = new Server(65535, this);
+		server.setCs(this);
 		vs = new VentanaServidor();
 		this.vs.setControlador(this);
 		server.run();
