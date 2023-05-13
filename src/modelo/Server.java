@@ -82,7 +82,8 @@ public class Server implements Runnable, ConsultaEstado {
 		for (ManejaConexiones cliente: conexiones) {
 			if (cliente != null) {
 				try {
-					cliente.mandarMensaje(mensaje);
+					if (cliente.puerto == 0) // el que me pasen ahora
+						cliente.mandarMensaje(mensaje);
 				} catch (IOException e) {
 					System.out.println(e.getLocalizedMessage() + "mandando mensaje");
 				}

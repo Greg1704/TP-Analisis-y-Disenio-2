@@ -36,7 +36,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
 		cliente = new Cliente(v.getTextFieldIp(), puertoServidor, this);
-		Mensaje mensaje = new Mensaje("/puerto/" + "Integer.parseInt(v.getTextFieldPuerto())", cliente.getIpLocal(), Integer.toString(this.puerto));
+		Mensaje mensaje = new Mensaje("/puerto/" + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), Integer.toString(this.puerto));
 	}
 	
 	public static Controlador getInstancia() {
