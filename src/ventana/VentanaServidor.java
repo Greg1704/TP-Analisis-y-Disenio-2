@@ -92,6 +92,7 @@ public class VentanaServidor extends JFrame implements MouseListener, KeyListene
 	public void setDefault() {
 		
 	}
+	
 
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -139,5 +140,13 @@ public class VentanaServidor extends JFrame implements MouseListener, KeyListene
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public String getLblCantidadConectados() {
+		return lblCantidadConectados.getText();
+	}
+
+	public void setLblCantidadConectados(String lblCantidadConectados) {
+		this.lblCantidadConectados.setText(lblCantidadConectados);
 	}
 }

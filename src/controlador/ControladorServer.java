@@ -34,6 +34,15 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 		
 	}
 	
+	public void cambioCantConectados(int sumaOresta) {
+		String texto = this.vs.getLblCantidadConectados();
+		String[] cadena = texto.split(": ");
+		int nuevoValor = Integer.parseInt(cadena[1]);
+		nuevoValor+=sumaOresta;
+		String nuevaCadena = cadena[0] + ": " + nuevoValor;
+		this.vs.setLblCantidadConectados(nuevaCadena);
+	}
+	
 	@Override
 	public void mostrarIntentoDeConexion(String ip) {
 		// TODO Auto-generated method stub

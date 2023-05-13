@@ -21,7 +21,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private int puerto;
 	private Cliente cliente;
 	private Server server;
-	private int puertoServidor = 1234;
+	private int puertoServidor = 65535;
 	
 	private Controlador () {
 		cliente = new Cliente("localhost", puertoServidor, this);
