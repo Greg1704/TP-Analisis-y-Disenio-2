@@ -7,6 +7,7 @@ public class ControladorServer implements IObservador{
 	private Server server;
 	public ControladorServer() {
 		server = new Server(1234, this);
+		server.run();
 	}
 	@Override
 	public void mostrarIntentoDeConexion() {

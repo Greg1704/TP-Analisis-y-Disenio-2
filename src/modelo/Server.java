@@ -65,6 +65,7 @@ public class Server implements Runnable, ConsultaEstado {
 			}
 		}
 		if (encontrado == true) {
+			System.out.println("entró acá");
 			Mensaje mensaje2 = new Mensaje("/solicitud/", conexiones.get(i).getCliente().getInetAddress().getHostAddress(), conexiones.get(i).getPuerto());
 			conexiones.get(i).setHablando(true);
 			conexiones.get(i).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
@@ -150,6 +151,7 @@ public class Server implements Runnable, ConsultaEstado {
 					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
 						int puertoAConectar = Integer.parseInt(cadena[1]); 
+						System.out.println("al menos entra en intento de conex");
 						consultaDisponibilidad(mensaje, puertoAConectar);
 					} else if (mensaje.getMensaje().contains("/aceptar/")) {
 						reparte(mensaje);

@@ -24,7 +24,6 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private int puertoServidor = 1234;
 	
 	private Controlador () {
-		server = new Server(puertoServidor, this);
 		puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
 		while (puerto<1025 || puerto>65535) {
 			if(puerto<1025)
