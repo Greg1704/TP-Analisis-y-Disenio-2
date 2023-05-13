@@ -104,7 +104,12 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	public void mostrarCierreSesion() {
 		JOptionPane.showMessageDialog(null, "La sesión ha sido cerrada");
 	}
-
+	
+	@Override
+	public void mostrarConexionErronea() {
+		JOptionPane.showMessageDialog(null, "La ip dada y/o el puerto son erroneas");
+	}
+	
 	@Override
 	public void cerrarInstancia() {
 		v.setVisible(false);
@@ -126,7 +131,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		if (cliente != null) {
+		if (cliente != null && cliente.getCliente() != null) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), Integer.toString(this.puerto));
 			cliente.mandarMensaje(mensaje);
 		}
@@ -160,5 +165,5 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }

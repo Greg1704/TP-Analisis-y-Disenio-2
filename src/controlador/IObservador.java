@@ -8,6 +8,7 @@ public interface IObservador {
 	 public void mostrarUsuarioOcupado();
 	 public void mostrarUsuarioNoDisponible();
 	 public void mostrarCierreSesion();
+	 public void mostrarConexionErronea();
 	 public void cerrarInstancia();
 	 public void aceptaInicioSesion();
 }
