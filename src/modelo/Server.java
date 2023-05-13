@@ -121,11 +121,12 @@ public class Server implements Runnable, ConsultaEstado {
 				while ((mensaje = (Mensaje) is.readObject()) != null) {
 					if (mensaje.getMensaje().equals("/modoEscuchaFalse/")) {
 						modoEscucha = false;
-					} else if (mensaje.getMensaje().equals("/cerrar/")) {
+					} else if (mensaje.getMensaje().equals("/cerrar/")) { 
 						reparte(mensaje);
 						cerrarServidor();
 					} else if (mensaje.getMensaje().contains("/puerto/")) {
-						this.puerto = 0; // el puerto que me pasen ahora
+						String[] cadena = mensaje.getMensaje().split(" ");
+						//this.puerto = ; // el puerto que me pasen ahora
 					} else {
 						reparte(mensaje);
 						chat.agregarMensajes(mensaje);
