@@ -17,9 +17,10 @@ import javax.swing.JOptionPane;
 
 import controlador.IObservador;
 
-public class Server implements Runnable {
+public class Server implements Runnable, ConsultaEstado {
 
 	private ServerSocket server;
+	private Socket cliente;
 	private ArrayList<ManejaConexiones> conexiones;
 	private Chat chat = new Chat();
 	private int port;
@@ -41,26 +42,40 @@ public class Server implements Runnable {
 			server = new ServerSocket(port);
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
-				Socket cliente = server.accept();
+				cliente = server.accept();
 				ManejaConexiones m = new ManejaConexiones(cliente);
-				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle que su pedido de conexion es rechazado
+				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle
+									// que su pedido de conexion es rechazado
 				pool.execute(m);
-				if (this.modoEscucha == true) {
-					if (conexiones.size() < 2) { // redundante xq se verifica bien el modo escucha
-						observador.mostrarIntentoDeConexion(); // hay menos de 2 personas charlando entonces popea ventana de intento de conexión
-					} 
-				} else {
-					Mensaje mensaje = new Mensaje("/enCharla/", "100.000.000.000", "1500"); // no importa la info acá, va hardcodeada. solo importa q no se puede conectar
-					ObjectOutputStream os = new ObjectOutputStream(cliente.getOutputStream());
-					os.writeObject(mensaje);
-					int ultimoElemento = conexiones.size() - 1;
-					conexiones.remove(ultimoElemento);
-					cliente.close();
-				}
+				consultoDisponibilidad();
 			}
 		} catch (IOException e) {
-			
+
 		}
+	}
+	
+	@Override
+	public void consultoDisponibilidad() {
+		if (this.modoEscucha == true) {
+			if (conexiones.size() < 2) { // redundante xq se verifica bien el modo escucha
+				observador.mostrarIntentoDeConexion(); // hay menos de 2 personas charlando entonces popea ventana de
+														// intento de conexión
+			}
+		} else {
+			try {
+				Mensaje mensaje = new Mensaje("/enCharla/", "100.000.000.000", "1500"); // no importa la info acá, va
+																						// hardcodeada. solo importa q
+																						// no se puede conectar
+				ObjectOutputStream os = new ObjectOutputStream(cliente.getOutputStream());
+				os.writeObject(mensaje);
+				int ultimoElemento = conexiones.size() - 1;
+				conexiones.remove(ultimoElemento);
+				cliente.close();
+			} catch (IOException e) {
+				System.out.println(e.getLocalizedMessage());
+			}
+		}
+
 	}
 
 	public void reparte(Mensaje mensaje) {

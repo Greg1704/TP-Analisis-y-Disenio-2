@@ -53,7 +53,7 @@ public class Cliente implements Runnable {
 			t.start();
 			
 		} catch (IOException e) {
-			System.out.println(e.getLocalizedMessage());
+			observador.mostrarConexionErronea();
 		}
 }
 	
