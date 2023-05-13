@@ -103,6 +103,7 @@ public class Server implements Runnable, ConsultaEstado {
 	
 	private class ManejaConexiones implements Runnable {
 		private Socket cliente;
+		private int puerto = 0;
 		private ObjectOutputStream os;
 		private ObjectInputStream is;
 		
@@ -114,7 +115,7 @@ public class Server implements Runnable, ConsultaEstado {
 		public void run() {
 			try {
 		        os = new ObjectOutputStream(cliente.getOutputStream());
-		    	is = new ObjectInputStream(cliente.getInputStream());
+				is = new ObjectInputStream(cliente.getInputStream());
 				Mensaje mensaje;
 				while ((mensaje = (Mensaje) is.readObject()) != null) {
 					if (mensaje.getMensaje().equals("/modoEscuchaFalse/")) {
@@ -122,6 +123,8 @@ public class Server implements Runnable, ConsultaEstado {
 					} else if (mensaje.getMensaje().equals("/cerrar/")) {
 						reparte(mensaje);
 						cerrarServidor();
+					} else if (mensaje.getMensaje().contains("/puerto/")) {
+						this.puerto = 0; // el puerto que me pasen ahora
 					} else {
 						reparte(mensaje);
 						chat.agregarMensajes(mensaje);
