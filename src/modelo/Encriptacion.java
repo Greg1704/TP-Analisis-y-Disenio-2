@@ -13,7 +13,6 @@ public final class Encriptacion {
 				i=1;
 			mensajeEncriptado+= c;
 		}
-		System.out.println(mensajeEncriptado);
 		return mensajeEncriptado;
 	}
 	
@@ -28,7 +27,6 @@ public final class Encriptacion {
 				i=1;
 			mensajeDesencriptado+=c;
 		}
-		System.out.println(mensajeDesencriptado);
 		return mensajeDesencriptado;
 	}
 	
