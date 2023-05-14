@@ -107,6 +107,7 @@ public class Server implements Runnable, ConsultaEstado {
 				conexiones.get(i).setHablando(false);
 				conexiones.remove(i);
 				cerrados++;
+				
 			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
 				conexiones.get(i).setPuertoOtroUsuario(0);
 				conexiones.get(i).setHablando(false);
@@ -115,6 +116,7 @@ public class Server implements Runnable, ConsultaEstado {
 			} else {
 				i++;
 			}
+			this.cs.cambioCantConectados(-1);
 		}
 	}
 
@@ -142,7 +144,7 @@ public class Server implements Runnable, ConsultaEstado {
 		private Socket cliente;
 		private int puerto = 0;
 		private boolean hablando;
-		private final int puertoOtroUsuario = -10;
+		private int puertoOtroUsuario = -10;
 		private ObjectOutputStream os;
 		private ObjectInputStream is;
 		
