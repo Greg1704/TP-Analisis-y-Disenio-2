@@ -35,6 +35,7 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 		// TODO Auto-generated method stub
 		if(e.getActionCommand().equals(IVista.cerrarServidor)) {
 				this.server.cerrarServidor();
+				this.vs.fusilarVentana();
 		}
 		
 	}
