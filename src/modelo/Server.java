@@ -23,7 +23,7 @@ public class Server implements Runnable, ConsultaEstado {
 	private ServerSocket server;
 	private Socket cliente;
 	private ArrayList<ManejaConexiones> conexiones;
-	private Chat chat = new Chat();
+	private ArrayList<Chat> chats = new ArrayList();
 	private int puertoServer;
 	private boolean listo = false;
 	private boolean modoEscucha;
@@ -215,7 +215,7 @@ public class Server implements Runnable, ConsultaEstado {
 						cierraChat(mensaje);
 					} else {
 						reparte(mensaje);
-						chat.agregarMensajes(mensaje);
+						//chat.agregarMensajes(mensaje);
 					}
 				}
 			} catch (IOException e) {
