@@ -24,7 +24,7 @@ public class Server implements Runnable, ConsultaEstado {
 	private Socket cliente;
 	private ArrayList<ManejaConexiones> conexiones;
 	private Chat chat = new Chat();
-	private int port;
+	private int puertoServer;
 	private boolean listo = false;
 	private boolean modoEscucha;
 	private IObservador observador;
@@ -34,14 +34,14 @@ public class Server implements Runnable, ConsultaEstado {
 	public Server(int port, IObservador observador) {
 		conexiones = new ArrayList(); // arrayList de 2 max por ahora
 		this.observador = observador;
-		this.port = port;
+		this.puertoServer = port;
 		this.modoEscucha = true;
 	}
 	
 	@Override
 	public void run() {
 		try {
-			server = new ServerSocket(port);
+			server = new ServerSocket(puertoServer);
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				cliente = server.accept();
@@ -57,14 +57,37 @@ public class Server implements Runnable, ConsultaEstado {
 
 		}
 	}
-	
-	@Override
+
+	@Override // metodo de interfaz
 	public void consultaDisponibilidad(Mensaje mensaje, int puerto) {
 		int i = 0;
 		boolean encontrado = false, encontrado2 = false;
-		while (i < conexiones.size() && encontrado == false) { // busco hasta encontrar la persona a la que le solicito la conexion
-			if (conexiones.get(i).getPuerto() == puerto && conexiones.get(i).isHablando() == false) {
+		while (i < conexiones.size() && encontrado == false) { // busco hasta encontrar la persona a la que le solicito
+																// la conexion
+			if (conexiones.get(i).getPuerto() == puerto && conexiones.get(i).isHablando() == false) { // esa persona no esta hablando
 				encontrado = true;
+			} else if (conexiones.get(i).getPuerto() == puerto && conexiones.get(i).isHablando() == true) { // esa persona esta hablando
+				int k = 0;
+				while (k < conexiones.size() && conexiones.get(k).getPuerto() != mensaje.getPuertoEmisor()) { // entonces busco a la persona que hizo la solicitud asi le aviso que esta en charla
+					k++;
+				}
+				if (conexiones.get(k).getPuerto() == mensaje.getPuertoEmisor()) {
+					Mensaje mensaje2 = new Mensaje("/enCharla/", this.server.getInetAddress().getHostAddress(), this.puertoServer);
+					try {
+						conexiones.get(k).mandarMensaje(mensaje2);
+						encontrado = false;
+						i = conexiones.size(); // corto el while
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						System.out.println("no mandar el mensaje de enCharla no deberia pasar nunca");
+						encontrado = false;
+						i = conexiones.size();
+					}
+				} else {
+					System.out.println("como no va a estar la persona que mando la solicitud?");
+					encontrado = false;
+					i = conexiones.size();
+				}
 			} else {
 				i++;
 			}
@@ -142,7 +165,14 @@ public class Server implements Runnable, ConsultaEstado {
 		listo = true;
 		modoEscucha = true;
 		for (ManejaConexiones cliente : conexiones) {
-			cliente.cerrarCliente();
+			Mensaje mensaje = new Mensaje("/cerrar/", server.getInetAddress().getHostAddress(), this.puertoServer);
+			try {
+				cliente.mandarMensaje(mensaje);
+				cliente.cerrarCliente();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("esto no deberia pasar nunca");
+			}
 		}
 		int i = 0;
 		while (i < conexiones.size()) {

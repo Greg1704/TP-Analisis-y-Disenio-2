@@ -84,13 +84,11 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	@Override
 	public void mostrarUsuarioOcupado() {
 		JOptionPane.showMessageDialog(null, "El usuario con el que se quiere contactar está en conversación");
-		server.setModoEscucha(true); // te rechazan la sesion entonces volves a escuchar en tu servidor
 	}
 	
 	@Override
 	public void mostrarUsuarioNoDisponible() {
 		JOptionPane.showMessageDialog(null, "El usuario con el que se quiere contactar no está disponible");
-		server.setModoEscucha(true);
 	}
 
 	@Override
