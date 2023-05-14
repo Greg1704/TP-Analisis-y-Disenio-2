@@ -100,11 +100,18 @@ public class Server implements Runnable, ConsultaEstado {
 	public void cierraChat(Mensaje mensaje) {
 		int i=0;
 		int cerrados = 0;
-		while (i < conexiones.size() && cerrados < 2) {
-			if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor() || conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) {
+		while (i < conexiones.size() && cerrados < 2) { 
+			if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor() || (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor() && 
+					conexiones.get(i).getPuertoOtroUsuario() !=-10)) { // si esa persona estaba hablando con alguien
 				conexiones.get(i).setPuertoOtroUsuario(0);
 				conexiones.get(i).setHablando(false);
+				conexiones.remove(i);
 				cerrados++;
+			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
+				conexiones.get(i).setPuertoOtroUsuario(0);
+				conexiones.get(i).setHablando(false);
+				conexiones.remove(i);
+				cerrados = 2;
 			} else {
 				i++;
 			}
@@ -135,7 +142,7 @@ public class Server implements Runnable, ConsultaEstado {
 		private Socket cliente;
 		private int puerto = 0;
 		private boolean hablando;
-		private int puertoOtroUsuario;
+		private final int puertoOtroUsuario = -10;
 		private ObjectOutputStream os;
 		private ObjectInputStream is;
 		
