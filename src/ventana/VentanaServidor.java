@@ -91,7 +91,6 @@ public class VentanaServidor extends JFrame implements MouseListener, KeyListene
 	
 	public void setDefault() {
 		this.btnCerrarServidor.addMouseListener(this);
-		this.btnCerrarServidor.setEnabled(false);
 		this.btnCerrarServidor.addActionListener(c);
 		this.btnCerrarServidor.setActionCommand(cerrarServidor);
 	}

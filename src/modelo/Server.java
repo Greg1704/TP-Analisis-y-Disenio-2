@@ -138,7 +138,17 @@ public class Server implements Runnable, ConsultaEstado {
 		this.modoEscucha = modoEscucha;
 	}
 	
-	
+	public void cerrarServidor() {
+		listo = true;
+		modoEscucha = true;
+		for (ManejaConexiones cliente : conexiones) {
+			cliente.cerrarCliente();
+		}
+		int i = 0;
+		while (i < conexiones.size()) {
+			conexiones.remove(i);
+		}
+	}
 	
 	private class ManejaConexiones implements Runnable {
 		private Socket cliente;
