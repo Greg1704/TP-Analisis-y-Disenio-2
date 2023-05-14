@@ -33,7 +33,7 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getActionCommand().equals(IVista.cerrarSesion)) {
+		if(e.getActionCommand().equals(IVista.cerrarServidor)) {
 				this.server.cerrarServidor();
 		}
 		
