@@ -16,6 +16,10 @@ public class Mensaje implements Serializable{
 	public String getMensaje() {
 		return this.mensaje;
 	}
+	
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
 
 	public String getIpEmisor() {
 		return ipEmisor;
@@ -24,5 +28,6 @@ public class Mensaje implements Serializable{
 	public int getPuertoEmisor() {
 		return puertoEmisor;
 	}
+
 	
 }

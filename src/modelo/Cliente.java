@@ -103,6 +103,8 @@ public class Cliente implements Runnable {
 							} else if (mensaje.getMensaje().equals("/solicitud/")) {
 								observador.mostrarIntentoDeConexion(mensaje.getIpEmisor()); // aca deberia mostrar con el campo de ip del emisor que contiene el mensaje
 							} else {
+								String criptont = mensaje.getMensaje();
+								mensaje.setMensaje(Encriptacion.Desencriptar(criptont));
 								observador.mostrarMensajeTextArea(mensaje);
 							}
 						}

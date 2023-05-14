@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import modelo.Cliente;
 import modelo.Mensaje;
 import modelo.Server;
+import modelo.Encriptacion;
 import ventana.*;
 
 public class Controlador implements ActionListener, IObservador, WindowListener {
@@ -54,7 +55,8 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 			Mensaje mensaje = new Mensaje("/intentoConexion/ " + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
-			Mensaje mensaje = new Mensaje(v.getTextFieldChatMensajeUsuario(), cliente.getIpLocal(), this.puerto);
+			String cripto = Encriptacion.Encriptar(v.getTextFieldChatMensajeUsuario());
+			Mensaje mensaje = new Mensaje(cripto, cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
