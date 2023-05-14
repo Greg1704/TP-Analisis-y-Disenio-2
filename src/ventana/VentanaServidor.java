@@ -19,7 +19,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 
-public class VentanaServidor extends JFrame implements MouseListener, KeyListener {
+public class VentanaServidor extends JFrame implements MouseListener, KeyListener,IVista {
 
 	private JPanel contentPane;
 	private JPanel panelServer;
@@ -90,7 +90,10 @@ public class VentanaServidor extends JFrame implements MouseListener, KeyListene
 	}
 	
 	public void setDefault() {
-		
+		this.btnCerrarServidor.addMouseListener(this);
+		this.btnCerrarServidor.setEnabled(false);
+		this.btnCerrarServidor.addActionListener(c);
+		this.btnCerrarServidor.setActionCommand(cerrarServidor);
 	}
 	
 

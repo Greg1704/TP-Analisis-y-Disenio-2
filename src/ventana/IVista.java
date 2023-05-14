@@ -14,4 +14,8 @@ public interface IVista {
 	
 	static final String aceptarSolicitud = "Aceptar solicitud de sesion";
 	static final String rechazarSolicitud = "Rechazar solicitud de sesion";
+	
+	//Ventana Server
+	
+	static final String cerrarServidor = "Cerrando Servidor";
 }

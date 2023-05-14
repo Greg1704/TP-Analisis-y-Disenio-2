@@ -7,6 +7,7 @@ import java.awt.event.WindowListener;
 
 import modelo.Mensaje;
 import modelo.Server;
+import ventana.IVista;
 import ventana.VentanaServidor;
 
 public class ControladorServer implements ActionListener, IObservador, WindowListener{
@@ -32,6 +33,9 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		if(e.getActionCommand().equals(IVista.cerrarSesion)) {
+				//HACER ESTO AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		}
 		
 	}
 	
