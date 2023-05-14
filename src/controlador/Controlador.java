@@ -36,6 +36,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		this.vs = new VentanaSolicitudDeSesion();
 		this.v.setControlador(this);
 		this.vs.setControlador(this);
+		this.setPuertoReferencia(puerto);
 		Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
 		cliente.mandarMensaje(mensaje);
 	}
@@ -156,6 +157,13 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	public void windowDeactivated(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void setPuertoReferencia(int puerto) {
+		String mensaje = this.v.getLblPuertoReferencia();
+		String[] cadena = mensaje.split(": ");
+		String nuevoMensaje = cadena[0] + ": " + puerto;
+		this.v.setLblPuertoReferencia(nuevoMensaje);
 	}
 
 }

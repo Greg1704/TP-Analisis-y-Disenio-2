@@ -47,6 +47,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	private JPanel panelBusquedaComponentes;
 	private JTextField textFieldChatMensajeUsuario;
 	private Controlador c;
+	private JLabel lblPuertoReferencia;
 	
 	/**
 	 * Launch the application.
@@ -118,6 +119,10 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		this.btnConectar.setBounds(103, 164, 89, 23);
 		this.panelBusquedaComponentes.add(this.btnConectar);
 		
+		this.lblPuertoReferencia = new JLabel("Puerto: 0000");
+		this.lblPuertoReferencia.setBounds(0, 446, 134, 23);
+		this.panelBusqueda.add(this.lblPuertoReferencia);
+		
 		this.panelChat = new JPanel();
 		this.tabbedPane.addTab("Chat", null, this.panelChat, null);
 		this.panelChat.setLayout(null);
@@ -158,6 +163,8 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	}
 	
 
+	
+	
 	public void setControlador(Controlador c) {
 		this.c = c;
 		this.addWindowListener(c);
@@ -278,5 +285,13 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 				this.btnConectar.setEnabled(true);
 		}
 
+	}
+
+	public String getLblPuertoReferencia() {
+		return lblPuertoReferencia.getText();
+	}
+
+	public void setLblPuertoReferencia(String lblPuertoReferencia) {
+		this.lblPuertoReferencia.setText(lblPuertoReferencia);
 	}
 }
