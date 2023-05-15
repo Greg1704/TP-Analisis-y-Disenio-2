@@ -171,4 +171,10 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		this.v.setLblPuertoReferencia(nuevoMensaje);
 	}
 
+	@Override
+	public void mostrarPuertoEnUso() {
+		JOptionPane.showMessageDialog(null, "El puerto ya está siendo usado por otro usuario, por favor inicie la aplicacion de vuelta y elija otro puerto.");
+		this.cerrarInstancia();
+	}
+
 }

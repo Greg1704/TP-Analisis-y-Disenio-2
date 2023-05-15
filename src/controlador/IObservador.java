@@ -10,6 +10,7 @@ public interface IObservador {
 	 public void mostrarCierreSesion();
 	 public void mostrarConexionErronea();
 	 public void mostrarPuertoErroneo();
+	 public void mostrarPuertoEnUso();
 	 public void cerrarInstancia();
 	 public void aceptaInicioSesion();
 }

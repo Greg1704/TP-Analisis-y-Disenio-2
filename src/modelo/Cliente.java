@@ -97,6 +97,9 @@ public class Cliente implements Runnable {
 								observador.aceptaInicioSesion();
 							} else if (mensaje.getMensaje().equals("/solicitud/")) {
 								observador.mostrarIntentoDeConexion(mensaje.getIpEmisor()); // aca deberia mostrar con el campo de ip del emisor que contiene el mensaje
+							} else if (mensaje.getMensaje().equals("/sinDisponibilidad/")) {
+								System.out.println("se recibio el mensaje sin disp");
+								observador.mostrarPuertoEnUso();
 							} else if (mensaje.getMensaje().equals("/erroneo/")) {
 								observador.mostrarConexionErronea();
 							} else {

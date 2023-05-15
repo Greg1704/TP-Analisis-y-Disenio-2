@@ -5,11 +5,13 @@ import java.util.ArrayList;
 
 public class Chat {
 	private ArrayList<Mensaje> mensajes = new ArrayList<Mensaje>();
-	Socket cliente1, cliente2;
+	private String ip1;
+	private int puerto1, puerto2;
 	
-	public Chat (Socket cliente1, Socket cliente2) {
-		this.cliente1 = cliente1;
-		this.cliente2 = cliente2;
+	public Chat(String ip1, int puerto1, int puerto2) {
+		this.ip1 = ip1;
+		this.puerto1 = puerto1;
+		this.puerto2 = puerto2;
 	}
 	
 	public void agregarMensajes(Mensaje mensaje) {
@@ -20,20 +22,18 @@ public class Chat {
 		return mensajes;
 	}
 
-	public Socket getCliente1() {
-		return cliente1;
+	public String getIp1() {
+		return ip1;
 	}
 
-	public Socket getCliente2() {
-		return cliente2;
-	}
-	
 	public int getPuerto1() {
-		return cliente1.getPort();
+		return puerto1;
+	}
+
+	public int getPuerto2() {
+		return puerto2;
 	}
 	
-	public int getPuerto2() {
-		return cliente2.getPort();
-	}
+	
 	
 }

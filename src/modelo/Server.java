@@ -26,7 +26,7 @@ public class Server implements Runnable, ConsultaEstado {
 	private ControladorServer cs;
 	
 	public Server(int port) {
-		conexiones = new ArrayList<ManejaConexiones>(); // arrayList de 2 max por ahora
+		conexiones = new ArrayList<ManejaConexiones>(); 
 		this.puertoServer = port;
 	}
 	
@@ -38,8 +38,7 @@ public class Server implements Runnable, ConsultaEstado {
 			while (!listo) {
 				cliente = server.accept();
 				ManejaConexiones m = new ManejaConexiones(cliente);
-				conexiones.add(m); // agrego igual al cliente a la lista de conexiones del servidor, para avisarle
-									// que su pedido de conexion es rechazado
+				conexiones.add(m);
 				this.cs.cambioCantConectados(1);
 				System.out.println("se conecto una persona");
 				System.out.println(conexiones.size());
@@ -69,11 +68,11 @@ public class Server implements Runnable, ConsultaEstado {
 		if (i < conexiones.size() && conexiones.get(i).getPuerto() == puerto) {
 			return i;
 		} else
-			return -1;
+			return -1; // no se encontro
 	}
 	
-	public void nuevoChat(Socket cliente1, Socket cliente2) {
-		Chat chat = new Chat(cliente1, cliente2);
+	public void nuevoChat(String ip1, int puerto1, int puerto2) {
+		Chat chat = new Chat(ip1, puerto1, puerto2);
 		chats.add(chat);
 	}
 	
@@ -108,7 +107,8 @@ public class Server implements Runnable, ConsultaEstado {
 				conexiones.get(indiceSolicitado).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
 				conexiones.get(indicePropio).setHablando(true);
 				conexiones.get(indicePropio).setPuertoOtroUsuario(puerto);
-				this.nuevoChat(conexiones.get(indicePropio).getCliente(), conexiones.get(indiceSolicitado).getCliente());
+				this.nuevoChat(conexiones.get(indicePropio).getCliente().getInetAddress().getHostAddress(), 
+						conexiones.get(indicePropio).getPuerto(), conexiones.get(indicePropio).getPuertoOtroUsuario());
 				try {
 					conexiones.get(indiceSolicitado).mandarMensaje(respuesta);
 				} catch (IOException e) {
@@ -130,6 +130,18 @@ public class Server implements Runnable, ConsultaEstado {
 			} catch (IOException e) {
 				System.out.println("error en erroneo");
 			}
+		}
+	}
+	
+	public boolean disponibilidadPuerto(int puerto) {
+		int i = 0;
+		while (i < conexiones.size() - 1 && conexiones.get(i).getPuerto() != puerto) {
+			i++;
+		}
+		if (i < conexiones.size() - 1 && conexiones.get(i).getPuerto() == puerto) { // se encontro que alguien usaba el puerto
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -167,6 +179,15 @@ public class Server implements Runnable, ConsultaEstado {
 					System.out.println(e.getLocalizedMessage() + "mandando mensaje");
 				}
 			}
+		}
+	}
+	
+	public void puertoErroneo(Mensaje mensaje) {
+		int ultimoIndice = conexiones.size() - 1;
+		try {
+			conexiones.get(ultimoIndice).mandarMensaje(mensaje);
+		} catch (IOException e) {
+			System.out.println("error al mandarle al ultimo cliente q no puede elegir ese puerto");
 		}
 	}
 	
@@ -213,6 +234,11 @@ public class Server implements Runnable, ConsultaEstado {
 					} else if (mensaje.getMensaje().contains("/puerto/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
 						this.puerto = Integer.parseInt(cadena[1]);
+						if (!disponibilidadPuerto(this.puerto)) {
+							Mensaje mensaje2 = new Mensaje("/sinDisponibilidad/", cliente.getInetAddress().getHostAddress(), this.puerto);
+							puertoErroneo(mensaje2);
+							cierraChat(mensaje2);
+						}
 					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
 						int puertoAConectar = Integer.parseInt(cadena[1]);
