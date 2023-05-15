@@ -19,6 +19,7 @@ public class Cliente implements Runnable {
 	private ObjectInputStream is;
 	private boolean listo = false;
 	private IObservador observador;
+	private String claveEncriptacion;
 	
 	public Cliente(String ipAConectar, int puerto, IObservador observador) {
 		this.puertoAConectar = puerto;
@@ -121,4 +122,9 @@ public class Cliente implements Runnable {
 	public Socket getCliente() {
 		return cliente;
 	}
+
+	public void setClaveEncriptacion(String claveEncriptacion) {
+		this.claveEncriptacion = claveEncriptacion;
+	}	
+	
 }
