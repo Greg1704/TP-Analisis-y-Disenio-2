@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 
 import controlador.ControladorServer;
 
-public class Server implements Runnable, ConsultaEstado {
+public class Server implements Runnable, IConsultaEstado {
 
 	private ServerSocket server;
 	private Socket cliente;
