@@ -53,14 +53,16 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 				while(claveCripto.length()<5 || claveCripto.length()>8) {
 					claveCripto = JOptionPane.showInputDialog("La clave ingresada no cumple los requisitos pedidos. Ingrese una nueva(Entre 5 y 8 caracteres)");
 				}
-				Mensaje mensaje = new Mensaje("/intentoConexion/ " + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), this.puerto);
+				cliente.setClaveEncriptacion(claveCripto);
+				Mensaje mensaje = new Mensaje("/intentoConexion/ " + Integer.parseInt(v.getTextFieldPuerto()) + "%" + claveCripto, cliente.getIpLocal(), this.puerto);
 				cliente.mandarMensaje(mensaje);
 			} else {
 				this.mostrarPuertoErroneo();
 			}
 		} else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
-			String cripto = ""; //SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-			Mensaje mensaje = new Mensaje(cripto, cliente.getIpLocal(), this.puerto);
+			String encriptado = Encriptacion.encriptadoMensaje(v.getTextFieldChatMensajeUsuario(), cliente.getClaveEncriptacion());
+			Mensaje mensaje = new Mensaje(encriptado, cliente.getIpLocal(), this.puerto);
+			System.out.println("se manda el mensaje");
 			cliente.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);

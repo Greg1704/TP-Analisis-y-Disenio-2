@@ -7,24 +7,22 @@ import javax.crypto.spec.SecretKeySpec;
 
 public final class Encriptacion {
 	
-	public static Mensaje encriptadoMensaje(Mensaje mensaje, String clave) {
+	public static String encriptadoMensaje(String mensaje, String clave) {
 		try {
-			byte[] textoEncriptado = encriptarABytes(clave, mensaje.getMensaje(), "DES");
+			byte[] textoEncriptado = encriptarABytes(clave, mensaje, "DES");
 			String textoEncriptadoBase64 = Base64.getEncoder().encodeToString(textoEncriptado);
-			mensaje.setMensaje(textoEncriptadoBase64);
-			return mensaje;
+			return textoEncriptadoBase64;
 		} catch (Exception e) {
 			System.out.println(e.getLocalizedMessage());
 		}
 		return null;
 	}
 	
-	public static Mensaje desencriptadoMensaje(Mensaje mensaje, String clave) {
+	public static String desencriptadoMensaje(String mensaje, String clave) {
 		try {
-			byte[] textoEncriptado = Base64.getDecoder().decode(mensaje.getMensaje());
+			byte[] textoEncriptado = Base64.getDecoder().decode(mensaje);
 			String textoOriginal = desencriptarDeBytes(clave,	textoEncriptado, "DES");
-			mensaje.setMensaje(textoOriginal);
-			return mensaje;
+			return textoOriginal;
 		} catch (Exception e) {
 			System.out.println(e.getLocalizedMessage());
 		}

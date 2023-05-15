@@ -104,8 +104,8 @@ public class Cliente implements Runnable {
 							} else if (mensaje.getMensaje().equals("/erroneo/")) {
 								observador.mostrarConexionErronea();
 							} else {
-								String criptont = mensaje.getMensaje();
-								mensaje.setMensaje(Encriptacion.Desencriptar(criptont));
+								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(), claveEncriptacion);
+								mensaje.setMensaje(desencriptado);
 								observador.mostrarMensajeTextArea(mensaje);
 							}
 						}
@@ -125,6 +125,10 @@ public class Cliente implements Runnable {
 
 	public void setClaveEncriptacion(String claveEncriptacion) {
 		this.claveEncriptacion = claveEncriptacion;
+	}
+
+	public String getClaveEncriptacion() {
+		return claveEncriptacion;
 	}	
 	
 }
