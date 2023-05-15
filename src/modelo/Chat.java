@@ -4,7 +4,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class Chat {
-	private ArrayList<Mensaje> mensajes = new ArrayList();
+	private ArrayList<Mensaje> mensajes = new ArrayList<Mensaje>();
 	Socket cliente1, cliente2;
 	
 	public Chat (Socket cliente1, Socket cliente2) {

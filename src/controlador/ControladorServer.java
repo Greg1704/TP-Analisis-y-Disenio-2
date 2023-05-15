@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import modelo.Mensaje;
 import modelo.Server;
 import ventana.IVista;
 import ventana.VentanaServidor;

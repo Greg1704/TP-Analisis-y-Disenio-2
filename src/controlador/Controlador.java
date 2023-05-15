@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 
 import modelo.Cliente;
 import modelo.Mensaje;
-import modelo.Server;
 import modelo.Encriptacion;
 import ventana.*;
 
@@ -20,7 +19,6 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private static Controlador instancia = null;
 	private int puerto;
 	private Cliente cliente;
-	private Server server;
 	private int puertoServidor = 65535;
 	
 	private Controlador () {

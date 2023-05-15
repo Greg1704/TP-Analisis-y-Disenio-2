@@ -1,11 +1,8 @@
 package modelo;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,17 +19,15 @@ public class Server implements Runnable, ConsultaEstado {
 	private ServerSocket server;
 	private Socket cliente;
 	private ArrayList<ManejaConexiones> conexiones;
-	private ArrayList<Chat> chats = new ArrayList();
+	private ArrayList<Chat> chats = new ArrayList<Chat>();
 	private int puertoServer;
 	private boolean listo = false;
-	private boolean modoEscucha;
 	private ExecutorService pool;
 	private ControladorServer cs;
 	
 	public Server(int port) {
-		conexiones = new ArrayList(); // arrayList de 2 max por ahora
+		conexiones = new ArrayList<ManejaConexiones>(); // arrayList de 2 max por ahora
 		this.puertoServer = port;
-		this.modoEscucha = true;
 	}
 	
 	@Override
@@ -88,12 +83,18 @@ public class Server implements Runnable, ConsultaEstado {
 			i++;
 		}
 		if (i < conexiones.size() && (chats.get(i).getPuerto1() == mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() == mensaje.getPuertoEmisor())) {
-			
+			chats.get(i).agregarMensajes(mensaje);
 		}
 	}
 	
-	public void eliminarChat() {
-		
+	public void eliminarChat(Mensaje mensaje) {
+		int i = 0;
+		while (i < conexiones.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
+			i++;
+		}
+		if (i < conexiones.size() && (chats.get(i).getPuerto1() == mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() == mensaje.getPuertoEmisor())) {
+			chats.remove(i);
+		}
 	}
 	
 	@Override // metodo de interfaz
@@ -107,6 +108,7 @@ public class Server implements Runnable, ConsultaEstado {
 				conexiones.get(indiceSolicitado).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
 				conexiones.get(indicePropio).setHablando(true);
 				conexiones.get(indicePropio).setPuertoOtroUsuario(puerto);
+				this.nuevoChat(conexiones.get(indicePropio).getCliente(), conexiones.get(indiceSolicitado).getCliente());
 				try {
 					conexiones.get(indiceSolicitado).mandarMensaje(respuesta);
 				} catch (IOException e) {
@@ -168,13 +170,8 @@ public class Server implements Runnable, ConsultaEstado {
 		}
 	}
 	
-	public void setModoEscucha(boolean modoEscucha) {
-		this.modoEscucha = modoEscucha;
-	}
-	
 	public void cerrarServidor() {
 		listo = true;
-		modoEscucha = true;
 		for (ManejaConexiones cliente : conexiones) {
 			Mensaje mensaje = new Mensaje("/cerrar/", server.getInetAddress().getHostAddress(), this.puertoServer);
 			try {
@@ -223,10 +220,11 @@ public class Server implements Runnable, ConsultaEstado {
 					} else if (mensaje.getMensaje().contains("/aceptar/")) {
 						reparte(mensaje);
 					} else if (mensaje.getMensaje().contains("/rechazar/")) {
+						eliminarChat(mensaje);
 						cierraChat(mensaje);
 					} else {
+						agregarAlChat(mensaje);
 						reparte(mensaje);
-						//chat.agregarMensajes(mensaje);
 					}
 				}
 			} catch (IOException e) {
@@ -251,25 +249,7 @@ public class Server implements Runnable, ConsultaEstado {
 				// try x obligacion, no deberia pasar
 			}
 		}
-		
-		public void cerrarServidor() {
-			try {
-				listo = true;
-				modoEscucha = true;
-				is.close();
-				os.close();
-				for (ManejaConexiones cliente : conexiones) {
-					cliente.cerrarCliente();
-				}
-				int i = 0;
-				while (i < conexiones.size()) {
-					conexiones.remove(i);
-				}
-			} catch (IOException e) {
-				//
-			}
-		}
-		
+
 		public int getPuerto() {
 			return this.puerto;
 		}
@@ -282,16 +262,16 @@ public class Server implements Runnable, ConsultaEstado {
 			return puertoOtroUsuario;
 		}
 
-		public Socket getCliente() {
-			return cliente;
-		}
-
 		public void setHablando(boolean hablando) {
 			this.hablando = hablando;
 		}
 
 		public void setPuertoOtroUsuario(int puertoOtroUsuario) {
 			this.puertoOtroUsuario = puertoOtroUsuario;
+		}
+		
+		public Socket getCliente() {
+			return this.cliente;
 		}
 		
 	}

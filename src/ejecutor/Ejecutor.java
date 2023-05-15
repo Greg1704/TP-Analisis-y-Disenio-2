@@ -1,7 +1,6 @@
 package ejecutor;
 
 import controlador.Controlador;
-import controlador.ControladorServer;
 
 public class Ejecutor {
 

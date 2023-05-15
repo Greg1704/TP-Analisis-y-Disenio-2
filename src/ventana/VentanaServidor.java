@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import controlador.Controlador;
 import controlador.ControladorServer;
 
 import javax.swing.JLabel;
