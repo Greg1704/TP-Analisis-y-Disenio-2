@@ -88,7 +88,7 @@ public class Server implements Runnable, ConsultaEstado {
 	
 	public void eliminarChat(Mensaje mensaje) {
 		int i = 0;
-		while (i < conexiones.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
+		while (i < conexiones.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() && chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
 			i++;
 		}
 		if (i < conexiones.size() && (chats.get(i).getPuerto1() == mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() == mensaje.getPuertoEmisor())) {
@@ -109,6 +109,7 @@ public class Server implements Runnable, ConsultaEstado {
 				conexiones.get(indicePropio).setPuertoOtroUsuario(puerto);
 				this.nuevoChat(conexiones.get(indicePropio).getCliente().getInetAddress().getHostAddress(), 
 						conexiones.get(indicePropio).getPuerto(), conexiones.get(indicePropio).getPuertoOtroUsuario());
+				System.out.println(conexiones.size());
 				try {
 					conexiones.get(indiceSolicitado).mandarMensaje(respuesta);
 				} catch (IOException e) {
@@ -145,7 +146,7 @@ public class Server implements Runnable, ConsultaEstado {
 		}
 	}
 
-	public void cierraChat(Mensaje mensaje) {
+	public void desconectaChat(Mensaje mensaje) {
 		int i=0;
 		int cerrados = 0;
 		while (i < conexiones.size() && cerrados < 2) { 
@@ -181,7 +182,21 @@ public class Server implements Runnable, ConsultaEstado {
 			}
 		}
 	}
-	
+
+	public void rechaza(Mensaje mensaje) {
+		int i = 0;
+		while (i < conexiones.size() && (conexiones.get(i).getPuertoOtroUsuario() != mensaje.getPuertoEmisor())) {
+			i++;
+		}
+		if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor()) {
+			try {
+				conexiones.get(i).mandarMensaje(mensaje);
+			} catch (IOException e) {
+				System.out.println("error al rechazar");
+			}
+		}
+	}
+
 	public void puertoErroneo(Mensaje mensaje) {
 		int ultimoIndice = conexiones.size() - 1;
 		try {
@@ -230,14 +245,14 @@ public class Server implements Runnable, ConsultaEstado {
 				while ((mensaje = (Mensaje) is.readObject()) != null) {
 					if (mensaje.getMensaje().equals("/cerrar/")) { 
 						reparte(mensaje);
-						cierraChat(mensaje);
+						desconectaChat(mensaje);
 					} else if (mensaje.getMensaje().contains("/puerto/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
 						this.puerto = Integer.parseInt(cadena[1]);
 						if (!disponibilidadPuerto(this.puerto)) {
 							Mensaje mensaje2 = new Mensaje("/sinDisponibilidad/", cliente.getInetAddress().getHostAddress(), this.puerto);
 							puertoErroneo(mensaje2);
-							cierraChat(mensaje2);
+							desconectaChat(mensaje2);
 						}
 					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
@@ -246,8 +261,9 @@ public class Server implements Runnable, ConsultaEstado {
 					} else if (mensaje.getMensaje().contains("/aceptar/")) {
 						reparte(mensaje);
 					} else if (mensaje.getMensaje().contains("/rechazar/")) {
+						rechaza(mensaje);
 						eliminarChat(mensaje);
-						cierraChat(mensaje);
+						desconectaChat(mensaje);
 					} else {
 						agregarAlChat(mensaje);
 						reparte(mensaje);
@@ -300,11 +316,6 @@ public class Server implements Runnable, ConsultaEstado {
 			return this.cliente;
 		}
 		
-	}
-	
-	public String getIpSolicitante() {
-		InetAddress aux = this.conexiones.get(0).cliente.getLocalAddress();
-		return (aux.toString());
 	}
 
 	public void setCs(ControladorServer cs) {
