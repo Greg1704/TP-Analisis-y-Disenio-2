@@ -162,9 +162,6 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		
 	}
 	
-
-	
-	
 	public void setControlador(Controlador c) {
 		this.c = c;
 		this.addWindowListener(c);

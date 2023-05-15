@@ -10,13 +10,13 @@ import modelo.Server;
 import ventana.IVista;
 import ventana.VentanaServidor;
 
-public class ControladorServer implements ActionListener, IObservador, WindowListener{
+public class ControladorServer implements ActionListener, WindowListener{ // la interfaz IOBservador es util para el new Server
 	private Server server;
 	private VentanaServidor vs;
 	private static ControladorServer instancia = null;
 	
 	public ControladorServer() {
-		server = new Server(65535, this);
+		server = new Server(65535);
 		server.setCs(this);
 		vs = new VentanaServidor();
 		this.vs.setControlador(this);
@@ -32,12 +32,10 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		if(e.getActionCommand().equals(IVista.cerrarServidor)) {
 				this.server.cerrarServidor();
 				this.vs.fusilarVentana();
 		}
-		
 	}
 	
 	public void cambioCantConectados(int sumaOresta) {
@@ -48,47 +46,6 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 		String nuevaCadena = cadena[0] + ": " + nuevoValor;
 		this.vs.setLblCantidadConectados(nuevaCadena);
 	}
-	
-	@Override
-	public void mostrarIntentoDeConexion(String ip) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void mostrarMensajeTextArea(Mensaje mensaje) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void mostrarUsuarioOcupado() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void mostrarUsuarioNoDisponible() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void mostrarCierreSesion() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void mostrarConexionErronea() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void cerrarInstancia() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void aceptaInicioSesion() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void windowOpened(WindowEvent e) {
@@ -98,8 +55,8 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		this.server.cerrarServidor();
+		this.vs.fusilarVentana();
 	}
 
 	@Override
@@ -131,6 +88,5 @@ public class ControladorServer implements ActionListener, IObservador, WindowLis
 		// TODO Auto-generated method stub
 		
 	}
-
 
 }

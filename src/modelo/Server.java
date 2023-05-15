@@ -16,7 +16,6 @@ import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 
 import controlador.ControladorServer;
-import controlador.IObservador;
 
 public class Server implements Runnable, ConsultaEstado {
 
@@ -27,13 +26,11 @@ public class Server implements Runnable, ConsultaEstado {
 	private int puertoServer;
 	private boolean listo = false;
 	private boolean modoEscucha;
-	private IObservador observador;
 	private ExecutorService pool;
 	private ControladorServer cs;
 	
-	public Server(int port, IObservador observador) {
+	public Server(int port) {
 		conexiones = new ArrayList(); // arrayList de 2 max por ahora
-		this.observador = observador;
 		this.puertoServer = port;
 		this.modoEscucha = true;
 	}
@@ -57,69 +54,83 @@ public class Server implements Runnable, ConsultaEstado {
 
 		}
 	}
-
-	@Override // metodo de interfaz
-	public void consultaDisponibilidad(Mensaje mensaje, int puerto) {
+	
+	public int buscaIndicePropio(Mensaje mensaje) {
 		int i = 0;
-		boolean encontrado = false, encontrado2 = false;
-		while (i < conexiones.size() && encontrado == false) { // busco hasta encontrar la persona a la que le solicito
-																// la conexion
-			if (conexiones.get(i).getPuerto() == puerto && conexiones.get(i).isHablando() == false) { // esa persona no esta hablando
-				encontrado = true;
-			} else if (conexiones.get(i).getPuerto() == puerto && conexiones.get(i).isHablando() == true) { // esa persona esta hablando
-				int k = 0;
-				while (k < conexiones.size() && conexiones.get(k).getPuerto() != mensaje.getPuertoEmisor()) { // entonces busco a la persona que hizo la solicitud asi le aviso que esta en charla
-					k++;
-				}
-				if (conexiones.get(k).getPuerto() == mensaje.getPuertoEmisor()) {
-					Mensaje mensaje2 = new Mensaje("/enCharla/", this.server.getInetAddress().getHostAddress(), this.puertoServer);
-					try {
-						conexiones.get(k).mandarMensaje(mensaje2);
-						encontrado = false;
-						i = conexiones.size(); // corto el while
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						System.out.println("no mandar el mensaje de enCharla no deberia pasar nunca");
-						encontrado = false;
-						i = conexiones.size();
-					}
-				} else {
-					System.out.println("como no va a estar la persona que mando la solicitud?");
-					encontrado = false;
-					i = conexiones.size();
-				}
-			} else {
-				i++;
-			}
+		while (i < conexiones.size() && conexiones.get(i).getPuerto() != mensaje.getPuertoEmisor()) {
+			i++;
 		}
-		if (encontrado == true) {
-			Mensaje mensaje2 = new Mensaje("/solicitud/", mensaje.getIpEmisor(), mensaje.getPuertoEmisor());
-			conexiones.get(i).setHablando(true);
-			conexiones.get(i).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
-			System.out.println("andara esto?");
-			try {
-				conexiones.get(i).mandarMensaje(mensaje2);
-			} catch (IOException e) {
-				System.out.println("hay error al mandar mensaje");
-				System.out.println(e.getLocalizedMessage());
-			}
-			i = 0;
-			while (i < conexiones.size() && encontrado2 == false) { // me busco a mi mismo asi ya no me puede contactar ninguna otra persona ya que estoy esperando respuesta
-				if (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) {
-					encontrado2 = true;
-				} else {
-					i++;
-				}
-			}
-			if (encontrado2 == true) {
-				conexiones.get(i).setHablando(true);
-				conexiones.get(i).setPuertoOtroUsuario(puerto);
-			}
-		} else { // no se encontró o estaba charlando
+		if (i < conexiones.size() && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) {
+			return i;
+		} else
+			return -1; // esto es imposible que pase
+	}
+	
+	public int buscaIndiceSolicitado(int puerto) {
+		int i = 0;
+		while (i < conexiones.size() && conexiones.get(i).getPuerto() != puerto) {
+			i++;
+		}
+		if (i < conexiones.size() && conexiones.get(i).getPuerto() == puerto) {
+			return i;
+		} else
+			return -1;
+	}
+	
+	public void nuevoChat(Socket cliente1, Socket cliente2) {
+		Chat chat = new Chat(cliente1, cliente2);
+		chats.add(chat);
+	}
+	
+	public void agregarAlChat(Mensaje mensaje) {
+		int i = 0;
+		while (i < conexiones.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
+			i++;
+		}
+		if (i < conexiones.size() && (chats.get(i).getPuerto1() == mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() == mensaje.getPuertoEmisor())) {
 			
 		}
 	}
 	
+	public void eliminarChat() {
+		
+	}
+	
+	@Override // metodo de interfaz
+	public void consultaDisponibilidad(Mensaje mensaje, int puerto) {
+		int indiceSolicitado = this.buscaIndiceSolicitado(puerto);
+		int indicePropio = buscaIndicePropio(mensaje);
+		if (indiceSolicitado != -1) { // se encontró a la persona
+			if (!conexiones.get(indiceSolicitado).isHablando()) { // no está hablando
+				Mensaje respuesta = new Mensaje("/solicitud/", mensaje.getIpEmisor(), mensaje.getPuertoEmisor());
+				conexiones.get(indiceSolicitado).setHablando(true);
+				conexiones.get(indiceSolicitado).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
+				conexiones.get(indicePropio).setHablando(true);
+				conexiones.get(indicePropio).setPuertoOtroUsuario(puerto);
+				try {
+					conexiones.get(indiceSolicitado).mandarMensaje(respuesta);
+				} catch (IOException e) {
+					System.out.println("aca no deberia entrar nunca, mandar mensaje");
+				}
+			} else { // está hablando
+				Mensaje respuesta = new Mensaje("/enCharla/", this.server.getInetAddress().getHostAddress(), this.puertoServer);
+				try {
+					conexiones.get(indicePropio).mandarMensaje(respuesta);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} else { // no se encontró a la persona
+			Mensaje respuesta = new Mensaje("/erroneo/", this.server.getInetAddress().getHostAddress(), this.puertoServer);
+			try {
+				conexiones.get(indicePropio).mandarMensaje(respuesta);
+			} catch (IOException e) {
+				System.out.println("error en erroneo");
+			}
+		}
+	}
+
 	public void cierraChat(Mensaje mensaje) {
 		int i=0;
 		int cerrados = 0;
@@ -130,16 +141,16 @@ public class Server implements Runnable, ConsultaEstado {
 				conexiones.get(i).setHablando(false);
 				conexiones.remove(i);
 				cerrados++;
-				
+				this.cs.cambioCantConectados(-1);
 			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
 				conexiones.get(i).setPuertoOtroUsuario(0);
 				conexiones.get(i).setHablando(false);
 				conexiones.remove(i);
 				cerrados = 2;
+				this.cs.cambioCantConectados(-1);
 			} else {
 				i++;
 			}
-			this.cs.cambioCantConectados(-1);
 		}
 	}
 
@@ -147,7 +158,7 @@ public class Server implements Runnable, ConsultaEstado {
 		for (ManejaConexiones cliente: conexiones) {
 			if (cliente != null) {
 				try {
-					if (cliente.puerto == mensaje.getPuertoEmisor() || cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) {
+					if (cliente.getPuerto() == mensaje.getPuertoEmisor() || cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) {
 						cliente.mandarMensaje(mensaje);
 					}
 				} catch (IOException e) {

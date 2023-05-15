@@ -18,7 +18,6 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	private VentanaDefinitiva v;
 	private VentanaSolicitudDeSesion vs;
 	private static Controlador instancia = null;
-	private String mensaje;
 	private int puerto;
 	private Cliente cliente;
 	private Server server;
@@ -48,17 +47,20 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		return instancia;
 	}
 	
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals(IVista.intentoDeConexion)) {
-			Mensaje mensaje = new Mensaje("/intentoConexion/ " + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), this.puerto);
-			cliente.mandarMensaje(mensaje);
-		}else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
+			if (puertoServidor != Integer.parseInt(v.getTextFieldPuerto())) {
+				Mensaje mensaje = new Mensaje("/intentoConexion/ " + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), this.puerto);
+				cliente.mandarMensaje(mensaje);
+			} else {
+				this.mostrarPuertoErroneo();
+			}
+		} else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			String cripto = Encriptacion.Encriptar(v.getTextFieldChatMensajeUsuario());
 			Mensaje mensaje = new Mensaje(cripto, cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
-		}else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
+		} else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
@@ -69,7 +71,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 			Mensaje mensaje = new Mensaje("/rechazar/", cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 			vs.desaparece();
-		} 
+		}
 	}
 
 	@Override
@@ -101,6 +103,11 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	@Override
 	public void mostrarConexionErronea() {
 		JOptionPane.showMessageDialog(null, "La ip dada y/o el puerto son erroneas");
+	}
+	
+	@Override
+	public void mostrarPuertoErroneo() {
+		JOptionPane.showMessageDialog(null, "Ingrese un puerto diferente al del servidor");
 	}
 	
 	@Override
