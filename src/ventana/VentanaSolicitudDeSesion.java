@@ -67,7 +67,7 @@ public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IV
 		this.panel.setLayout(null);
 		
 		this.lblIp = new JLabel("XXX.XXX.X.XXX");
-		this.lblIp.setBounds(82, 26, 124, 14);
+		this.lblIp.setBounds(33, 26, 203, 14);
 		this.panel.add(this.lblIp);
 		
 		this.lblTexto = new JLabel("              quiere iniciar una sesion con usted");

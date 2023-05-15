@@ -73,8 +73,8 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	}
 
 	@Override
-	public void mostrarIntentoDeConexion(String ip) {
-		this.vs.setLblIp(ip); 
+	public void mostrarIntentoDeConexion(String ip, int puerto) {
+		this.vs.setLblIp("ip: "+ ip + " puerto: " + puerto); 
 		this.vs.aparece();
 	}
 
