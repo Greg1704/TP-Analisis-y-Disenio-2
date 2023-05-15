@@ -49,13 +49,17 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals(IVista.intentoDeConexion)) {
 			if (puertoServidor != Integer.parseInt(v.getTextFieldPuerto())) {
+				String claveCripto = JOptionPane.showInputDialog("Ingrese clave del chat(entre 5 y 8 caracteres)");
+				while(claveCripto.length()<5 || claveCripto.length()>8) {
+					claveCripto = JOptionPane.showInputDialog("La clave ingresada no cumple los requisitos pedidos. Ingrese una nueva(Entre 5 y 8 caracteres)");
+				}
 				Mensaje mensaje = new Mensaje("/intentoConexion/ " + Integer.parseInt(v.getTextFieldPuerto()), cliente.getIpLocal(), this.puerto);
 				cliente.mandarMensaje(mensaje);
 			} else {
 				this.mostrarPuertoErroneo();
 			}
 		} else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
-			String cripto = Encriptacion.Encriptar(v.getTextFieldChatMensajeUsuario());
+			String cripto = ""; //SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 			Mensaje mensaje = new Mensaje(cripto, cliente.getIpLocal(), this.puerto);
 			cliente.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
