@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 
 import controlador.ControladorServer;
+import controlador.IComunicacion;
 import controlador.IConectados;
 
 public class Server implements Runnable, IConsultaEstado,IConectados {
@@ -107,30 +108,19 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 				conexiones.get(indiceSolicitado).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
 				conexiones.get(indicePropio).setHablando(true);
 				conexiones.get(indicePropio).setPuertoOtroUsuario(puerto);
-				this.nuevoChat(conexiones.get(indicePropio).getCliente().getInetAddress().getHostAddress(), 
+				this.nuevoChat(conexiones.get(indicePropio).getCliente().getInetAddress().getHostAddress(),
 						conexiones.get(indicePropio).getPuerto(), conexiones.get(indicePropio).getPuertoOtroUsuario());
 				System.out.println(conexiones.size());
-				try {
-					conexiones.get(indiceSolicitado).mandarMensaje(mensaje);
-				} catch (IOException e) {
-					System.out.println("aca no deberia entrar nunca, mandar mensaje");
-				}
+				conexiones.get(indiceSolicitado).mandarMensaje(mensaje);
 			} else { // está hablando
-				Mensaje respuesta = new Mensaje("/enCharla/", this.server.getInetAddress().getHostAddress(), this.puertoServer);
-				try {
-					conexiones.get(indicePropio).mandarMensaje(respuesta);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				Mensaje respuesta = new Mensaje("/enCharla/", this.server.getInetAddress().getHostAddress(),
+						this.puertoServer);
+				conexiones.get(indicePropio).mandarMensaje(respuesta);
 			}
 		} else { // no se encontró a la persona
-			Mensaje respuesta = new Mensaje("/erroneo/", this.server.getInetAddress().getHostAddress(), this.puertoServer);
-			try {
-				conexiones.get(indicePropio).mandarMensaje(respuesta);
-			} catch (IOException e) {
-				System.out.println("error en erroneo");
-			}
+			Mensaje respuesta = new Mensaje("/erroneo/", this.server.getInetAddress().getHostAddress(),
+					this.puertoServer);
+			conexiones.get(indicePropio).mandarMensaje(respuesta);
 		}
 	}
 	
@@ -172,16 +162,19 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 			}
 		}
 	}
+	
+	@Override
+	public void cambioCantConectados(int sumaOresta) {
+		this.cs.cambioCantConectados(sumaOresta);
+		
+	}
 
 	public void reparte(Mensaje mensaje) {
-		for (ManejaConexiones cliente: conexiones) {
+		for (ManejaConexiones cliente : conexiones) {
 			if (cliente != null) {
-				try {
-					if (cliente.getPuerto() == mensaje.getPuertoEmisor() || cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) {
-						cliente.mandarMensaje(mensaje);
-					}
-				} catch (IOException e) {
-					System.out.println(e.getLocalizedMessage() + "mandando mensaje");
+				if (cliente.getPuerto() == mensaje.getPuertoEmisor()
+						|| cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) {
+					cliente.mandarMensaje(mensaje);
 				}
 			}
 		}
@@ -193,34 +186,21 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 			i++;
 		}
 		if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor()) {
-			try {
-				conexiones.get(i).mandarMensaje(mensaje);
-			} catch (IOException e) {
-				System.out.println("error al rechazar");
-			}
+			conexiones.get(i).mandarMensaje(mensaje);
 		}
 	}
 
 	public void puertoErroneo(Mensaje mensaje) {
 		int ultimoIndice = conexiones.size() - 1;
-		try {
 			conexiones.get(ultimoIndice).mandarMensaje(mensaje);
-		} catch (IOException e) {
-			System.out.println("error al mandarle al ultimo cliente q no puede elegir ese puerto");
-		}
 	}
 	
 	public void cerrarServidor() {
 		listo = true;
 		for (ManejaConexiones cliente : conexiones) {
 			Mensaje mensaje = new Mensaje("/cerrar/", server.getInetAddress().getHostAddress(), this.puertoServer);
-			try {
-				cliente.mandarMensaje(mensaje);
-				cliente.cerrarCliente();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.out.println("esto no deberia pasar nunca");
-			}
+			cliente.mandarMensaje(mensaje);
+			cliente.cerrarCliente();
 		}
 		int i = 0;
 		while (i < conexiones.size()) {
@@ -228,7 +208,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 		}
 	}
 	
-	private class ManejaConexiones implements Runnable {
+	private class ManejaConexiones implements Runnable, IComunicacion {
 		private Socket cliente;
 		private int puerto = 0;
 		private boolean hablando;
@@ -280,8 +260,12 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 			}
 		}
 
-		public void mandarMensaje(Mensaje mensaje) throws IOException {
-			os.writeObject(mensaje);
+		public void mandarMensaje(Mensaje mensaje) {
+			try {
+				os.writeObject(mensaje);
+			} catch (IOException e) {
+				System.out.println("esto no deberia pasar nunca, mandar mensaje desde el servidor");
+			}
 		}
 		
 		public void cerrarCliente() {
@@ -319,17 +303,77 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 		public Socket getCliente() {
 			return this.cliente;
 		}
+
+		@Override
+		public void mostrarIntentoDeConexion(String ip, int puerto) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarMensajeTextArea(Mensaje mensaje) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarUsuarioOcupado() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarUsuarioNoDisponible() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarCierreSesion() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarConexionErronea() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarConexxionErroneaServer() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarPuertoErroneo() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mostrarPuertoEnUso() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void cerrarInstancia() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void aceptaInicioSesion() {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 
 	public void setCs(ControladorServer cs) {
 		this.cs = cs;
-	}
-
-	@Override
-	public void cambioCantConectados(int sumaOresta) {
-		this.cs.cambioCantConectados(sumaOresta);
-		
 	}
 	
  }
