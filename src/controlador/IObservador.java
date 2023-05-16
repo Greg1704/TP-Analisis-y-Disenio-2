@@ -9,6 +9,7 @@ public interface IObservador {
 	 public void mostrarUsuarioNoDisponible();
 	 public void mostrarCierreSesion();
 	 public void mostrarConexionErronea();
+	 public void mostrarConexxionErroneaServer();
 	 public void mostrarPuertoErroneo();
 	 public void mostrarPuertoEnUso();
 	 public void cerrarInstancia();

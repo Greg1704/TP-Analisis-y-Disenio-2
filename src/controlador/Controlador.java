@@ -114,6 +114,12 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	}
 	
 	@Override
+	public void mostrarConexxionErroneaServer() {
+		JOptionPane.showMessageDialog(null, "El servidor no está abierto");
+		System.exit(0); // finaliza el proceso
+	}
+	
+	@Override
 	public void cerrarInstancia() {
 		v.setVisible(false);
         System.exit(0); // finaliza el proceso
