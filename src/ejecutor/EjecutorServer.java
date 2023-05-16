@@ -5,6 +5,6 @@ import controlador.ControladorServer;
 public class EjecutorServer {
 
 	public static void main(String[] args) {
-		ControladorServer cServer = new ControladorServer();
+		new ControladorServer();
 	}
 }
