@@ -12,8 +12,9 @@ import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 
 import controlador.ControladorServer;
+import controlador.IConectados;
 
-public class Server implements Runnable, IConsultaEstado {
+public class Server implements Runnable, IConsultaEstado,IConectados {
 
 	private ServerSocket server;
 	private Socket cliente;
@@ -22,11 +23,12 @@ public class Server implements Runnable, IConsultaEstado {
 	private int puertoServer;
 	private boolean listo = false;
 	private ExecutorService pool;
-	private ControladorServer cs;
+	private IConectados cs;
 	
-	public Server(int port) {
+	public Server(int port,IConectados cs) {
 		conexiones = new ArrayList<ManejaConexiones>(); 
 		this.puertoServer = port;
+		this.cs = cs;
 	}
 	
 	@Override
@@ -38,7 +40,7 @@ public class Server implements Runnable, IConsultaEstado {
 				cliente = server.accept();
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m);
-				this.cs.cambioCantConectados(1);
+				this.cambioCantConectados(1);
 				System.out.println("se conecto una persona");
 				System.out.println(conexiones.size());
 				pool.execute(m);
@@ -155,7 +157,7 @@ public class Server implements Runnable, IConsultaEstado {
 				cerrados++;
 				if (mensaje.getMensaje().contains("/cerrar/")) {
 					conexiones.remove(i);
-					this.cs.cambioCantConectados(-1);
+					this.cambioCantConectados(-1);
 				}
 			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
 				conexiones.get(i).setPuertoOtroUsuario(-10);
@@ -163,7 +165,7 @@ public class Server implements Runnable, IConsultaEstado {
 				cerrados = 2;
 				if (mensaje.getMensaje().contains("/cerrar/")) {
 					conexiones.remove(i);
-					this.cs.cambioCantConectados(-1);
+					this.cambioCantConectados(-1);
 				}
 			} else {
 				i++;
@@ -322,6 +324,12 @@ public class Server implements Runnable, IConsultaEstado {
 
 	public void setCs(ControladorServer cs) {
 		this.cs = cs;
+	}
+
+	@Override
+	public void cambioCantConectados(int sumaOresta) {
+		this.cs.cambioCantConectados(sumaOresta);
+		
 	}
 	
  }

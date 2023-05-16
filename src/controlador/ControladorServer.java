@@ -9,14 +9,13 @@ import modelo.Server;
 import ventana.IVista;
 import ventana.VentanaServidor;
 
-public class ControladorServer implements ActionListener, WindowListener{ // la interfaz IOBservador es util para el new Server
+public class ControladorServer implements ActionListener, WindowListener,IConectados{ // la interfaz IOBservador es util para el new Server
 	private Server server;
 	private VentanaServidor vs;
 	private static ControladorServer instancia = null;
 	
 	public ControladorServer() {
-		server = new Server(65535);
-		server.setCs(this);
+		server = new Server(65535,this);
 		vs = new VentanaServidor();
 		this.vs.setControlador(this);
 		server.run();
@@ -37,6 +36,7 @@ public class ControladorServer implements ActionListener, WindowListener{ // la 
 		}
 	}
 	
+	@Override
 	public void cambioCantConectados(int sumaOresta) {
 		String texto = this.vs.getLblCantidadConectados();
 		String[] cadena = texto.split(": ");
