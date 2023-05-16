@@ -2,7 +2,7 @@ package controlador;
 
 import modelo.Mensaje;
 
-public interface IObservador {
+public interface IComunicacion {
 	 public void mostrarIntentoDeConexion(String ip,int puerto);
 	 public void mostrarMensajeTextArea(Mensaje mensaje);
 	 public void mostrarUsuarioOcupado();
@@ -14,4 +14,5 @@ public interface IObservador {
 	 public void mostrarPuertoEnUso();
 	 public void cerrarInstancia();
 	 public void aceptaInicioSesion();
+	 public void mandarMensaje(Mensaje mensaje);
 }

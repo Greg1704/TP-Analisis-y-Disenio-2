@@ -5,7 +5,7 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-public final class Encriptacion {
+public final class Encriptacion{
 	
 	public static String encriptadoMensaje(String mensaje, String clave) {
 		try {

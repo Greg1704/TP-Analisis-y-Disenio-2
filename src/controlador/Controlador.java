@@ -12,7 +12,7 @@ import modelo.Mensaje;
 import modelo.Encriptacion;
 import ventana.*;
 
-public class Controlador implements ActionListener, IObservador, WindowListener {
+public class Controlador implements ActionListener, IComunicacion, WindowListener {
 
 	private VentanaDefinitiva v;
 	private VentanaSolicitudDeSesion vs;
@@ -40,7 +40,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 		this.vs.setControlador(this);
 		this.setPuertoReferencia(puerto);
 		Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
-		cliente.mandarMensaje(mensaje);
+		this.mandarMensaje(mensaje);
 	}
 	
 	public static Controlador getInstancia() {
@@ -59,24 +59,24 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 				}
 				cliente.setClaveEncriptacion(claveCripto);
 				Mensaje mensaje = new Mensaje("/intentoConexion/" + Integer.parseInt(v.getTextFieldPuerto()) + "/" + claveCripto, cliente.getIpLocal(), this.puerto);
-				cliente.mandarMensaje(mensaje);
+				this.mandarMensaje(mensaje);
 			} else {
 				this.mostrarPuertoErroneo();
 			}
 		} else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
 			String encriptado = Encriptacion.encriptadoMensaje(v.getTextFieldChatMensajeUsuario(), cliente.getClaveEncriptacion());
 			Mensaje mensaje = new Mensaje(encriptado, cliente.getIpLocal(), this.puerto);
-			cliente.mandarMensaje(mensaje);
+			this.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
-			cliente.mandarMensaje(mensaje);
+			this.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/aceptar/", cliente.getIpLocal(), this.puerto);
-			cliente.mandarMensaje(mensaje);
+			this.mandarMensaje(mensaje);
 			this.vs.desaparece();
 		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/rechazar/", cliente.getIpLocal(), this.puerto);
-			cliente.mandarMensaje(mensaje);
+			this.mandarMensaje(mensaje);
 			vs.desaparece();
 		}
 	}
@@ -146,7 +146,7 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	public void windowClosing(WindowEvent e) {
 		if (cliente != null && cliente.getCliente() != null) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
-			cliente.mandarMensaje(mensaje);
+			this.mandarMensaje(mensaje);
 		}
 	}
 
@@ -190,6 +190,11 @@ public class Controlador implements ActionListener, IObservador, WindowListener 
 	public void mostrarPuertoEnUso() {
 		JOptionPane.showMessageDialog(null, "El puerto ya está siendo usado por otro usuario, por favor inicie la aplicacion de vuelta y elija otro puerto.");
 		this.cerrarInstancia();
+	}
+
+	@Override
+	public void mandarMensaje(Mensaje mensaje) {
+		cliente.mandarMensaje(mensaje);
 	}
 
 }

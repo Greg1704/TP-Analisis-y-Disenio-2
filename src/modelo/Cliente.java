@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import controlador.IObservador;
+import controlador.IComunicacion;
 
 import java.net.InetAddress;
 
-public class Cliente implements Runnable {
+public class Cliente implements Runnable, IComunicacion {
 
 	private Socket cliente;
 	private int puertoAConectar;
@@ -18,10 +18,10 @@ public class Cliente implements Runnable {
 	private ObjectOutputStream os;
 	private ObjectInputStream is;
 	private boolean listo = false;
-	private IObservador observador;
+	private IComunicacion observador;
 	private String claveEncriptacion;
 	
-	public Cliente(String ipAConectar, int puerto, IObservador observador) {
+	public Cliente(String ipAConectar, int puerto, IComunicacion observador) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
 		this.observador = observador;
@@ -54,7 +54,7 @@ public class Cliente implements Runnable {
 			observador.mostrarConexxionErroneaServer();
 		}
 }
-	
+	@Override
 	public void mandarMensaje(Mensaje mensaje) {
 		try {
 			os.writeObject(mensaje);
@@ -131,6 +131,72 @@ public class Cliente implements Runnable {
 
 	public String getClaveEncriptacion() {
 		return claveEncriptacion;
+	}
+
+	@Override
+	public void mostrarIntentoDeConexion(String ip, int puerto) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarMensajeTextArea(Mensaje mensaje) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarUsuarioOcupado() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarUsuarioNoDisponible() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarCierreSesion() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarConexionErronea() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarConexxionErroneaServer() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarPuertoErroneo() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarPuertoEnUso() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cerrarInstancia() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void aceptaInicioSesion() {
+		// TODO Auto-generated method stub
+		
 	}	
 	
 }
