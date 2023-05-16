@@ -78,7 +78,7 @@ public class Server implements Runnable, IConsultaEstado {
 	
 	public void agregarAlChat(Mensaje mensaje) {
 		int i = 0;
-		while (i < conexiones.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
+		while (i < chats.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
 			i++;
 		}
 		if (i < conexiones.size() && (chats.get(i).getPuerto1() == mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() == mensaje.getPuertoEmisor())) {
@@ -88,7 +88,7 @@ public class Server implements Runnable, IConsultaEstado {
 	
 	public void eliminarChat(Mensaje mensaje) {
 		int i = 0;
-		while (i < conexiones.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() && chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
+		while (i < chats.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() && chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
 			i++;
 		}
 		if (i < conexiones.size() && (chats.get(i).getPuerto1() == mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() == mensaje.getPuertoEmisor())) {
@@ -102,7 +102,6 @@ public class Server implements Runnable, IConsultaEstado {
 		int indicePropio = buscaIndicePropio(mensaje);
 		if (indiceSolicitado != -1) { // se encontró a la persona
 			if (!conexiones.get(indiceSolicitado).isHablando()) { // no está hablando
-				Mensaje respuesta = new Mensaje("/solicitud/", mensaje.getIpEmisor(), mensaje.getPuertoEmisor());
 				conexiones.get(indiceSolicitado).setHablando(true);
 				conexiones.get(indiceSolicitado).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
 				conexiones.get(indicePropio).setHablando(true);
@@ -111,7 +110,7 @@ public class Server implements Runnable, IConsultaEstado {
 						conexiones.get(indicePropio).getPuerto(), conexiones.get(indicePropio).getPuertoOtroUsuario());
 				System.out.println(conexiones.size());
 				try {
-					conexiones.get(indiceSolicitado).mandarMensaje(respuesta);
+					conexiones.get(indiceSolicitado).mandarMensaje(mensaje);
 				} catch (IOException e) {
 					System.out.println("aca no deberia entrar nunca, mandar mensaje");
 				}
@@ -152,17 +151,21 @@ public class Server implements Runnable, IConsultaEstado {
 		while (i < conexiones.size() && cerrados < 2) { 
 			if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor() || (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor() && 
 					conexiones.get(i).getPuertoOtroUsuario() !=-10)) { // si esa persona estaba hablando con alguien
-				conexiones.get(i).setPuertoOtroUsuario(0);
+				conexiones.get(i).setPuertoOtroUsuario(-10);
 				conexiones.get(i).setHablando(false);
-				conexiones.remove(i);
 				cerrados++;
-				this.cs.cambioCantConectados(-1);
+				if (mensaje.getMensaje().contains("/cerrar/")) {
+					conexiones.remove(i);
+					this.cs.cambioCantConectados(-1);
+				}
 			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
-				conexiones.get(i).setPuertoOtroUsuario(0);
+				conexiones.get(i).setPuertoOtroUsuario(-10);
 				conexiones.get(i).setHablando(false);
-				conexiones.remove(i);
 				cerrados = 2;
-				this.cs.cambioCantConectados(-1);
+				if (mensaje.getMensaje().contains("/cerrar/")) {
+					conexiones.remove(i);
+					this.cs.cambioCantConectados(-1);
+				}
 			} else {
 				i++;
 			}
@@ -255,8 +258,8 @@ public class Server implements Runnable, IConsultaEstado {
 							desconectaChat(mensaje2);
 						}
 					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
-						String[] cadena = mensaje.getMensaje().split(" ");
-						int puertoAConectar = Integer.parseInt(cadena[1]);
+						String[] cadena = mensaje.getMensaje().split("/");
+						int puertoAConectar = Integer.parseInt(cadena[2]);
 						consultaDisponibilidad(mensaje, puertoAConectar);
 					} else if (mensaje.getMensaje().contains("/aceptar/")) {
 						reparte(mensaje);

@@ -96,7 +96,10 @@ public class Cliente implements Runnable {
 								observador.mostrarUsuarioNoDisponible();
 							} else if (mensaje.getMensaje().equals("/aceptar/")) {
 								observador.aceptaInicioSesion();
-							} else if (mensaje.getMensaje().equals("/solicitud/")) {
+							} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
+								String[] arraySplit = mensaje.getMensaje().split("/");
+								System.out.println("recibe el intento");
+								setClaveEncriptacion(arraySplit[3]);
 								observador.mostrarIntentoDeConexion(mensaje.getIpEmisor(),mensaje.getPuertoEmisor()); // aca deberia mostrar con el campo de ip del emisor que contiene el mensaje
 							} else if (mensaje.getMensaje().equals("/sinDisponibilidad/")) {
 								System.out.println("se recibio el mensaje sin disp");
