@@ -101,6 +101,34 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 		}
 	}
 	
+	@Override
+	public void desconectaChat(Mensaje mensaje) {
+		int i=0;
+		int cerrados = 0;
+		while (i < conexiones.size() && cerrados < 2) { 
+			if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor() || (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor() && 
+					conexiones.get(i).getPuertoOtroUsuario() !=-10)) { // si esa persona estaba hablando con alguien
+				conexiones.get(i).setPuertoOtroUsuario(-10);
+				conexiones.get(i).setHablando(false);
+				cerrados++;
+				if (mensaje.getMensaje().contains("/cerrar/")) {
+					conexiones.remove(i);
+					this.cambioCantConectados(-1);
+				}
+			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
+				conexiones.get(i).setPuertoOtroUsuario(-10);
+				conexiones.get(i).setHablando(false);
+				cerrados = 2;
+				if (mensaje.getMensaje().contains("/cerrar/")) {
+					conexiones.remove(i);
+					this.cambioCantConectados(-1);
+				}
+			} else {
+				i++;
+			}
+		}
+	}
+	
 	@Override // metodo de interfaz
 	public void consultaDisponibilidad(Mensaje mensaje, int puerto) {
 		int indiceSolicitado = this.buscaIndiceSolicitado(puerto);
@@ -139,32 +167,6 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 		}
 	}
 
-	public void desconectaChat(Mensaje mensaje) {
-		int i=0;
-		int cerrados = 0;
-		while (i < conexiones.size() && cerrados < 2) { 
-			if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor() || (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor() && 
-					conexiones.get(i).getPuertoOtroUsuario() !=-10)) { // si esa persona estaba hablando con alguien
-				conexiones.get(i).setPuertoOtroUsuario(-10);
-				conexiones.get(i).setHablando(false);
-				cerrados++;
-				if (mensaje.getMensaje().contains("/cerrar/")) {
-					conexiones.remove(i);
-					this.cambioCantConectados(-1);
-				}
-			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
-				conexiones.get(i).setPuertoOtroUsuario(-10);
-				conexiones.get(i).setHablando(false);
-				cerrados = 2;
-				if (mensaje.getMensaje().contains("/cerrar/")) {
-					conexiones.remove(i);
-					this.cambioCantConectados(-1);
-				}
-			} else {
-				i++;
-			}
-		}
-	}
 	
 	@Override
 	public void cambioCantConectados(int sumaOresta) {
