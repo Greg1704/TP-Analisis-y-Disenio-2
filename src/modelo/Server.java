@@ -15,7 +15,7 @@ import controlador.ControladorServer;
 import controlador.IComunicacion;
 import controlador.IConectados;
 
-public class Server implements Runnable, IConsultaEstado,IConectados {
+public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 
 	private ServerSocket server;
 	private Socket cliente;
@@ -73,11 +73,13 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 			return -1; // no se encontro
 	}
 	
+	@Override
 	public void nuevoChat(String ip1, int puerto1, int puerto2) {
 		Chat chat = new Chat(ip1, puerto1, puerto2);
 		chats.add(chat);
 	}
 	
+	@Override
 	public void agregarAlChat(Mensaje mensaje) {
 		int i = 0;
 		while (i < chats.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() || chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
@@ -88,6 +90,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados {
 		}
 	}
 	
+	@Override
 	public void eliminarChat(Mensaje mensaje) {
 		int i = 0;
 		while (i < chats.size() && (chats.get(i).getPuerto1() != mensaje.getPuertoEmisor() && chats.get(i).getPuerto2() != mensaje.getPuertoEmisor())) {
