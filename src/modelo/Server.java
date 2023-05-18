@@ -41,7 +41,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				cliente = server.accept();
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m);
-				this.cambioCantConectados(1);
+				this.cambioCantConectados(conexiones.size());
 				System.out.println("se conecto una persona");
 				System.out.println(conexiones.size());
 				pool.execute(m);
@@ -113,7 +113,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				cerrados++;
 				if (mensaje.getMensaje().contains("/cerrar/")) {
 					conexiones.remove(i);
-					this.cambioCantConectados(-1);
+					this.cambioCantConectados(conexiones.size());
 				}
 			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
 				conexiones.get(i).setPuertoOtroUsuario(-10);
@@ -121,7 +121,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				cerrados = 2;
 				if (mensaje.getMensaje().contains("/cerrar/")) {
 					conexiones.remove(i);
-					this.cambioCantConectados(-1);
+					this.cambioCantConectados(conexiones.size());
 				}
 			} else {
 				i++;
