@@ -199,6 +199,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 		int ultimoIndice = conexiones.size() - 1;
 			conexiones.get(ultimoIndice).mandarMensaje(mensaje);
 			conexiones.remove(ultimoIndice);
+			cambioCantConectados(conexiones.size());
 	}
 	
 	public void cerrarServidor() {
