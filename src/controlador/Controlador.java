@@ -22,25 +22,28 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 	private int puertoServidor = 65535;
 	
 	private Controlador () {
-		cliente = new Cliente("localhost", puertoServidor, this);
 		String puertoTexto = JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)");
-		//puerto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)"));
-		while (puertoTexto.equals("") || Integer.parseInt(puertoTexto)<1025 || Integer.parseInt(puertoTexto)>65534) {
-			if(puertoTexto.equals(""))
-				puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar un valor entre 1024 y 65534");
-			else if (Integer.parseInt(puertoTexto)>65534)
-				puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor menor a 65535)");
-			else
-				puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor mayor a 1024)");
+		if (puertoTexto != null) {
+			cliente = new Cliente("localhost", puertoServidor, this);
+			while (puertoTexto.equals("") || puertoTexto.length()>5 || Integer.parseInt(puertoTexto)<1025 || Integer.parseInt(puertoTexto)>65534) {
+				if(puertoTexto.equals("") || puertoTexto.length()>5)
+					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar un valor entre 1024 y 65534");
+				else if (Integer.parseInt(puertoTexto)>65534)
+					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor menor a 65535)");
+				else
+					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor mayor a 1024)");
+			}
+			this.puerto = Integer.parseInt(puertoTexto);
+			this.v = new VentanaDefinitiva();
+			this.vs = new VentanaSolicitudDeSesion();
+			this.v.setControlador(this);
+			this.vs.setControlador(this);
+			this.setPuertoReferencia(puerto);
+			Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
+			this.mandarMensaje(mensaje);
+		} else {
+			//
 		}
-		this.puerto = Integer.parseInt(puertoTexto);
-		this.v = new VentanaDefinitiva();
-		this.vs = new VentanaSolicitudDeSesion();
-		this.v.setControlador(this);
-		this.vs.setControlador(this);
-		this.setPuertoReferencia(puerto);
-		Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
-		this.mandarMensaje(mensaje);
 	}
 	
 	public static Controlador getInstancia() {

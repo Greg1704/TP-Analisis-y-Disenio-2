@@ -154,20 +154,20 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 			conexiones.get(indicePropio).mandarMensaje(respuesta);
 		}
 	}
-	
+
 	public boolean disponibilidadPuerto(int puerto) {
 		int i = 0;
 		while (i < conexiones.size() - 1 && conexiones.get(i).getPuerto() != puerto) {
 			i++;
 		}
-		if (i < conexiones.size() - 1 && conexiones.get(i).getPuerto() == puerto) { // se encontro que alguien usaba el puerto
+		if (i < conexiones.size() - 1 && conexiones.get(i).getPuerto() == puerto) { // se encontro que alguien usaba
+																					// el puerto
 			return false;
 		} else {
 			return true;
 		}
 	}
 
-	
 	@Override
 	public void cambioCantConectados(int sumaOresta) {
 		this.cs.cambioCantConectados(sumaOresta);
