@@ -198,6 +198,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 	public void puertoErroneo(Mensaje mensaje) {
 		int ultimoIndice = conexiones.size() - 1;
 			conexiones.get(ultimoIndice).mandarMensaje(mensaje);
+			conexiones.remove(ultimoIndice);
 	}
 	
 	public void cerrarServidor() {
