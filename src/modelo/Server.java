@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.JOptionPane;
-
 import controlador.ControladorServer;
 import controlador.IComunicacion;
 import controlador.IConectados;
@@ -42,12 +40,9 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m);
 				this.cambioCantConectados(conexiones.size());
-				System.out.println("se conecto una persona");
-				System.out.println(conexiones.size());
 				pool.execute(m);
 			}
 		} catch (IOException e) {
-
 		}
 	}
 	
@@ -105,7 +100,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 	public void desconectaChat(Mensaje mensaje) {
 		int i=0;
 		int cerrados = 0;
-		while (i < conexiones.size() && cerrados < 2) { 
+		while (i < conexiones.size() && cerrados < 2) {
 			if (conexiones.get(i).getPuertoOtroUsuario() == mensaje.getPuertoEmisor() || (conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor() && 
 					conexiones.get(i).getPuertoOtroUsuario() !=-10)) { // si esa persona estaba hablando con alguien
 				conexiones.get(i).setPuertoOtroUsuario(-10);
@@ -114,6 +109,8 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				if (mensaje.getMensaje().contains("/cerrar/")) {
 					conexiones.remove(i);
 					this.cambioCantConectados(conexiones.size());
+				} else {
+					i++;
 				}
 			} else if (conexiones.get(i).getPuertoOtroUsuario() == -10 && conexiones.get(i).getPuerto() == mensaje.getPuertoEmisor()) { // si no estaba hablando con nadie
 				conexiones.get(i).setPuertoOtroUsuario(-10);
@@ -122,6 +119,8 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				if (mensaje.getMensaje().contains("/cerrar/")) {
 					conexiones.remove(i);
 					this.cambioCantConectados(conexiones.size());
+				} else {
+					i++;
 				}
 			} else {
 				i++;
@@ -141,7 +140,6 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				conexiones.get(indicePropio).setPuertoOtroUsuario(puerto);
 				this.nuevoChat(conexiones.get(indicePropio).getCliente().getInetAddress().getHostAddress(),
 						conexiones.get(indicePropio).getPuerto(), conexiones.get(indicePropio).getPuertoOtroUsuario());
-				System.out.println(conexiones.size());
 				conexiones.get(indiceSolicitado).mandarMensaje(mensaje);
 			} else { // está hablando
 				Mensaje respuesta = new Mensaje("/enCharla/", this.server.getInetAddress().getHostAddress(),
@@ -198,6 +196,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 	public void puertoErroneo(Mensaje mensaje) {
 		int ultimoIndice = conexiones.size() - 1;
 			conexiones.get(ultimoIndice).mandarMensaje(mensaje);
+			conexiones.get(ultimoIndice).cerrarCliente();
 			conexiones.remove(ultimoIndice);
 			cambioCantConectados(conexiones.size());
 	}
@@ -236,6 +235,7 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				while ((mensaje = (Mensaje) is.readObject()) != null) {
 					if (mensaje.getMensaje().equals("/cerrar/")) { 
 						reparte(mensaje);
+						cerrarCliente();
 						desconectaChat(mensaje);
 					} else if (mensaje.getMensaje().contains("/puerto/")) {
 						String[] cadena = mensaje.getMensaje().split(" ");
@@ -261,9 +261,9 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 					}
 				}
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, e.getLocalizedMessage());
+				//
 			} catch (ClassNotFoundException e) {
-				System.out.println(e.getLocalizedMessage() + "run de server manejaconex");
+				
 			}
 		}
 
@@ -283,7 +283,6 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 					cliente.close();
 				}
 			} catch (IOException e) {
-				// try x obligacion, no deberia pasar
 			}
 		}
 

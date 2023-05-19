@@ -23,16 +23,18 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 	
 	private Controlador () {
 		String puertoTexto = JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)");
-		if (puertoTexto != null) {
-			cliente = new Cliente("localhost", puertoServidor, this);
-			while (puertoTexto.equals("") || puertoTexto.length()>5 || Integer.parseInt(puertoTexto)<1025 || Integer.parseInt(puertoTexto)>65534) {
-				if(puertoTexto.equals("") || puertoTexto.length()>5)
+		if (puertoTexto != null && !puertoTexto.equals("")) {
+			while (puertoTexto == null || puertoTexto.equals("") || puertoTexto.length()>5 || Integer.parseInt(puertoTexto)<1025 || Integer.parseInt(puertoTexto)>65534) {
+				if (puertoTexto == null) 
+					System.exit(0);
+				else if(puertoTexto.equals("") || puertoTexto.length()>5)
 					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar un valor entre 1024 y 65534");
 				else if (Integer.parseInt(puertoTexto)>65534)
 					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor menor a 65535)");
 				else
 					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor mayor a 1024)");
 			}
+			cliente = new Cliente("localhost", puertoServidor, this);
 			this.puerto = Integer.parseInt(puertoTexto);
 			this.v = new VentanaDefinitiva();
 			this.vs = new VentanaSolicitudDeSesion();
@@ -42,7 +44,7 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 			Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
 		} else {
-			//
+			System.exit(0);
 		}
 	}
 	
