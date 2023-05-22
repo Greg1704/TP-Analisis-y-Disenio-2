@@ -54,7 +54,7 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		this.server.cerrarServidor();
+		System.exit(0);
 		this.vs.fusilarVentana();
 	}
 

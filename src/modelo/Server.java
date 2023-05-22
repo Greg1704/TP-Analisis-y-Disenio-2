@@ -6,7 +6,10 @@ import java.io.ObjectOutputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,15 +19,15 @@ import controlador.IConectados;
 
 public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 
-	private static int puertoServer = 8000;
-	private static int puertoTransferenciaDatos = 9000;
+	private int puertoServer = 11000;
+	private int puertoTransferenciaDatos = 9000;
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
 	private boolean listo = false;
 	private ExecutorService pool;
 	private IConectados cs;
-	private IState estado = new PrimarioState(this);
+	private boolean primario = true;
 	
 	public Server(IConectados cs) {
 		conexiones = new ArrayList<ManejaConexiones>(); 
@@ -44,12 +47,116 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 				pool.execute(m);
 			}
 		} catch (BindException e) {
+			this.primario = false;
 			System.out.println("Es el segundo server q abris en el mismo puerto mostri"); // FUNCIONA !
 		} catch (IOException e) {
 			
 		}
 	}
 	
+	public void conectarseAMonitor() { // esto es para PRIMARIO Y SECUNDARIO: hay que mandar latidos O estar conectados
+										// con el monitor asi el monitor avisa si se cae el primero
+		new Thread() {
+			public void run() {
+				Timer t = new Timer();
+				t.scheduleAtFixedRate(new TimerTask() {
+
+					@Override
+					public void run() {
+						if (primario) {
+							try {
+								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
+																									// primario
+								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+
+								out.writeObject(true);
+
+								out.close();
+								socket.close();
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						} else {
+							try {
+								ServerSocket serverSocket = new ServerSocket(puertoServer);
+								while (true) {
+									Socket socket = serverSocket.accept();
+									ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+									// recibo mensaje
+									setPrimario(true);
+								}
+							} catch (Exception e) {
+								System.out.println(e.getLocalizedMessage());
+							}
+						}
+					}
+				}, 0, 5000);
+			}
+		}.start();
+	}
+	
+
+	public void mandarActualizacionInformacion() { // mandarle la informacion actualizada al secundario
+		new Thread() {
+			public void run() {
+				Timer t = new Timer();
+				t.scheduleAtFixedRate(new TimerTask() {
+
+					@Override
+					public void run() {
+						if (primario) {
+							try {
+								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
+																									// primario
+								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+
+								out.writeObject(conexiones);
+								out.writeObject(chats);
+								
+								out.close();
+								socket.close();
+							} catch (Exception e) {
+								System.out.println("No hay servidor secundario");
+							}
+						}
+					}
+				}, 0, 5000);
+			}
+		}.start();
+	}
+	
+	public void recibirActualizacionInformacion() {
+		new Thread() {
+			public void run() {
+				Timer t = new Timer();
+				t.scheduleAtFixedRate(new TimerTask() {
+
+					@Override
+					public void run() {
+						if (!primario) {
+							try {
+								ServerSocket serverSocket = new ServerSocket(puertoTransferenciaDatos); // soy servidor
+																									// primario
+								while (true) {
+									Socket socket = serverSocket.accept();
+									ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+									
+									ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
+									setConexiones(conexiones);
+									ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
+									setChats(chats);
+								}
+							} catch (Exception e) {
+								System.out.println("No hay servidor secundario");
+							}
+						}
+					}
+				}, 0, 5000);
+			}
+		}.start();
+	}
+
 	public int buscaIndicePropio(Mensaje mensaje) {
 		int i = 0;
 		while (i < conexiones.size() && conexiones.get(i).getPuerto() != mensaje.getPuertoEmisor()) {
@@ -382,11 +489,11 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 		
 	}
 
-	public static int getPuertoServer() {
+	public int getPuertoServer() {
 		return puertoServer;
 	}
 	
-	public static int getPuertoTransferenciaDatos() {
+	public int getPuertoTransferenciaDatos() {
 		return puertoTransferenciaDatos;
 	}
 
@@ -396,6 +503,14 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 
 	public void setConexiones(ArrayList<ManejaConexiones> conexiones) {
 		this.conexiones = conexiones;
+	}
+
+	public boolean isPrimario() {
+		return primario;
+	}
+
+	public void setPrimario(boolean primario) {
+		this.primario = primario;
 	}
 
 	public ArrayList<Chat> getChats() {
@@ -408,14 +523,6 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 
 	public ExecutorService getPool() {
 		return pool;
-	}
-	
-	public void setEstado(IState estado) {
-		this.estado = estado;
-	}
-	
-	public void init() {
-		this.estado.init();
 	}
 
 	public void setCs(ControladorServer cs) {

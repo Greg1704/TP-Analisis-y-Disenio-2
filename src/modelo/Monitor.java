@@ -12,7 +12,7 @@ public class Monitor {
 	private boolean activo = true;
 	private Timer t = new Timer();
 	private static int puertoLatidosPrimario = 11000;
-	private static int puertoEsperaSecundario = 12000;
+	private static int puertoEsperaSecundario = 9000;
 	private static Monitor instance = null;
 	
 	public static Monitor getInstance() {
