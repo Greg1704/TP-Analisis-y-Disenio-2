@@ -3,6 +3,7 @@ package modelo;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -42,7 +43,10 @@ public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
 				this.cambioCantConectados(conexiones.size());
 				pool.execute(m);
 			}
+		} catch (BindException e) {
+			System.out.println("Es el segundo server q abris en el mismo puerto mostri"); // FUNCIONA !
 		} catch (IOException e) {
+			
 		}
 	}
 	
