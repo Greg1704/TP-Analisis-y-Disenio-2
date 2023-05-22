@@ -19,8 +19,9 @@ import controlador.IConectados;
 
 public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 
+	private int puertoMonitor = 12000;
 	private int puertoServer = 11000;
-	private int puertoTransferenciaDatos = 9000;
+	private int puertoSecundario = 9000;
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
@@ -38,6 +39,8 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 	public void run() {
 		try {
 			server = new ServerSocket(puertoServer);
+			conectarseAMonitor();
+			mandarActualizacionInformacion();
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
@@ -48,6 +51,8 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 			}
 		} catch (BindException e) {
 			this.primario = false;
+			conectarseAMonitor();
+			recibirActualizacionInformacion();
 			System.out.println("Es el segundo server q abris en el mismo puerto mostri"); // FUNCIONA !
 		} catch (IOException e) {
 			
@@ -65,7 +70,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 					public void run() {
 						if (primario) {
 							try {
-								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
+								Socket socket = new Socket("localhost", puertoServer); // soy servidor
 																									// primario
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
@@ -79,11 +84,9 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 							}
 						} else {
 							try {
-								ServerSocket serverSocket = new ServerSocket(puertoServer);
+								ServerSocket serverSocket = new ServerSocket(puertoSecundario);
 								while (true) {
-									Socket socket = serverSocket.accept();
-									ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-									// recibo mensaje
+									Socket socket = serverSocket.accept(); // una vez que esto se acepta , baja de linea
 									setPrimario(true);
 								}
 							} catch (Exception e) {
@@ -107,10 +110,10 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 					public void run() {
 						if (primario) {
 							try {
-								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
+								Socket socket = new Socket("localhost", puertoMonitor); // soy servidor
 																									// primario
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-
+								System.out.println();
 								out.writeObject(conexiones);
 								out.writeObject(chats);
 								
@@ -136,7 +139,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 					public void run() {
 						if (!primario) {
 							try {
-								ServerSocket serverSocket = new ServerSocket(puertoTransferenciaDatos); // soy servidor
+								ServerSocket serverSocket = new ServerSocket(puertoSecundario); // soy servidor
 																									// primario
 								while (true) {
 									Socket socket = serverSocket.accept();
@@ -493,8 +496,8 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 		return puertoServer;
 	}
 	
-	public int getPuertoTransferenciaDatos() {
-		return puertoTransferenciaDatos;
+	public int getPuertoSecundario() {
+		return puertoSecundario;
 	}
 
 	public ArrayList<ManejaConexiones> getConexiones() {
