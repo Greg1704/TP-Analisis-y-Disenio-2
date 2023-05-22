@@ -14,18 +14,17 @@ public class Cliente implements Runnable, IComunicacion {
 
 	private Socket cliente;
 	private int puertoAConectar;
-	private String ipAConectar, ipLocal, nombreUsuario;
+	private String ipAConectar, ipLocal;
 	private ObjectOutputStream os;
 	private ObjectInputStream is;
 	private boolean listo = false;
 	private IComunicacion observador;
 	private String claveEncriptacion;
 	
-	public Cliente(String nombreUsuario,String ipAConectar, int puerto, IComunicacion observador) {
+	public Cliente(String ipAConectar, int puerto, IComunicacion observador) {
 		this.puertoAConectar = puerto;
 		this.ipAConectar = ipAConectar;
 		this.observador = observador;
-		this.nombreUsuario = nombreUsuario;
 		try {
 			InetAddress localHost = InetAddress.getLocalHost();
 			this.ipLocal = localHost.getHostAddress();

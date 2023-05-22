@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,11 +20,16 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import controlador.Controlador;
+import modelo.Cliente;
 import modelo.Mensaje;
+import modelo.Server.ManejaConexiones;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JTextArea;
+import javax.swing.JList;
+import javax.swing.border.TitledBorder;
 
 public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, KeyListener  {
 
@@ -48,6 +54,10 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	private JTextField textFieldChatMensajeUsuario;
 	private Controlador c;
 	private JLabel lblPuertoReferencia;
+	private JPanel panelListaConectados;
+	private JScrollPane scrollPaneConectados;
+	private JList listConectados;
+	private DefaultListModel<ManejaConexiones> modelListClientesConectados;
 	
 	/**
 	 * Launch the application.
@@ -88,7 +98,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		
 		this.panelBusquedaComponentes = new JPanel();
 		this.panelBusquedaComponentes.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		this.panelBusquedaComponentes.setBounds(287, 91, 290, 213);
+		this.panelBusquedaComponentes.setBounds(143, 91, 290, 213);
 		this.panelBusqueda.add(this.panelBusquedaComponentes);
 		this.panelBusquedaComponentes.setLayout(null);
 		
@@ -122,6 +132,22 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		this.lblPuertoReferencia = new JLabel("Puerto: 0000");
 		this.lblPuertoReferencia.setBounds(0, 446, 134, 23);
 		this.panelBusqueda.add(this.lblPuertoReferencia);
+		
+		this.panelListaConectados = new JPanel();
+		this.panelListaConectados.setBounds(487, 0, 360, 469);
+		this.panelBusqueda.add(this.panelListaConectados);
+		this.panelListaConectados.setLayout(new BorderLayout(0, 0));
+		
+		this.scrollPaneConectados = new JScrollPane();
+		this.scrollPaneConectados.setViewportBorder(new TitledBorder(null, "Usuarios conectados al servidor", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		this.panelListaConectados.add(this.scrollPaneConectados, BorderLayout.CENTER);
+		
+		this.listConectados = new JList();
+		this.scrollPaneConectados.setViewportView(this.listConectados);
+		this.modelListClientesConectados = new DefaultListModel<ManejaConexiones>();
+		this.listConectados.setModel(modelListClientesConectados);
+		this.listConectados.setName("listConectados");
+		this.listConectados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		this.panelChat = new JPanel();
 		this.tabbedPane.addTab("Chat", null, this.panelChat, null);
@@ -193,6 +219,8 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		
 		this.textFieldPuerto.addKeyListener(this);
 		
+		this.listConectados.setEnabled(true);
+		this.listConectados.addMouseListener(this);
 	}
 	
 
@@ -232,6 +260,10 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 			this.btnEnviarMensaje.setEnabled(false);
 		}else if(e.getSource() == this.btnCerrarSesion) {
 			
+		}else if(e.getSource() == this.listConectados) {
+			ManejaConexiones cliente = (ManejaConexiones) this.listConectados.getSelectedValue();
+			this.textFieldIp.setText(cliente.getCliente().getLocalAddress().getHostAddress());
+			this.textFieldPuerto.setText(Integer.toString(cliente.getPuerto()));
 		}
 	}
 
@@ -291,4 +323,14 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	public void setLblPuertoReferencia(String lblPuertoReferencia) {
 		this.lblPuertoReferencia.setText(lblPuertoReferencia);
 	}
+
+	public JList getListConectados() {
+		return listConectados;
+	}
+
+	public void setListConectados(JList listConectados) {
+		this.listConectados = listConectados;
+	}
+	
+	
 }

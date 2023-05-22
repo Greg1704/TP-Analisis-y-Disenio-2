@@ -35,7 +35,7 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor mayor a 1024)");
 			}
 			String nombreCliente = JOptionPane.showInputDialog("Ingrese el nombre de usuario que desee utilizar");
-			cliente = new Cliente(nombreCliente,"localhost", puertoServidor, this);
+			cliente = new Cliente("localhost", puertoServidor, this);
 			this.puerto = Integer.parseInt(puertoTexto);
 			this.v = new VentanaDefinitiva();
 			this.vs = new VentanaSolicitudDeSesion();
