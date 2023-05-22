@@ -14,7 +14,7 @@ import controlador.ControladorServer;
 import controlador.IComunicacion;
 import controlador.IConectados;
 
-public class Server implements Runnable, IConsultaEstado,IConectados, IChat {
+public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 
 	private ServerSocket server;
 	private Socket cliente;
