@@ -12,7 +12,7 @@ import modelo.Server.ManejaConexiones;
 
 public class SecundarioState extends State {
 	
-	private static int puertoSecundario = 65534;
+	private static int puertoSecundario = 12000;
 
 	public SecundarioState(Server server) {
 		super(server);
@@ -23,7 +23,7 @@ public class SecundarioState extends State {
 	public void init() {
 		Socket socket;
 		try {
-			socket = new Socket("localhost", Server.getPuertoServer());
+			socket = new Socket("localhost", Server.getPuertoTransferenciaDatos());
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 			
@@ -70,7 +70,7 @@ public class SecundarioState extends State {
 		new Thread() {
 			public void run() {
 				try {
-					
+					// ACA VOY A IR AGREGANDO LAS COSAS
 				} catch (Exception e) {
 					System.out.println(e.getLocalizedMessage());
 				}

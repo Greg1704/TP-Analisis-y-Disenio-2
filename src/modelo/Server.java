@@ -16,7 +16,8 @@ import controlador.IConectados;
 
 public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 
-	private static int puertoServer = 65535;
+	private static int puertoServer = 8000;
+	private static int puertoTransferenciaDatos = 9000;
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
@@ -385,7 +386,9 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 		return puertoServer;
 	}
 	
-	
+	public static int getPuertoTransferenciaDatos() {
+		return puertoTransferenciaDatos;
+	}
 
 	public ArrayList<ManejaConexiones> getConexiones() {
 		return conexiones;

@@ -1,6 +1,9 @@
 package modelo;
 
 public class PrimarioState extends State {
+	
+	private static int puertosLatidos = 11000;
+	
 
 	public PrimarioState(Server server) {
 		super(server);

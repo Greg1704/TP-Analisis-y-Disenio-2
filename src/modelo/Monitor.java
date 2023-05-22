@@ -11,8 +11,8 @@ import java.util.TimerTask;
 public class Monitor {
 	private boolean activo = true;
 	private Timer t = new Timer();
-	private static int puertoLatidosPrimario = 65535;
-	private static int puertoEsperaSecundario = 65534;
+	private static int puertoLatidosPrimario = 11000;
+	private static int puertoEsperaSecundario = 12000;
 	private static Monitor instance = null;
 	
 	public static Monitor getInstance() {
