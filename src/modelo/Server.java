@@ -25,6 +25,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 	private ExecutorService pool;
 	private IConectados cs;
 	
+	
 	public Server(int port,IConectados cs) {
 		conexiones = new ArrayList<ManejaConexiones>(); 
 		this.puertoServer = port;
