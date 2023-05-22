@@ -15,7 +15,7 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 	private static ControladorServer instancia = null;
 	
 	public ControladorServer() {
-		server = new Server(65535,this);
+		server = new Server(this);
 		vs = new VentanaServidor();
 		this.vs.setControlador(this);
 		server.run();

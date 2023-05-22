@@ -16,19 +16,17 @@ import controlador.IConectados;
 
 public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 
+	private static int puertoServer = 65535;
 	private ServerSocket server;
-	private Socket cliente;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
-	private int puertoServer;
 	private boolean listo = false;
 	private ExecutorService pool;
 	private IConectados cs;
+	private IState estado = new PrimarioState(this);
 	
-	
-	public Server(int port,IConectados cs) {
+	public Server(IConectados cs) {
 		conexiones = new ArrayList<ManejaConexiones>(); 
-		this.puertoServer = port;
 		this.cs = cs;
 	}
 	
@@ -38,7 +36,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 			server = new ServerSocket(puertoServer);
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
-				cliente = server.accept();
+				Socket cliente = server.accept();
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m);
 				this.cambioCantConectados(conexiones.size());
@@ -219,7 +217,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 		}
 	}
 	
-	private class ManejaConexiones implements Runnable, IComunicacion {
+	public class ManejaConexiones implements Runnable, IComunicacion {
 		private Socket cliente;
 		private int puerto = 0;
 		private boolean hablando;
@@ -381,6 +379,40 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 			
 		}
 		
+	}
+
+	public static int getPuertoServer() {
+		return puertoServer;
+	}
+	
+	
+
+	public ArrayList<ManejaConexiones> getConexiones() {
+		return conexiones;
+	}
+
+	public void setConexiones(ArrayList<ManejaConexiones> conexiones) {
+		this.conexiones = conexiones;
+	}
+
+	public ArrayList<Chat> getChats() {
+		return chats;
+	}
+
+	public void setChats(ArrayList<Chat> chats) {
+		this.chats = chats;
+	}
+
+	public ExecutorService getPool() {
+		return pool;
+	}
+	
+	public void setEstado(IState estado) {
+		this.estado = estado;
+	}
+	
+	public void init() {
+		this.estado.init();
 	}
 
 	public void setCs(ControladorServer cs) {
