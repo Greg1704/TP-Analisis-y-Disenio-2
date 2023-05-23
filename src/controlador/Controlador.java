@@ -19,7 +19,7 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 	private static Controlador instancia = null;
 	private int puerto;
 	private Cliente cliente;
-	private int puertoServidor = 65535;
+	private int puertoServidor = 11000;
 	
 	private Controlador () {
 		String puertoTexto = JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)");

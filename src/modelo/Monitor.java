@@ -11,8 +11,8 @@ import java.util.TimerTask;
 public class Monitor {
 	private boolean activo = true;
 	private Timer t = new Timer();
-	private static int puertoLatidosPrimario = 12000;
-	private static int puertoEsperaSecundario = 9000;
+	private static int puertoLatidosPrimario = 10000;
+	private static int puertoEsperaSecundario = 8000;
 	private static Monitor instance = null;
 	
 	public static Monitor getInstance() {
@@ -27,14 +27,17 @@ public class Monitor {
 				
 				@Override
 				public void run() {
-					if (activo) {
+					if(activo) {
 						Monitor.getInstance().setActivo(false);
+						System.out.println("Pasando a false");
 					} else {
 						try {
 							Socket socket = new Socket("localhost", puertoEsperaSecundario);
 							ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 							out.writeObject(true);
 							out.close();
+							socket.close();
+							System.out.println("se ejecuta la parte de paso de secundario a primario");
 						} catch (ConnectException e) {
 							System.out.println("El secundario no existe todavía");
 						} catch (SocketException e) {
@@ -43,7 +46,6 @@ public class Monitor {
 							System.out.println(e.getLocalizedMessage());
 						}
 					}
-					
 				}
 			}, 1000, 5000);
 		this.comienzaEsperaLatidos();
@@ -53,7 +55,8 @@ public class Monitor {
 		new Thread() {
 			public void run() {
 				try {
-					ServerSocket servSocket = new ServerSocket(puertoLatidosPrimario);
+					System.out.println("se ejecuta comienzaEsperaLatidos");
+					ServerSocket servSocket = new ServerSocket(puertoLatidosPrimario); // PUERTO MONITOR ES 12000 // PUERTO PRIMARIO ES 11000
 					while (true) {
 						Socket socket = servSocket.accept();
 						Monitor.getInstance().setActivo(true);
@@ -61,7 +64,7 @@ public class Monitor {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					System.out.println(e.getLocalizedMessage());
 				}
 			}
 		}.start();

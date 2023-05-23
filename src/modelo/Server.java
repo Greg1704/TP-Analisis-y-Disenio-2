@@ -3,7 +3,9 @@ package modelo;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.BindException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -17,11 +19,12 @@ import controlador.ControladorServer;
 import controlador.IComunicacion;
 import controlador.IConectados;
 
-public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
+public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IReconectar {
 
-	private int puertoMonitor = 12000;
-	private int puertoServer = 11000;
-	private int puertoSecundario = 9000;
+	private int puertoMonitor = 10000; // puerto para conectarse al monitor siendo el servidor original
+	private int puertoServer = 11000; // puerto original donde habla la gente
+	private int puertoSecundario = 8000; // puerto en el que escucha el servidor secundaria para que el monitor le avise cuando tiene que usarse
+	private int puertoSincronizacion = 7000; // puerto para mandarse informacion entre servidor original y el secundario
 	private ServerSocket server;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
@@ -41,9 +44,12 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 			server = new ServerSocket(puertoServer);
 			conectarseAMonitor();
 			mandarActualizacionInformacion();
+			System.out.println("ORIGINAL");
+			System.out.println("ORIGINAL");
 			pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
+				System.out.println("se ejecuta el while listo");
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m);
 				this.cambioCantConectados(conexiones.size());
@@ -53,10 +59,15 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 			this.primario = false;
 			conectarseAMonitor();
 			recibirActualizacionInformacion();
-			System.out.println("Es el segundo server q abris en el mismo puerto mostri"); // FUNCIONA !
+			System.out.println("el serverSocket tenia el puerto ocupado"); 
 		} catch (IOException e) {
 			
 		}
+	}
+	
+	@Override
+	public void reconecta() {
+		this.run();
 	}
 	
 	public void conectarseAMonitor() { // esto es para PRIMARIO Y SECUNDARIO: hay que mandar latidos O estar conectados
@@ -70,36 +81,41 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 					public void run() {
 						if (primario) {
 							try {
-								Socket socket = new Socket("localhost", puertoServer); // soy servidor
+								Socket socket = new Socket("localhost", puertoMonitor); // soy servidor
 																									// primario
+								mandarActualizacionInformacion();
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-
 								out.writeObject(true);
 
 								out.close();
 								socket.close();
 
 							} catch (Exception e) {
-								e.printStackTrace();
+								System.out.println(e.getLocalizedMessage());
+							
 							}
 						} else {
 							try {
 								ServerSocket serverSocket = new ServerSocket(puertoSecundario);
 								while (true) {
 									Socket socket = serverSocket.accept(); // una vez que esto se acepta , baja de linea
-									setPrimario(true);
+									System.out.println("el servidor secundario se hizo primario");
+									serverSocket.close();
+									socket.close();
+									setPrimario();
+									reconecta();
+								
 								}
 							} catch (Exception e) {
 								System.out.println(e.getLocalizedMessage());
 							}
 						}
 					}
-				}, 0, 5000);
+				}, 1000, 5000);
 			}
 		}.start();
 	}
 	
-
 	public void mandarActualizacionInformacion() { // mandarle la informacion actualizada al secundario
 		new Thread() {
 			public void run() {
@@ -110,7 +126,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 					public void run() {
 						if (primario) {
 							try {
-								Socket socket = new Socket("localhost", puertoMonitor); // soy servidor
+								Socket socket = new Socket("localhost", puertoSincronizacion); // soy servidor
 																									// primario
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 								System.out.println();
@@ -119,8 +135,8 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 								
 								out.close();
 								socket.close();
-							} catch (Exception e) {
-								System.out.println("No hay servidor secundario");
+							} catch (IOException e) {
+								System.out.println("No hay servidor secundario en mandar actualizacion");
 							}
 						}
 					}
@@ -131,32 +147,29 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 	
 	public void recibirActualizacionInformacion() {
 		new Thread() {
-			public void run() {
-				Timer t = new Timer();
-				t.scheduleAtFixedRate(new TimerTask() {
-
 					@Override
 					public void run() {
 						if (!primario) {
 							try {
-								ServerSocket serverSocket = new ServerSocket(puertoSecundario); // soy servidor
-																									// primario
+								ServerSocket serverSocket = new ServerSocket(puertoSincronizacion); // soy servidor
+																									// secundario
 								while (true) {
 									Socket socket = serverSocket.accept();
 									ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 									
 									ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
 									setConexiones(conexiones);
+									System.out.println(conexiones.size());
 									ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
 									setChats(chats);
+									System.out.println(conexiones.size());
 								}
 							} catch (Exception e) {
-								System.out.println("No hay servidor secundario");
+								System.out.println("No hay servidor secundario en recibir actualizacion");
+								System.out.println(e.getLocalizedMessage());
 							}
 						}
 					}
-				}, 0, 5000);
-			}
 		}.start();
 	}
 
@@ -328,7 +341,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 		}
 	}
 	
-	public class ManejaConexiones implements Runnable, IComunicacion {
+	public class ManejaConexiones implements Runnable, IComunicacion, Serializable {
 		private Socket cliente;
 		private int puerto = 0;
 		private boolean hablando;
@@ -512,8 +525,8 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat {
 		return primario;
 	}
 
-	public void setPrimario(boolean primario) {
-		this.primario = primario;
+	public void setPrimario() {
+		this.primario = true;
 	}
 
 	public ArrayList<Chat> getChats() {
