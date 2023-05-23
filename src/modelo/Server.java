@@ -337,14 +337,12 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 		for (ManejaConexiones cliente : conexiones) {
 			if (cliente.getPuerto() == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona que mando el mensaje
 				cliente.mandarMensaje(mensaje, mensaje.getPuertoEmisor());
-			} if (cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona destino
+			} else if (cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona destino
 				cliente.mandarMensaje(mensaje, cliente.getPuerto());
 			}
 		}
 	}
 	
-
-
 	public void rechaza(Mensaje mensaje) {
 		int i = 0;
 		while (i < conexiones.size() && (conexiones.get(i).getPuertoOtroUsuario() != mensaje.getPuertoEmisor())) {
