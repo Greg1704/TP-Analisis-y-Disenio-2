@@ -99,24 +99,13 @@ public class Cliente implements IComunicacion {
 							} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
 								String[] arraySplit = mensaje.getMensaje().split("/");
 								setClaveEncriptacion(arraySplit[3]);
-								observador.mostrarIntentoDeConexion(mensaje.getIpEmisor(), mensaje.getPuertoEmisor()); // aca
-																														// deberia
-																														// mostrar
-																														// con
-																														// el
-																														// campo
-																														// de
-																														// ip
-																														// del
-																														// emisor
-																														// que
-																														// contiene
-																														// el
-																														// mensaje
+								observador.mostrarIntentoDeConexion(mensaje.getIpEmisor(), mensaje.getPuertoEmisor()); 
 							} else if (mensaje.getMensaje().equals("/sinDisponibilidad/")) {
 								observador.mostrarPuertoEnUso();
 							} else if (mensaje.getMensaje().equals("/erroneo/")) {
 								observador.mostrarConexionErronea();
+							} else if (mensaje.getMensaje().contains("/actualizacionLista/")) {
+								
 							} else {
 								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),
 										claveEncriptacion);
