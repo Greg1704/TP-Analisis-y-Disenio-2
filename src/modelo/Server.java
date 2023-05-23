@@ -46,14 +46,14 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 			mandarActualizacionInformacion();
 			System.out.println("ORIGINAL");
 			System.out.println("ORIGINAL");
-			pool = Executors.newCachedThreadPool();
+		//	pool = Executors.newCachedThreadPool();
 			while (!listo) {
 				Socket cliente = server.accept();
 				System.out.println("se ejecuta el while listo");
 				ManejaConexiones m = new ManejaConexiones(cliente);
 				conexiones.add(m);
 				this.cambioCantConectados(conexiones.size());
-				pool.execute(m);
+			//	pool.execute(m);
 			}
 		} catch (BindException e) {
 			this.primario = false;
@@ -160,7 +160,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 									ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 									
 									ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
-									setConexiones(conexiones);
+								//	setConexiones(conexiones);
 									System.out.println(conexiones.size());
 									ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
 									setChats(chats);
@@ -347,7 +347,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 		}
 	}
 	
-	public class ManejaConexiones implements Runnable, IComunicacion {
+	public class ManejaConexiones implements IComunicacion {
 		private Socket cliente;
 		private String nombre;
 		private int puerto = 0;
@@ -358,47 +358,52 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 		
 		public ManejaConexiones(Socket cliente) {
 			this.cliente = cliente;
+			maneja();
 		}
 		
-		@Override
-		public void run() {
-			try {
-		        os = new ObjectOutputStream(cliente.getOutputStream());
-				is = new ObjectInputStream(cliente.getInputStream());
-				Mensaje mensaje;
-				while ((mensaje = (Mensaje) is.readObject()) != null) {
-					if (mensaje.getMensaje().equals("/cerrar/")) { 
-						reparte(mensaje);
-						cerrarCliente();
-						desconectaChat(mensaje);
-					} else if (mensaje.getMensaje().contains("/puerto/")) {
-						String[] cadena = mensaje.getMensaje().split(" ");
-						this.puerto = Integer.parseInt(cadena[1]);
-						if (!disponibilidadPuerto(this.puerto)) {
-							Mensaje mensaje2 = new Mensaje("/sinDisponibilidad/", cliente.getInetAddress().getHostAddress(), this.puerto);
-							puertoErroneo(mensaje2);
-							desconectaChat(mensaje2);
+		public void maneja() {
+			new Thread() {
+				public void run() {
+					try {
+						os = new ObjectOutputStream(cliente.getOutputStream());
+						is = new ObjectInputStream(cliente.getInputStream());
+						Mensaje mensaje;
+						while ((mensaje = (Mensaje) is.readObject()) != null) {
+							if (mensaje.getMensaje().equals("/cerrar/")) {
+								reparte(mensaje);
+								cerrarCliente();
+								desconectaChat(mensaje);
+							} else if (mensaje.getMensaje().contains("/puerto/")) {
+								String[] cadena = mensaje.getMensaje().split(" ");
+								puerto = Integer.parseInt(cadena[1]);
+								if (!disponibilidadPuerto(puerto)) {
+									Mensaje mensaje2 = new Mensaje("/sinDisponibilidad/",
+											cliente.getInetAddress().getHostAddress(), puerto);
+									puertoErroneo(mensaje2);
+									desconectaChat(mensaje2);
+								}
+							} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
+								String[] cadena = mensaje.getMensaje().split("/");
+								int puertoAConectar = Integer.parseInt(cadena[2]);
+								consultaDisponibilidad(mensaje, puertoAConectar);
+							} else if (mensaje.getMensaje().contains("/aceptar/")) {
+								reparte(mensaje);
+							} else if (mensaje.getMensaje().contains("/rechazar/")) {
+								rechaza(mensaje);
+								eliminarChat(mensaje);
+								desconectaChat(mensaje);
+							} else {
+								agregarAlChat(mensaje);
+								reparte(mensaje);
+							}
 						}
-					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
-						String[] cadena = mensaje.getMensaje().split("/");
-						int puertoAConectar = Integer.parseInt(cadena[2]);
-						consultaDisponibilidad(mensaje, puertoAConectar);
-					} else if (mensaje.getMensaje().contains("/aceptar/")) {
-						reparte(mensaje);
-					} else if (mensaje.getMensaje().contains("/rechazar/")) {
-						rechaza(mensaje);
-						eliminarChat(mensaje);
-						desconectaChat(mensaje);
-					} else {
-						agregarAlChat(mensaje);
-						reparte(mensaje);
+					} catch (IOException e) {
+						//
+					} catch (ClassNotFoundException e) {
+
 					}
 				}
-			} catch (IOException e) {
-				//
-			} catch (ClassNotFoundException e) {
-				
-			}
+			}.start();
 		}
 
 		public void mandarMensaje(Mensaje mensaje) {
