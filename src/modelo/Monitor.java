@@ -44,6 +44,7 @@ public class Monitor {
 							//
 						} catch (Exception e) {
 							System.out.println(e.getLocalizedMessage());
+							e.getStackTrace();
 						}
 					}
 				}
