@@ -139,16 +139,22 @@ public class ControladorMonitor implements ActionListener, IComunicacion, Window
 	}
 
 	@Override
-	public void mandarMensaje(Mensaje mensaje) {
+	public void actionPerformed(ActionEvent e) {
+		if(e.getActionCommand().equals(IVista.cerrarMonitor)) {
+			System.exit(0);
+	}
+		
+	}
+
+	@Override
+	public void mandarMensaje(Mensaje mensaje, int puerto) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals(IVista.cerrarMonitor)) {
-			System.exit(0);
-	}
+	public void mandarMensaje(Mensaje mensaje) {
+		// TODO Auto-generated method stub
 		
 	}
 

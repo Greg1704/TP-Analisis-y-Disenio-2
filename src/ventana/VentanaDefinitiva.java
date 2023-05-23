@@ -271,7 +271,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 			
 		}else if(e.getSource() == this.listConectados) {
 			ManejaConexiones cliente = (ManejaConexiones) this.listConectados.getSelectedValue();
-			this.textFieldIp.setText(cliente.getCliente().getLocalAddress().getHostAddress());
+			this.textFieldIp.setText(c.getIpLocal());
 			this.textFieldPuerto.setText(Integer.toString(cliente.getPuerto()));
 		}
 	}

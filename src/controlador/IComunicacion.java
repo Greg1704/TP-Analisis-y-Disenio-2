@@ -15,4 +15,5 @@ public interface IComunicacion {
 	 public void cerrarInstancia();
 	 public void aceptaInicioSesion();
 	 public void mandarMensaje(Mensaje mensaje);
+	 public void mandarMensaje(Mensaje mensaje, int puerto);
 }

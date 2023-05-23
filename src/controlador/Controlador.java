@@ -37,14 +37,14 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 					puertoTexto = JOptionPane.showInputDialog("Puerto invalido, ingresar nuevamente(valor mayor a 1024)");
 			}
 			String nombreCliente = JOptionPane.showInputDialog("Ingrese el nombre de usuario que desee utilizar");
-			cliente = new Cliente("localhost", puertoServidor, this);
 			this.puerto = Integer.parseInt(puertoTexto);
+			cliente = new Cliente("localhost", puertoServidor, puerto, this);
 			this.v = new VentanaDefinitiva();
 			this.vs = new VentanaSolicitudDeSesion();
 			this.v.setControlador(this);
 			this.vs.setControlador(this);
 			this.setPuertoReferencia(puerto);
-			Mensaje mensaje = new Mensaje("/puerto/ " + this.puerto, cliente.getIpLocal(), this.puerto);
+			Mensaje mensaje = new Mensaje("/puerto/" + this.puerto, cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
 		} else {
 			System.exit(0);
@@ -149,10 +149,14 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public String getIpLocal() {
+		return cliente.getIpLocal();
+	}
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		if (cliente != null && cliente.getCliente() != null) {
+		if (cliente != null) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
 		}
@@ -205,6 +209,12 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 		cliente.mandarMensaje(mensaje);
 	}
 	
+	@Override
+	public void mandarMensaje(Mensaje mensaje, int puerto) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	public ArrayList<ManejaConexiones> recuperaListaConectados(){ //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 		return null;
 	}
@@ -212,5 +222,7 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 	public void actualizarListaConectados() {
 		this.v.actualizarListaConectados();
 	}
+
+
 
 }
