@@ -5,12 +5,14 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import controlador.IComunicacion;
 
 import java.net.InetAddress;
 
-public class Cliente implements Runnable, IComunicacion {
+public class Cliente implements IComunicacion {
 
 	private Socket cliente;
 	private int puertoAConectar;
@@ -32,28 +34,29 @@ public class Cliente implements Runnable, IComunicacion {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.run();
+		conecta();
 	}
     
 	public String getIpLocal() {
 		return ipLocal;
 	}
 	
-	@Override
-	public void run() {
+	public void conecta() {
+		new Thread() {
+			public void run() {
+				try {
+					cliente = new Socket(ipAConectar, puertoAConectar);
+					os = new ObjectOutputStream(cliente.getOutputStream());
+					is = new ObjectInputStream(cliente.getInputStream());
+					ManejaInput m = new ManejaInput();
 
-		try {
-			cliente = new Socket(ipAConectar, puertoAConectar);
-			os = new ObjectOutputStream(cliente.getOutputStream());
-			is = new ObjectInputStream(cliente.getInputStream());
-			ManejaInput m = new ManejaInput();
-			Thread t = new Thread(m);
-			t.start();
-			
-		} catch (IOException e) {
-			observador.mostrarConexxionErroneaServer();
-		}
-}
+				} catch (IOException e) {
+					observador.mostrarConexxionErroneaServer();
+				}
+			}
+		}.start();
+	}
+	
 	@Override
 	public void mandarMensaje(Mensaje mensaje) {
 		try {
@@ -76,46 +79,56 @@ public class Cliente implements Runnable, IComunicacion {
 		}
 	}
 	
-	private class ManejaInput implements Runnable {
+	private class ManejaInput {
 
-		@Override
-		public void run() {
-			try {
-				while (!listo) {
-					Mensaje mensaje;
+		private ManejaInput() {
+			maneja();
+		}
+
+		public void maneja() {
+			new Thread() {
+				public void run() {
 					try {
-						while ((mensaje = (Mensaje) is.readObject()) != null) {
-							if (mensaje.getMensaje().equals("/enCharla/")) {
-								observador.mostrarUsuarioOcupado();
-							} else if (mensaje.getMensaje().equals("/cerrar/")){
-								observador.mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
-								cerrarConversacion();
-								observador.cerrarInstancia();
-							}  else if (mensaje.getMensaje().equals("/rechazar/")) {
-								observador.mostrarUsuarioNoDisponible();
-							} else if (mensaje.getMensaje().equals("/aceptar/")) {
-								observador.aceptaInicioSesion();
-							} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
-								String[] arraySplit = mensaje.getMensaje().split("/");
-								setClaveEncriptacion(arraySplit[3]);
-								observador.mostrarIntentoDeConexion(mensaje.getIpEmisor(),mensaje.getPuertoEmisor()); // aca deberia mostrar con el campo de ip del emisor que contiene el mensaje
-							} else if (mensaje.getMensaje().equals("/sinDisponibilidad/")) {
-								observador.mostrarPuertoEnUso();
-							} else if (mensaje.getMensaje().equals("/erroneo/")) {
-								observador.mostrarConexionErronea();
-							} else {
-								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(), claveEncriptacion);
-								mensaje.setMensaje(desencriptado);
-								observador.mostrarMensajeTextArea(mensaje);
+						while (!listo) {
+							Mensaje mensaje;
+							try {
+								while ((mensaje = (Mensaje) is.readObject()) != null) {
+									if (mensaje.getMensaje().equals("/enCharla/")) {
+										observador.mostrarUsuarioOcupado();
+									} else if (mensaje.getMensaje().equals("/cerrar/")) {
+										observador.mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
+										cerrarConversacion();
+										observador.cerrarInstancia();
+									} else if (mensaje.getMensaje().equals("/rechazar/")) {
+										observador.mostrarUsuarioNoDisponible();
+									} else if (mensaje.getMensaje().equals("/aceptar/")) {
+										observador.aceptaInicioSesion();
+									} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
+										String[] arraySplit = mensaje.getMensaje().split("/");
+										setClaveEncriptacion(arraySplit[3]);
+										observador.mostrarIntentoDeConexion(mensaje.getIpEmisor(),
+												mensaje.getPuertoEmisor()); // aca deberia mostrar con el campo de ip
+																			// del emisor que contiene el mensaje
+									} else if (mensaje.getMensaje().equals("/sinDisponibilidad/")) {
+										observador.mostrarPuertoEnUso();
+									} else if (mensaje.getMensaje().equals("/erroneo/")) {
+										observador.mostrarConexionErronea();
+									} else {
+										String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),
+												claveEncriptacion);
+										mensaje.setMensaje(desencriptado);
+										observador.mostrarMensajeTextArea(mensaje);
+									}
+								}
+							} catch (ClassNotFoundException e) {
+								System.out.println(e.getLocalizedMessage());
 							}
 						}
-					} catch (ClassNotFoundException e) {
-						System.out.println(e.getLocalizedMessage());
+					} catch (IOException e) {
+						cerrarConversacion();
 					}
 				}
-			} catch (IOException e) {
-				cerrarConversacion();
-			}
+			}.start();
 		}
 	}
 

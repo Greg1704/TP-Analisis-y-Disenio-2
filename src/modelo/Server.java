@@ -43,7 +43,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 		try {
 			server = new ServerSocket(puertoServer);
 			conectarseAMonitor();
-			mandarActualizacionInformacion();
+	//		mandarActualizacionInformacion();
 			System.out.println("ORIGINAL");
 			System.out.println("ORIGINAL");
 		//	pool = Executors.newCachedThreadPool();
@@ -58,7 +58,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 		} catch (BindException e) {
 			this.primario = false;
 			conectarseAMonitor();
-			recibirActualizacionInformacion();
+		//	recibirActualizacionInformacion();
 			System.out.println("el serverSocket tenia el puerto ocupado"); 
 		} catch (IOException e) {
 			
