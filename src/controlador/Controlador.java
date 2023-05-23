@@ -215,12 +215,8 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 		
 	}
 	
-	public ArrayList<ManejaConexiones> recuperaListaConectados(){ //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-		return null;
-	}
-	
-	public void actualizarListaConectados() {
-		this.v.actualizarListaConectados();
+	public void actualizarListaConectados(ArrayList<ManejaConexiones> conexiones) {
+		this.v.actualizarListaConectados(conexiones);
 	}
 
 

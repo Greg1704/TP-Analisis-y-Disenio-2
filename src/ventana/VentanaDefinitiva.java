@@ -225,9 +225,9 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	}
 	
 	
-	public void actualizarListaConectados() {
+	public void actualizarListaConectados(ArrayList<ManejaConexiones> conexiones) {
 		this.modelListClientesConectados.clear();
-		ArrayList<ManejaConexiones> mc = c.recuperaListaConectados();
+		ArrayList<ManejaConexiones> mc = conexiones;
 		for(int i=0;i<mc.size();i++) {
 			this.modelListClientesConectados.addElement(mc.get(i));
 		}

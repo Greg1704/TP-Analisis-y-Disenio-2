@@ -331,7 +331,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 	public void cambioCantConectados(int sumaOresta) {
 		this.cs.cambioCantConectados(sumaOresta);
 		for (ManejaConexiones cliente : conexiones) {
-			Mensaje mensaje = new Mensaje("/actualizacionLista/" + conexiones, server.getInetAddress().getHostAddress(), puertoServer);
+			Mensaje mensaje = new Mensaje(conexiones, server.getInetAddress().getHostAddress(), puertoServer);
 		}
 	}
 

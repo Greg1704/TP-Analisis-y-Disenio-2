@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import controlador.Controlador;
 import controlador.IComunicacion;
 
 import java.net.InetAddress;
@@ -104,8 +105,9 @@ public class Cliente implements IComunicacion {
 								observador.mostrarPuertoEnUso();
 							} else if (mensaje.getMensaje().equals("/erroneo/")) {
 								observador.mostrarConexionErronea();
-							} else if (mensaje.getMensaje().contains("/actualizacionLista/")) {
-								
+							} else if (mensaje.getConexiones() != null) {
+								Controlador c = Controlador.getInstancia();
+								c.actualizarListaConectados(mensaje.getConexiones());
 							} else {
 								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),
 										claveEncriptacion);
