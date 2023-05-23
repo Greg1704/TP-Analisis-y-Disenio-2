@@ -46,6 +46,9 @@ public class VentanaMonitor extends JFrame implements MouseListener,IVista {
 	 */
 	public VentanaMonitor() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.setVisible(true);
+		
 		setBounds(100, 100, 249, 194);
 		this.contentPane = new JPanel();
 		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

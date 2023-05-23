@@ -8,6 +8,7 @@ import controlador.ControladorServer;
 import controlador.IComunicacion;
 import modelo.Mensaje;
 import modelo.Monitor;
+import ventana.IVista;
 import ventana.VentanaMonitor;
 
 public class ControladorMonitor implements ActionListener, IComunicacion, WindowListener {
@@ -19,6 +20,7 @@ public class ControladorMonitor implements ActionListener, IComunicacion, Window
 	public ControladorMonitor() {
 		this.monitor = Monitor.getInstance();
 		this.vm = new VentanaMonitor();
+		this.vm.setControlador(this);
 	}
 	
 	public static ControladorMonitor getInstancia() {
@@ -144,7 +146,9 @@ public class ControladorMonitor implements ActionListener, IComunicacion, Window
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getActionCommand().equals(IVista.cerrarMonitor)) {
+			System.exit(0);
+	}
 		
 	}
 
