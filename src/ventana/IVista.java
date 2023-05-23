@@ -18,4 +18,8 @@ public interface IVista {
 	//Ventana Server
 	
 	static final String cerrarServidor = "Cerrando Servidor";
+	
+	//Ventana Monitor
+	
+	static final String cerrarMonitor = "Cerrando Monitor";
 }
