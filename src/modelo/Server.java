@@ -132,7 +132,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 								System.out.println();
 								out.writeObject(conexiones);
 								out.writeObject(chats);
-								
+								//out.writeObject(pool);
 								out.close();
 								socket.close();
 							} catch (IOException e) {
@@ -147,12 +147,14 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 	
 	public void recibirActualizacionInformacion() {
 		new Thread() {
+			public void run() {
+				Timer t = new Timer();
+				t.scheduleAtFixedRate(new TimerTask() {
 					@Override
 					public void run() {
 						if (!primario) {
 							try {
-								ServerSocket serverSocket = new ServerSocket(puertoSincronizacion); // soy servidor
-																									// secundario
+								ServerSocket serverSocket = new ServerSocket(puertoSincronizacion); // soy servidor	 secundario
 								while (true) {
 									Socket socket = serverSocket.accept();
 									ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
@@ -163,13 +165,17 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 									ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
 									setChats(chats);
 									System.out.println(conexiones.size());
+							//		ExecutorService pool = (ExecutorService) in.readObject();
+							//		setPool(pool);
 								}
 							} catch (Exception e) {
 								System.out.println("No hay servidor secundario en recibir actualizacion");
 								System.out.println(e.getLocalizedMessage());
 							}
 						}
-					}
+						}
+					}, 0, 5000);
+			}
 		}.start();
 	}
 
@@ -341,8 +347,9 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 		}
 	}
 	
-	public class ManejaConexiones implements Runnable, IComunicacion, Serializable {
+	public class ManejaConexiones implements Runnable, IComunicacion {
 		private Socket cliente;
+		private String nombre;
 		private int puerto = 0;
 		private boolean hablando;
 		private int puertoOtroUsuario = -10;
@@ -539,6 +546,10 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 
 	public ExecutorService getPool() {
 		return pool;
+	}
+	
+	public void setPool(ExecutorService pool) {
+		this.pool = pool;
 	}
 
 	public void setCs(ControladorServer cs) {
