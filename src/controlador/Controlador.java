@@ -4,11 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 import modelo.Cliente;
 import modelo.Mensaje;
+import modelo.Server.ManejaConexiones;
 import modelo.Encriptacion;
 import ventana.*;
 
@@ -201,6 +203,14 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 	@Override
 	public void mandarMensaje(Mensaje mensaje) {
 		cliente.mandarMensaje(mensaje);
+	}
+	
+	public ArrayList<ManejaConexiones> recuperaListaConectados(){ //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+		return null;
+	}
+	
+	public void actualizarListaConectados() {
+		this.v.actualizarListaConectados();
 	}
 
 }

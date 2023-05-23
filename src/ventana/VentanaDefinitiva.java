@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -223,6 +224,14 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		this.listConectados.addMouseListener(this);
 	}
 	
+	
+	public void actualizarListaConectados() {
+		this.modelListClientesConectados.clear();
+		ArrayList<ManejaConexiones> mc = c.recuperaListaConectados();
+		for(int i=0;i<mc.size();i++) {
+			this.modelListClientesConectados.addElement(mc.get(i));
+		}
+	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
