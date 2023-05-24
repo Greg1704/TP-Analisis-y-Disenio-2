@@ -330,8 +330,9 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 	@Override
 	public void cambioCantConectados(int sumaOresta) {
 		this.cs.cambioCantConectados(sumaOresta);
+		Mensaje mensaje = new Mensaje(conexiones, server.getInetAddress().getHostAddress(), puertoServer);
 		for (ManejaConexiones cliente : conexiones) {
-			Mensaje mensaje = new Mensaje(conexiones, server.getInetAddress().getHostAddress(), puertoServer);
+			cliente.mandarMensaje(mensaje, cliente.getPuerto());
 		}
 	}
 
@@ -375,7 +376,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 		}
 	}
 	
-	public class ManejaConexiones implements IComunicacion {
+	public class ManejaConexiones implements IComunicacion,Serializable {
 		private String nombre;
 		private int puerto = 0;
 		private boolean hablando;

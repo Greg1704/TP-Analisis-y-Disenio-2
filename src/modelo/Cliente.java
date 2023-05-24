@@ -107,6 +107,7 @@ public class Cliente implements IComunicacion {
 								observador.mostrarConexionErronea();
 							} else if (mensaje.getConexiones() != null) {
 								Controlador c = Controlador.getInstancia();
+								System.out.println("llega al menos " + mensaje.getConexiones().size());
 								c.actualizarListaConectados(mensaje.getConexiones());
 							} else {
 								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),
