@@ -45,7 +45,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 			public void run() {
 				try {
 					ServerSocket server = new ServerSocket(puertoServer);
-					conectarseAMonitor();
+					heartBeat();
 					mandarActualizacionInformacion();
 					System.out.println("ORIGINAL");
 					System.out.println("ORIGINAL");
@@ -55,11 +55,11 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					}
 				} catch (BindException e) {
 					primario = false;
-					conectarseAMonitor();
+					esperaFalloHeartBeat();
 					recibirActualizacionInformacion();
 					System.out.println("el serverSocket tenia el puerto ocupado");
 				} catch (IOException e) {
-
+						
 				}
 			}
 		}.start();
@@ -70,8 +70,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		esperaServer();
 	}
 	
-	public void conectarseAMonitor() { // esto es para PRIMARIO Y SECUNDARIO: hay que mandar latidos O estar conectados
-										// con el monitor asi el monitor avisa si se cae el primero
+	public void heartBeat() { // esto es para PRIMARIO Y SECUNDARIO: hay que mandar latidos O estar conectados	// con el monitor asi el monitor avisa si se cae el primero
 		new Thread() {
 			public void run() {
 				Timer t = new Timer();
@@ -79,7 +78,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 					@Override
 					public void run() {
-						if (primario) {
 							try {
 								Socket socket = new Socket("localhost", puertoMonitor); // soy servidor
 																									// primario
@@ -91,32 +89,36 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								socket.close();
 
 							} catch (Exception e) {
-						//		System.out.println(e.getLocalizedMessage());
-							
+								System.out.println(e.getLocalizedMessage());
+								System.out.println("este es el error de socket is closed");
 							}
-						} else {
-							try {
-								ServerSocket serverSocket = new ServerSocket(puertoSecundario);
-								while (true) {
-									Socket socket = serverSocket.accept(); // una vez que esto se acepta , baja de linea
-									System.out.println("el servidor secundario se hizo primario");
-									serverSocket.close();
-									socket.close();
-									setPrimario();
-									reconecta();
-								
-								}
-							} catch (Exception e) {
-							//	System.out.println(e.getLocalizedMessage());
-							}
-						}
 					}
-				}, 1000, 5000);
+				}, 0, 5000);
 			}
 		}.start();
 	}
 	
-	public void mandarActualizacionInformacion() { // mandarle la informacion actualizada al secundario
+	public void esperaFalloHeartBeat() { // metodo que usa el servidor secundario para esperar notificacion del monitor
+		new Thread() {
+			public void run() {
+			//	private boolean listo2 = false;
+				ServerSocket serverSocket;
+				try {
+					serverSocket = new ServerSocket(puertoSecundario);
+					Socket monitor = serverSocket.accept(); // linea en la que espera conexion del monitor para avisarle
+					System.out.println("el servidor secundario se hizo primario");
+					//listo2 = true;
+					serverSocket.close();
+					setPrimario();
+					reconecta();
+				} catch (IOException e) {
+					System.out.println(e.getLocalizedMessage());
+				}
+			}
+		}.start();
+	}
+
+	public void mandarActualizacionInformacion() { // mandarle la informacion actualizada al servidor secundario
 		new Thread() {
 			public void run() {
 				Timer t = new Timer();
@@ -132,11 +134,10 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								System.out.println();
 								out.writeObject(conexiones); 
 								out.writeObject(chats);
-								//out.writeObject(pool);
 								out.close();
 								socket.close();
 							} catch (IOException e) {
-						//		System.out.println("No hay servidor secundario en mandar actualizacion");
+								System.out.println("No hay servidor secundario en mandar actualizacion");
 							}
 						}
 					}
@@ -144,37 +145,27 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 			}
 		}.start();
 	}
-	
+
 	public void recibirActualizacionInformacion() {
 		new Thread() {
 			public void run() {
-				Timer t = new Timer();
-				t.scheduleAtFixedRate(new TimerTask() {
-					@Override
-					public void run() {
-						if (!primario) {
-							try {
-								ServerSocket serverSocket = new ServerSocket(puertoSincronizacion); // soy servidor	 secundario
-								while (true) {
-									Socket socket = serverSocket.accept();
-									ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-									
-									ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
-								//	setConexiones(conexiones);
-									System.out.println(conexiones.size());
-									ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
-									setChats(chats);
-									System.out.println(conexiones.size());
-							//		ExecutorService pool = (ExecutorService) in.readObject();
-							//		setPool(pool);
-								}
-							} catch (Exception e) {
-								System.out.println("No hay servidor secundario en recibir actualizacion");
-								System.out.println(e.getLocalizedMessage());
-							}
+				if (!primario) {
+					try {
+						ServerSocket serverSocket = new ServerSocket(puertoSincronizacion); // soy servidor secundario
+						while (true) {
+							Socket socket = serverSocket.accept();
+							ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+							ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
+							setConexiones(conexiones);
+							ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
+							setChats(chats);
 						}
-						}
-					}, 0, 5000);
+					} catch (Exception e) {
+						System.out.println("No hay servidor secundario en recibir actualizacion");
+						System.out.println(e.getLocalizedMessage());
+					}
+				}
 			}
 		}.start();
 	}
@@ -537,6 +528,11 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public String toString() {
+			return "nombre: " + this.nombre + " ip: " + this.ip + " puerto: " + this.puerto;
+		}
 		
 	}
 
@@ -570,14 +566,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 	public void setChats(ArrayList<Chat> chats) {
 		this.chats = chats;
-	}
-
-	public ExecutorService getPool() {
-		return pool;
-	}
-	
-	public void setPool(ExecutorService pool) {
-		this.pool = pool;
 	}
 
 	public void setCs(ControladorServer cs) {
