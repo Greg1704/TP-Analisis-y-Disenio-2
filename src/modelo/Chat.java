@@ -1,8 +1,9 @@
 package modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Chat {
+public class Chat implements Serializable {
 	private ArrayList<Mensaje> mensajes = new ArrayList<Mensaje>();
 	private String ip1;
 	private int puerto1, puerto2;

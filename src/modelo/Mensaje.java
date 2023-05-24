@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import modelo.Server.ManejaConexiones;
 
 public class Mensaje implements Serializable{
-	private String mensaje = null;
+	private String mensaje = "";
 	private String ipEmisor;
 	private int puertoEmisor;
 	private  ArrayList<ManejaConexiones> conexiones = null;

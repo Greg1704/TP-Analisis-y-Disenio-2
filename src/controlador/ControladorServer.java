@@ -4,12 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.Serializable;
 
 import modelo.Server;
 import ventana.IVista;
 import ventana.VentanaServidor;
 
-public class ControladorServer implements ActionListener, WindowListener,IConectados{ // la interfaz IOBservador es util para el new Server
+public class ControladorServer implements ActionListener, WindowListener,IConectados, Serializable { // la interfaz IOBservador es util para el new Server
 	private Server server;
 	private VentanaServidor vs;
 	private static ControladorServer instancia = null;
@@ -18,7 +19,6 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 		server = new Server(this);
 		vs = new VentanaServidor();
 		this.vs.setControlador(this);
-		server.run();
 	}
 	
 	public static ControladorServer getInstancia() {

@@ -19,13 +19,13 @@ import controlador.ControladorServer;
 import controlador.IComunicacion;
 import controlador.IConectados;
 
-public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IReconectar {
+public class Server implements IConsultaEstado, IConectados, IChat, IReconectar, Serializable {
 
 	private int puertoMonitor = 10000; // puerto para conectarse al monitor siendo el servidor original
 	private int puertoServer = 11000; // puerto original donde habla la gente
 	private int puertoSecundario = 8000; // puerto en el que escucha el servidor secundaria para que el monitor le avise cuando tiene que usarse
 	private int puertoSincronizacion = 7000; // puerto para mandarse informacion entre servidor original y el secundario
-	private ServerSocket server;
+	private String ipServer;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
 	private boolean listo = false;
@@ -37,33 +37,37 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 	public Server(IConectados cs) {
 		conexiones = new ArrayList<ManejaConexiones>(); 
 		this.cs = cs;
+		this.esperaServer();
 	}
 	
-	@Override
-	public void run() {
-		try {
-			server = new ServerSocket(puertoServer);
-			conectarseAMonitor();
-	//		mandarActualizacionInformacion();
-	//		System.out.println("ORIGINAL");
-	//		System.out.println("ORIGINAL");
-			while (!listo) {
-				Socket cliente = server.accept();
-				identificador(cliente);
+	public void esperaServer() {
+		new Thread() {
+			public void run() {
+				try {
+					ServerSocket server = new ServerSocket(puertoServer);
+					conectarseAMonitor();
+					mandarActualizacionInformacion();
+					System.out.println("ORIGINAL");
+					System.out.println("ORIGINAL");
+					while (!listo) {
+						Socket cliente = server.accept();
+						identificador(cliente);
+					}
+				} catch (BindException e) {
+					primario = false;
+					conectarseAMonitor();
+					recibirActualizacionInformacion();
+					System.out.println("el serverSocket tenia el puerto ocupado");
+				} catch (IOException e) {
+
+				}
 			}
-		} catch (BindException e) {
-			this.primario = false;
-			conectarseAMonitor();
-		//	recibirActualizacionInformacion();
-			System.out.println("el serverSocket tenia el puerto ocupado"); 
-		} catch (IOException e) {
-			
-		}
+		}.start();
 	}
 	
 	@Override
 	public void reconecta() {
-		this.run();
+		esperaServer();
 	}
 	
 	public void conectarseAMonitor() { // esto es para PRIMARIO Y SECUNDARIO: hay que mandar latidos O estar conectados
@@ -267,16 +271,16 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 				conexiones.get(indiceSolicitado).setPuertoOtroUsuario(mensaje.getPuertoEmisor());
 				conexiones.get(indicePropio).setHablando(true);
 				conexiones.get(indicePropio).setPuertoOtroUsuario(puerto);
-				this.nuevoChat(server.getInetAddress().getHostAddress(),
+				this.nuevoChat(ipServer,
 						conexiones.get(indicePropio).getPuerto(), conexiones.get(indicePropio).getPuertoOtroUsuario());
 				conexiones.get(indiceSolicitado).mandarMensaje(mensaje, puerto);
 			} else { // está hablando
-				Mensaje respuesta = new Mensaje("/enCharla/", this.server.getInetAddress().getHostAddress(),
+				Mensaje respuesta = new Mensaje("/enCharla/", ipServer,
 						this.puertoServer);
 				conexiones.get(indicePropio).mandarMensaje(respuesta, mensaje.getPuertoEmisor());
 			}
 		} else { // no se encontró a la persona
-			Mensaje respuesta = new Mensaje("/erroneo/", this.server.getInetAddress().getHostAddress(),
+			Mensaje respuesta = new Mensaje("/erroneo/", ipServer,
 					this.puertoServer);
 			conexiones.get(indicePropio).mandarMensaje(respuesta, mensaje.getPuertoEmisor());
 		}
@@ -330,7 +334,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 	@Override
 	public void cambioCantConectados(int sumaOresta) {
 		this.cs.cambioCantConectados(sumaOresta);
-		Mensaje mensaje = new Mensaje(conexiones, server.getInetAddress().getHostAddress(), puertoServer);
+		Mensaje mensaje = new Mensaje(conexiones, ipServer, puertoServer);
 		for (ManejaConexiones cliente : conexiones) {
 			cliente.mandarMensaje(mensaje, cliente.getPuerto());
 		}
@@ -367,7 +371,7 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 	public void cerrarServidor() {
 		listo = true;
 		for (ManejaConexiones cliente : conexiones) {
-			Mensaje mensaje = new Mensaje("/cerrar/", server.getInetAddress().getHostAddress(), this.puertoServer);
+			Mensaje mensaje = new Mensaje("/cerrar/", ipServer, this.puertoServer);
 			cliente.mandarMensaje(mensaje, cliente.getPuerto());
 		}
 		int i = 0;
@@ -377,12 +381,14 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 	}
 	
 	public class ManejaConexiones implements IComunicacion,Serializable {
+		private String ip;
 		private String nombre;
 		private int puerto = 0;
 		private boolean hablando;
 		private int puertoOtroUsuario = -10;
 		
 		public ManejaConexiones(Socket cliente) {
+			ipServer = cliente.getInetAddress().getHostAddress();
 			maneja(cliente);
 		}
 
@@ -456,6 +462,10 @@ public class Server implements Runnable, IConsultaEstado, IConectados, IChat, IR
 			this.puertoOtroUsuario = puertoOtroUsuario;
 		}
 		
+		public String getIp() {
+			return ip;
+		}
+
 		@Override
 		public void mostrarIntentoDeConexion(String ip, int puerto) {
 			// TODO Auto-generated method stub
