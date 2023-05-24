@@ -21,10 +21,10 @@ import controlador.IConectados;
 
 public class Server implements IConsultaEstado, IConectados, IChat, IReconectar, Serializable {
 
-	private int puertoMonitor = 10000; // puerto para conectarse al monitor siendo el servidor original
-	private int puertoServer = 11000; // puerto original donde habla la gente
+	private int puertoHeartBeat = 10000; // puerto para conectarse al monitor siendo el servidor original
+	private int puertoServidorOriginal = 11000; // puerto original donde habla la gente
 	private int puertoSecundario = 8000; // puerto en el que escucha el servidor secundaria para que el monitor le avise cuando tiene que usarse
-	private int puertoSincronizacion = 7000; // puerto para mandarse informacion entre servidor original y el secundario
+	private int puertoTransferenciaDatos = 7000; // puerto para mandarse informacion entre servidor original y el secundario
 	private String ipServer;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
@@ -37,14 +37,14 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	public Server(IConectados cs) {
 		conexiones = new ArrayList<ManejaConexiones>(); 
 		this.cs = cs;
-		this.esperaServer();
+		this.correrServer();
 	}
 	
-	public void esperaServer() {
+	public void correrServer() {
 		new Thread() {
 			public void run() {
 				try {
-					ServerSocket server = new ServerSocket(puertoServer);
+					ServerSocket server = new ServerSocket(puertoServidorOriginal);
 					heartBeat();
 					mandarActualizacionInformacion();
 					System.out.println("ORIGINAL");
@@ -67,7 +67,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	
 	@Override
 	public void reconecta() {
-		esperaServer();
+		correrServer();
 	}
 	
 	public void heartBeat() { // esto es para PRIMARIO Y SECUNDARIO: hay que mandar latidos O estar conectados	// con el monitor asi el monitor avisa si se cae el primero
@@ -79,7 +79,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					@Override
 					public void run() {
 							try {
-								Socket socket = new Socket("localhost", puertoMonitor); // soy servidor
+								Socket socket = new Socket("localhost", puertoHeartBeat); // soy servidor
 																									// primario
 								mandarActualizacionInformacion();
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
@@ -128,7 +128,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					public void run() {
 						if (primario) {
 							try {
-								Socket socket = new Socket("localhost", puertoSincronizacion); // soy servidor
+								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
 																									// primario
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 								System.out.println();
@@ -146,16 +146,15 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		}.start();
 	}
 
-	public void recibirActualizacionInformacion() {
+	public void recibirActualizacionInformacion() { // metodo que ejecuta el servidor secundario
 		new Thread() {
 			public void run() {
 				if (!primario) {
 					try {
-						ServerSocket serverSocket = new ServerSocket(puertoSincronizacion); // soy servidor secundario
-						while (true) {
+						ServerSocket serverSocket = new ServerSocket(puertoTransferenciaDatos); // soy servidor secundario
+						while (!primario) {
 							Socket socket = serverSocket.accept();
 							ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-
 							ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
 							setConexiones(conexiones);
 							ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
@@ -267,12 +266,12 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 				conexiones.get(indiceSolicitado).mandarMensaje(mensaje, puerto);
 			} else { // está hablando
 				Mensaje respuesta = new Mensaje("/enCharla/", ipServer,
-						this.puertoServer);
+						this.puertoServidorOriginal);
 				conexiones.get(indicePropio).mandarMensaje(respuesta, mensaje.getPuertoEmisor());
 			}
 		} else { // no se encontró a la persona
 			Mensaje respuesta = new Mensaje("/erroneo/", ipServer,
-					this.puertoServer);
+					this.puertoServidorOriginal);
 			conexiones.get(indicePropio).mandarMensaje(respuesta, mensaje.getPuertoEmisor());
 		}
 	}
@@ -325,7 +324,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	@Override
 	public void cambioCantConectados(int sumaOresta) {
 		this.cs.cambioCantConectados(sumaOresta);
-		Mensaje mensaje = new Mensaje(conexiones, ipServer, puertoServer);
+		Mensaje mensaje = new Mensaje(conexiones, ipServer, puertoServidorOriginal);
 		for (ManejaConexiones cliente : conexiones) {
 			cliente.mandarMensaje(mensaje, cliente.getPuerto());
 		}
@@ -362,7 +361,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	public void cerrarServidor() {
 		listo = true;
 		for (ManejaConexiones cliente : conexiones) {
-			Mensaje mensaje = new Mensaje("/cerrar/", ipServer, this.puertoServer);
+			Mensaje mensaje = new Mensaje("/cerrar/", ipServer, this.puertoServidorOriginal);
 			cliente.mandarMensaje(mensaje, cliente.getPuerto());
 		}
 		int i = 0;
@@ -380,6 +379,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		
 		public ManejaConexiones(Socket cliente) {
 			ipServer = cliente.getInetAddress().getHostAddress();
+		//	this.nombre = nombre;
 			maneja(cliente);
 		}
 
@@ -531,13 +531,21 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 		@Override
 		public String toString() {
-			return "nombre: " + this.nombre + " ip: " + this.ip + " puerto: " + this.puerto;
+			return "ManejaConexiones [ip=" + ip + ", nombre=" + nombre + ", puerto=" + puerto + ", hablando=" + hablando
+					+ ", puertoOtroUsuario=" + puertoOtroUsuario + "]";
 		}
 		
+		
+		/*
+		@Override
+		public String toString() {
+			return "nombre: " + this.nombre + " ip: " + this.ip + " puerto: " + this.puerto;
+		}
+		*/
 	}
 
 	public int getPuertoServer() {
-		return puertoServer;
+		return puertoServidorOriginal;
 	}
 	
 	public int getPuertoSecundario() {
