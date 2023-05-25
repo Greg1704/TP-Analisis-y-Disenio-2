@@ -17,6 +17,7 @@ import java.net.ServerSocket;
 
 public class Cliente implements IComunicacion {
 
+	private String nombre;
 	private int puertoCliente;
 	private int puertoAConectar;
 	private String ipAConectar, ipLocal;
@@ -26,11 +27,12 @@ public class Cliente implements IComunicacion {
 	private IComunicacion observador;
 	private String claveEncriptacion;
 	
-	public Cliente(String ipAConectar, int puerto, int puertoCliente, IComunicacion observador) {
+	public Cliente(String ipAConectar, int puerto, int puertoCliente, String nombre, IComunicacion observador) {
 		this.puertoAConectar = puerto;
 		this.puertoCliente = puertoCliente;
 		this.ipAConectar = ipAConectar;
 		this.observador = observador;
+		this.nombre = nombre;
 		try {
 			InetAddress localHost = InetAddress.getLocalHost();
 			this.ipLocal = localHost.getHostAddress();

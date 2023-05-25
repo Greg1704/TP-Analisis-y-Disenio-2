@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -389,8 +390,14 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		private int puertoOtroUsuario = -10;
 		
 		public ManejaConexiones(Socket cliente, Mensaje mensaje) {
-			ipServer = cliente.getInetAddress().getHostAddress();
-		//	this.nombre = nombre;
+			InetAddress localHost;
+			try {
+				localHost = InetAddress.getLocalHost();
+				this.ip = localHost.getHostAddress();
+			} catch (UnknownHostException e) {
+				System.out.println("no se q pasa al obtener la ip");
+			}
+			this.nombre = nombre;
 			maneja(cliente, mensaje);
 		}
 
@@ -403,6 +410,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 				} else if (mensaje.getMensaje().contains("/puerto/")) {
 					String[] cadena = mensaje.getMensaje().split("/");
 					int puertoAux = Integer.parseInt(cadena[2]);
+					this.nombre = cadena[3];
 					if (!disponibilidadPuerto(puertoAux)) {
 						Mensaje mensaje2 = new Mensaje("/sinDisponibilidad/", cliente.getInetAddress().getHostAddress(),
 								puertoAux);
@@ -538,8 +546,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 		@Override
 		public String toString() {
-			return "ManejaConexiones [ip=" + ip + ", nombre=" + nombre + ", puerto=" + puerto + ", hablando=" + hablando
-					+ ", puertoOtroUsuario=" + puertoOtroUsuario + "]";
+			return "nombre = " + this.nombre + " ip = " + this.ip + " puerto = " + this.puerto;
 		}
 		
 		

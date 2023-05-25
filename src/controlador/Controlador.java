@@ -38,13 +38,13 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 			}
 			String nombreCliente = JOptionPane.showInputDialog("Ingrese el nombre de usuario que desee utilizar");
 			this.puerto = Integer.parseInt(puertoTexto);
-			cliente = new Cliente("localhost", puertoServidor, puerto, this);
+			cliente = new Cliente("localhost", puertoServidor, puerto, nombreCliente, this);
 			this.v = new VentanaDefinitiva();
 			this.vs = new VentanaSolicitudDeSesion();
 			this.v.setControlador(this);
 			this.vs.setControlador(this);
 			this.setPuertoReferencia(puerto);
-			Mensaje mensaje = new Mensaje("/puerto/" + this.puerto, cliente.getIpLocal(), this.puerto);
+			Mensaje mensaje = new Mensaje("/puerto/" + this.puerto + "/" + nombreCliente, cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
 		} else {
 			System.exit(0);
