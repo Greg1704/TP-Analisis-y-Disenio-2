@@ -77,6 +77,7 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 			this.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
+			System.out.println(mensaje.getMensaje());
 			this.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/aceptar/", cliente.getIpLocal(), this.puerto);

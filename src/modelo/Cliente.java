@@ -11,6 +11,7 @@ import java.util.TimerTask;
 import controlador.Controlador;
 import controlador.IComunicacion;
 
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
@@ -69,8 +70,9 @@ public class Cliente implements IComunicacion {
 	public void mandarMensaje(Mensaje mensaje) {
 		try {
 			Socket cliente = new Socket(ipAConectar, puertoAConectar);
-			os = new ObjectOutputStream(cliente.getOutputStream());
-			os.writeObject(mensaje);
+			ObjectOutputStream os1 = new ObjectOutputStream(cliente.getOutputStream());
+			os1.writeObject(mensaje);
+			os1.flush();
 			cliente.close();
 		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
@@ -101,8 +103,6 @@ public class Cliente implements IComunicacion {
 								String[] arraySplit = mensaje.getMensaje().split("/");
 								setClaveEncriptacion(arraySplit[3]);
 								observador.mostrarIntentoDeConexion(mensaje.getIpEmisor(), mensaje.getPuertoEmisor()); 
-							} else if (mensaje.getMensaje().equals("/sinDisponibilidad/")) {
-								observador.mostrarPuertoEnUso();
 							} else if (mensaje.getMensaje().equals("/erroneo/")) {
 								observador.mostrarConexionErronea();
 							} else if (mensaje.getConexiones() != null) {
@@ -114,9 +114,13 @@ public class Cliente implements IComunicacion {
 										claveEncriptacion);
 								mensaje.setMensaje(desencriptado);
 								observador.mostrarMensajeTextArea(mensaje);
+								System.out.println(mensaje.getMensaje());
+							//	System.out.println("LLEGA MENSAJE EN PERFECTAS CONDICIONES");
 							}
 						}
 					}
+				} catch (BindException e) {
+					observador.mostrarPuertoEnUso();
 				} catch (IOException | ClassNotFoundException e) {
 					System.out.println(e.getLocalizedMessage());
 				}

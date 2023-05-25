@@ -12,8 +12,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 import controlador.ControladorServer;
 import controlador.IComunicacion;
@@ -29,7 +28,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
 	private boolean listo = false;
-	private ExecutorService pool;
 	private IConectados cs;
 	private boolean primario = true;
 	Mensaje mensaje;
@@ -47,6 +45,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					ServerSocket server = new ServerSocket(puertoServidorOriginal);
 					heartBeat();
 					mandarActualizacionInformacion();
+					System.out.println(conexiones.size());
 					System.out.println("ORIGINAL");
 					System.out.println("ORIGINAL");
 					while (!listo) {
@@ -55,11 +54,11 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					}
 				} catch (BindException e) {
 					primario = false;
+					System.out.println("el serverSocket tenia el puerto ocupado");
 					esperaFalloHeartBeat();
 					recibirActualizacionInformacion();
-					System.out.println("el serverSocket tenia el puerto ocupado");
 				} catch (IOException e) {
-						
+					System.out.println(e.getLocalizedMessage());
 				}
 			}
 		}.start();
@@ -81,7 +80,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 							try {
 								Socket socket = new Socket("localhost", puertoHeartBeat); // soy servidor
 																									// primario
-								mandarActualizacionInformacion();
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 								out.writeObject(true);
 
@@ -120,51 +118,53 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 	public void mandarActualizacionInformacion() { // mandarle la informacion actualizada al servidor secundario
 		new Thread() {
-			public void run() {
-				Timer t = new Timer();
-				t.scheduleAtFixedRate(new TimerTask() {
-
-					@Override
 					public void run() {
-						if (primario) {
-							try {
-								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
-																									// primario
+						try {
+							ServerSocket serverSocket = new ServerSocket(puertoTransferenciaDatos); // soy servidor
+							while (true) { // primario
+								Socket socket = serverSocket.accept();
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-								System.out.println();
-								out.writeObject(conexiones); 
+								System.out.println("ES ESTO LO QUE SE QUEDA EJECUTANDO SIN PARAR");
+								out.writeObject(conexiones);
+								out.flush();
 								out.writeObject(chats);
-								out.close();
-								socket.close();
-							} catch (IOException e) {
-								System.out.println("No hay servidor secundario en mandar actualizacion");
+								out.flush();
 							}
+						} catch (IOException e) {
+							System.out.println(e.getLocalizedMessage());
+							System.out.println("No hay servidor secundario en mandar actualizacion");
 						}
 					}
-				}, 0, 5000);
-			}
-		}.start();
+			}.start();
 	}
 
 	public void recibirActualizacionInformacion() { // metodo que ejecuta el servidor secundario
 		new Thread() {
 			public void run() {
-				if (!primario) {
-					try {
-						ServerSocket serverSocket = new ServerSocket(puertoTransferenciaDatos); // soy servidor secundario
-						while (!primario) {
-							Socket socket = serverSocket.accept();
-							ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-							ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
-							setConexiones(conexiones);
-							ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
-							setChats(chats);
+				Timer t = new Timer();
+				t.scheduleAtFixedRate(new TimerTask() {
+					public void run() {
+						try {
+							if (!primario) {
+								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
+																									// secundario
+								ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+								conexiones = null;
+								ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
+								setConexiones(conexiones);
+								chats = null;
+								ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
+								setChats(chats);
+								socket.close();
+							} else {
+								t.cancel();
+							}
+						} catch (Exception e) {
+							System.out.println("No hay servidor secundario en recibir actualizacion");
+							System.out.println(e.getLocalizedMessage());
 						}
-					} catch (Exception e) {
-						System.out.println("No hay servidor secundario en recibir actualizacion");
-						System.out.println(e.getLocalizedMessage());
 					}
-				}
+				}, 0, 5000);
 			}
 		}.start();
 	}
@@ -298,7 +298,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 			String[] cadena = mensaje.getMensaje().split("/");
 			int puerto = Integer.parseInt(cadena[2]);
 			*/
-			System.out.println(mensaje.getPuertoEmisor());
 			if (disponibilidadPuerto(mensaje.getPuertoEmisor())) {
 				System.out.println("entra if 1");
 				ManejaConexiones m = new ManejaConexiones(cliente);
@@ -312,6 +311,8 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 						System.out.println("entra if 3");
 						conexiones.get(indice).maneja(cliente);
 					}
+				} else {
+					// se resuelve desde el Cliente, si se quiere hacer un serverSocket con mismo puerto te fleta
 				}
 			}
 		} catch (IOException e) {
@@ -332,10 +333,16 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 	public void reparte(Mensaje mensaje) {
 		for (ManejaConexiones cliente : conexiones) {
+			System.out.println("entro al reparte");
+			System.out.println(mensaje.getMensaje());
 			if (cliente.getPuerto() == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona que mando el mensaje
 				cliente.mandarMensaje(mensaje, mensaje.getPuertoEmisor());
+				System.out.println("entro al reparte1");
+				System.out.println(mensaje.getMensaje());
 			} else if (cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona destino
 				cliente.mandarMensaje(mensaje, cliente.getPuerto());
+				System.out.println("entro al reparte2");
+				System.out.println(mensaje.getMensaje());
 			}
 		}
 	}
@@ -399,13 +406,10 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 							desconectaChat(mensaje2);
 						} else {
 							puerto = puertoAux;
-							System.out.println("SE ASIGNA EL PUERTO" + puerto);
 						}
 					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
 						String[] cadena = mensaje.getMensaje().split("/");
 						int puertoAConectar = Integer.parseInt(cadena[2]);
-						System.out.println("LO DE ABAJO ES EL PARSEO DEL PUERTO");
-						System.out.println(puertoAConectar);
 						consultaDisponibilidad(mensaje, puertoAConectar);
 					} else if (mensaje.getMensaje().contains("/aceptar/")) {
 						reparte(mensaje);
@@ -426,6 +430,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 				Socket socketEnvioMensaje = new Socket("localhost", puerto);
 				ObjectOutputStream os = new ObjectOutputStream(socketEnvioMensaje.getOutputStream());
 				os.writeObject(mensaje);
+				os.flush();
 				socketEnvioMensaje.close();
 			} catch (IOException e) {
 				System.out.println("esto no deberia pasar nunca, mandar mensaje desde el servidor");
@@ -525,9 +530,8 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 		@Override
 		public void mandarMensaje(Mensaje mensaje) {
-			// TODO Auto-generated method stub
 			
-		}
+			}
 
 		@Override
 		public String toString() {
