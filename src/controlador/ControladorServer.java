@@ -31,8 +31,11 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.cerrarServidor)) {
+			if (server.isPrimario()) {
 				this.server.cerrarServidor();
-				this.vs.fusilarVentana();
+				
+			}
+			this.vs.fusilarVentana();
 		}
 	}
 	

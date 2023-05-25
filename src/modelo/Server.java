@@ -28,7 +28,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	private String ipServer;
 	private ArrayList<ManejaConexiones> conexiones;
 	private ArrayList<Chat> chats = new ArrayList<Chat>();
-	private boolean listo = false;
 	private IConectados cs;
 	private boolean primario = true;
 	
@@ -45,20 +44,15 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					ServerSocket server = new ServerSocket(puertoServidorOriginal);
 					heartBeat();
 					mandarActualizacionInformacion();
-			//		System.out.println(conexiones.size());
-				//	System.out.println("ORIGINAL");
-				//	System.out.println("ORIGINAL");
-					while (!listo) {
+					while (true) {
 						Socket cliente = server.accept();
 						identificador(cliente);
 					}
 				} catch (BindException e) {
 					primario = false;
-				//	System.out.println("el serverSocket tenia el puerto ocupado");
 					esperaFalloHeartBeat();
 					recibirActualizacionInformacion();
 				} catch (IOException e) {
-				//	System.out.println(e.getLocalizedMessage());
 				}
 			}
 		}.start();
@@ -87,8 +81,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								socket.close();
 
 							} catch (Exception e) {
-							//	System.out.println(e.getLocalizedMessage());
-							//	System.out.println("este es el error de socket is closed");
+								
 							}
 					}
 				}, 0, 5000);
@@ -99,13 +92,10 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	public void esperaFalloHeartBeat() { // metodo que usa el servidor secundario para esperar notificacion del monitor
 		new Thread() {
 			public void run() {
-			//	private boolean listo2 = false;
 				ServerSocket serverSocket;
 				try {
 					serverSocket = new ServerSocket(puertoSecundario);
 					Socket monitor = serverSocket.accept(); // linea en la que espera conexion del monitor para avisarle
-				//	System.out.println("el servidor secundario se hizo primario");
-					//listo2 = true;
 					serverSocket.close();
 					setPrimario();
 					reconecta();
@@ -130,7 +120,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 							while (true) { // primario
 								Socket socket = serverSocket.accept();
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-							//	System.out.println("ES ESTO LO QUE SE QUEDA EJECUTANDO SIN PARAR");
+
 								out.writeObject(conexiones);
 								out.flush();
 								out.writeObject(chats);
@@ -154,11 +144,9 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								Socket socket = new Socket("localhost", puertoTransferenciaDatos); // soy servidor
 																									// secundario
 								ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-								conexiones = null;
 								ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
 								setConexiones(conexiones);
 								cambioCantConectados(conexiones.size());
-								chats = null;
 								ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
 								setChats(chats);
 								socket.close();
@@ -371,7 +359,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	}
 	
 	public void cerrarServidor() {
-		listo = true;
 		for (ManejaConexiones cliente : conexiones) {
 			Mensaje mensaje = new Mensaje("/cerrar/", ipServer, this.puertoServidorOriginal);
 			cliente.mandarMensaje(mensaje, cliente.getPuerto());
