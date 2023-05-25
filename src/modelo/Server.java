@@ -30,7 +30,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	private boolean listo = false;
 	private IConectados cs;
 	private boolean primario = true;
-	Mensaje mensaje;
 	
 	public Server(IConectados cs) {
 		conexiones = new ArrayList<ManejaConexiones>(); 
@@ -45,20 +44,20 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					ServerSocket server = new ServerSocket(puertoServidorOriginal);
 					heartBeat();
 					mandarActualizacionInformacion();
-					System.out.println(conexiones.size());
-					System.out.println("ORIGINAL");
-					System.out.println("ORIGINAL");
+			//		System.out.println(conexiones.size());
+				//	System.out.println("ORIGINAL");
+				//	System.out.println("ORIGINAL");
 					while (!listo) {
 						Socket cliente = server.accept();
 						identificador(cliente);
 					}
 				} catch (BindException e) {
 					primario = false;
-					System.out.println("el serverSocket tenia el puerto ocupado");
+				//	System.out.println("el serverSocket tenia el puerto ocupado");
 					esperaFalloHeartBeat();
 					recibirActualizacionInformacion();
 				} catch (IOException e) {
-					System.out.println(e.getLocalizedMessage());
+				//	System.out.println(e.getLocalizedMessage());
 				}
 			}
 		}.start();
@@ -87,8 +86,8 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								socket.close();
 
 							} catch (Exception e) {
-								System.out.println(e.getLocalizedMessage());
-								System.out.println("este es el error de socket is closed");
+							//	System.out.println(e.getLocalizedMessage());
+							//	System.out.println("este es el error de socket is closed");
 							}
 					}
 				}, 0, 5000);
@@ -104,18 +103,24 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 				try {
 					serverSocket = new ServerSocket(puertoSecundario);
 					Socket monitor = serverSocket.accept(); // linea en la que espera conexion del monitor para avisarle
-					System.out.println("el servidor secundario se hizo primario");
+				//	System.out.println("el servidor secundario se hizo primario");
 					//listo2 = true;
 					serverSocket.close();
 					setPrimario();
 					reconecta();
+					
 				} catch (IOException e) {
 					System.out.println(e.getLocalizedMessage());
 				}
 			}
 		}.start();
 	}
-
+	
+	public void resetThreads() {
+		
+		
+	}
+	
 	public void mandarActualizacionInformacion() { // mandarle la informacion actualizada al servidor secundario
 		new Thread() {
 					public void run() {
@@ -124,7 +129,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 							while (true) { // primario
 								Socket socket = serverSocket.accept();
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-								System.out.println("ES ESTO LO QUE SE QUEDA EJECUTANDO SIN PARAR");
+							//	System.out.println("ES ESTO LO QUE SE QUEDA EJECUTANDO SIN PARAR");
 								out.writeObject(conexiones);
 								out.flush();
 								out.writeObject(chats);
@@ -132,7 +137,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 							}
 						} catch (IOException e) {
 							System.out.println(e.getLocalizedMessage());
-							System.out.println("No hay servidor secundario en mandar actualizacion");
 						}
 					}
 			}.start();
@@ -152,6 +156,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								conexiones = null;
 								ArrayList<ManejaConexiones> conexiones = (ArrayList<ManejaConexiones>) in.readObject();
 								setConexiones(conexiones);
+								cambioCantConectados(conexiones.size());
 								chats = null;
 								ArrayList<Chat> chats = (ArrayList<Chat>) in.readObject();
 								setChats(chats);
@@ -160,11 +165,10 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								t.cancel();
 							}
 						} catch (Exception e) {
-							System.out.println("No hay servidor secundario en recibir actualizacion");
 							System.out.println(e.getLocalizedMessage());
 						}
 					}
-				}, 0, 5000);
+				}, 0, 1000);
 			}
 		}.start();
 	}
@@ -293,30 +297,30 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	public void identificador(Socket cliente) {
 		try {
 			ObjectInputStream is = new ObjectInputStream(cliente.getInputStream());
-			this.mensaje = (Mensaje) is.readObject();
+			Mensaje mensaje = (Mensaje) is.readObject();
+			System.out.println("el mensaje que entra por identificador es " + mensaje.getMensaje());
 			/*
 			String[] cadena = mensaje.getMensaje().split("/");
 			int puerto = Integer.parseInt(cadena[2]);
 			*/
-			if (disponibilidadPuerto(mensaje.getPuertoEmisor())) {
-				System.out.println("entra if 1");
-				ManejaConexiones m = new ManejaConexiones(cliente);
+			if (disponibilidadPuerto(mensaje.getPuertoEmisor())) { // es una nueva conexion ? 
+				//System.out.println("entra if 1");
+				ManejaConexiones m = new ManejaConexiones(cliente, mensaje);
 				conexiones.add(m);
 				this.cambioCantConectados(conexiones.size());
 			} else {
-				if (!mensaje.getMensaje().contains("/puerto/")) {
-					System.out.println("entra if 2");
+				if (!mensaje.getMensaje().contains("/puerto/")) { // entra un mensaje en el que existe un cliente con ese puerto, me fijo si es alguien queriendo registrarse con ese mismo puerto
+				//	System.out.println("entra if 2");
 					int indice = buscaIndicePropio(mensaje);
 					if (indice!=-1) {
-						System.out.println("entra if 3");
-						conexiones.get(indice).maneja(cliente);
+						conexiones.get(indice).maneja(cliente, mensaje);
 					}
 				} else {
 					// se resuelve desde el Cliente, si se quiere hacer un serverSocket con mismo puerto te fleta
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("no pasa nunca");
+		//	System.out.println("no pasa nunca");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -333,16 +337,16 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 	public void reparte(Mensaje mensaje) {
 		for (ManejaConexiones cliente : conexiones) {
-			System.out.println("entro al reparte");
-			System.out.println(mensaje.getMensaje());
+		//	System.out.println("entro al reparte");
+		//	System.out.println(mensaje.getMensaje());
 			if (cliente.getPuerto() == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona que mando el mensaje
 				cliente.mandarMensaje(mensaje, mensaje.getPuertoEmisor());
-				System.out.println("entro al reparte1");
-				System.out.println(mensaje.getMensaje());
+			//	System.out.println("entro al reparte1");
+			//	System.out.println(mensaje.getMensaje());
 			} else if (cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona destino
 				cliente.mandarMensaje(mensaje, cliente.getPuerto());
-				System.out.println("entro al reparte2");
-				System.out.println(mensaje.getMensaje());
+			//	System.out.println("entro al reparte2");
+			//	System.out.println(mensaje.getMensaje());
 			}
 		}
 	}
@@ -384,45 +388,44 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		private boolean hablando;
 		private int puertoOtroUsuario = -10;
 		
-		public ManejaConexiones(Socket cliente) {
+		public ManejaConexiones(Socket cliente, Mensaje mensaje) {
 			ipServer = cliente.getInetAddress().getHostAddress();
 		//	this.nombre = nombre;
-			maneja(cliente);
+			maneja(cliente, mensaje);
 		}
 
-		public void maneja(Socket cliente) {
-			new Thread() {
-				public void run() {
-					if (mensaje.getMensaje().equals("/cerrar/")) {
-						reparte(mensaje);
-						desconectaChat(mensaje);
-					} else if (mensaje.getMensaje().contains("/puerto/")) {
-						String[] cadena = mensaje.getMensaje().split("/");
-						int puertoAux = Integer.parseInt(cadena[2]);
-						if (!disponibilidadPuerto(puertoAux)) {
-							Mensaje mensaje2 = new Mensaje("/sinDisponibilidad/",
-									cliente.getInetAddress().getHostAddress(), puertoAux);
-							puertoErroneo(mensaje2); // VER ESTO FALTA AVISAR QUE NO HAY DISPONIBILIDAD
-							desconectaChat(mensaje2);
-						} else {
-							puerto = puertoAux;
-						}
-					} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
-						String[] cadena = mensaje.getMensaje().split("/");
-						int puertoAConectar = Integer.parseInt(cadena[2]);
-						consultaDisponibilidad(mensaje, puertoAConectar);
-					} else if (mensaje.getMensaje().contains("/aceptar/")) {
-						reparte(mensaje);
-					} else if (mensaje.getMensaje().contains("/rechazar/")) {
-						rechaza(mensaje);
-						eliminarChat(mensaje);
-						desconectaChat(mensaje);
+		public void maneja(Socket cliente, Mensaje mensaje) {
+			if (mensaje != null) {
+				System.out.print("el mensaje que entra por maneja es " + mensaje.getMensaje());
+				if (mensaje.getMensaje().equals("/cerrar/")) {
+					reparte(mensaje);
+					desconectaChat(mensaje);
+				} else if (mensaje.getMensaje().contains("/puerto/")) {
+					String[] cadena = mensaje.getMensaje().split("/");
+					int puertoAux = Integer.parseInt(cadena[2]);
+					if (!disponibilidadPuerto(puertoAux)) {
+						Mensaje mensaje2 = new Mensaje("/sinDisponibilidad/", cliente.getInetAddress().getHostAddress(),
+								puertoAux);
+						puertoErroneo(mensaje2); // VER ESTO FALTA AVISAR QUE NO HAY DISPONIBILIDAD
+						desconectaChat(mensaje2);
 					} else {
-						agregarAlChat(mensaje);
-						reparte(mensaje);
+						puerto = puertoAux;
 					}
+				} else if (mensaje.getMensaje().contains("/intentoConexion/")) {
+					String[] cadena = mensaje.getMensaje().split("/");
+					int puertoAConectar = Integer.parseInt(cadena[2]);
+					consultaDisponibilidad(mensaje, puertoAConectar);
+				} else if (mensaje.getMensaje().contains("/aceptar/")) {
+					reparte(mensaje);
+				} else if (mensaje.getMensaje().contains("/rechazar/")) {
+					rechaza(mensaje);
+					eliminarChat(mensaje);
+					desconectaChat(mensaje);
+				} else {
+					agregarAlChat(mensaje);
+					reparte(mensaje);
 				}
-			}.start();
+			}
 		}
 
 		public void mandarMensaje(Mensaje mensaje, int puerto) {
@@ -433,8 +436,8 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 				os.flush();
 				socketEnvioMensaje.close();
 			} catch (IOException e) {
-				System.out.println("esto no deberia pasar nunca, mandar mensaje desde el servidor");
-				System.out.println(e.getLocalizedMessage());
+			//	System.out.println("esto no deberia pasar nunca, mandar mensaje desde el servidor");
+			//	System.out.println(e.getLocalizedMessage());
 			}
 		}
 		

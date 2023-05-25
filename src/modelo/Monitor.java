@@ -48,7 +48,7 @@ public class Monitor {
 						}
 					}
 				}
-			}, 1000, 5000);
+			}, 500, 3000);
 		this.comienzaEsperaLatidos();
 	}
 	
@@ -65,7 +65,7 @@ public class Monitor {
 					}
 
 				} catch (Exception e) {
-				//	System.out.println(e.getLocalizedMessage());
+					System.out.println(e.getLocalizedMessage());
 				}
 			}
 		}.start();

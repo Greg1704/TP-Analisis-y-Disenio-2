@@ -39,31 +39,11 @@ public class Cliente implements IComunicacion {
 			e.printStackTrace();
 		}
 		//conecta();
-		maneja();
+		this.maneja();
 	}
     
 	public String getIpLocal() {
 		return ipLocal;
-	}
-	
-	public void conecta() {
-		new Thread() {
-			public void run() {
-				/*
-				try {
-				
-					cliente = new Socket(ipAConectar, puertoAConectar);
-					os = new ObjectOutputStream(cliente.getOutputStream());
-					is = new ObjectInputStream(cliente.getInputStream());
-					ManejaInput m = new ManejaInput();
-
-				} catch (IOException e) {
-					observador.mostrarConexxionErroneaServer();
-				}
-				*/
-			}
-			
-		}.start();
 	}
 	
 	@Override
@@ -75,7 +55,7 @@ public class Cliente implements IComunicacion {
 			os1.flush();
 			cliente.close();
 		} catch (IOException e) {
-			System.out.println(e.getLocalizedMessage());
+		//	System.out.println(e.getLocalizedMessage());
 		} // SE MANDA DIRECTAMENTE A SERVIDOR. SE VE EN LA VENTANA EL MENSAJE ENVIADO YA QUE SE RECIBE DEL SERVIDOR LUEGO (EN LA PARTE DONDE SE INVOCA REPARTE())
 	}
 
@@ -107,14 +87,14 @@ public class Cliente implements IComunicacion {
 								observador.mostrarConexionErronea();
 							} else if (mensaje.getConexiones() != null) {
 								Controlador c = Controlador.getInstancia();
-								System.out.println("llega al menos " + mensaje.getConexiones().size());
+							//	System.out.println("llega al menos " + mensaje.getConexiones().size());
 								c.actualizarListaConectados(mensaje.getConexiones());
 							} else {
 								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),
 										claveEncriptacion);
 								mensaje.setMensaje(desencriptado);
 								observador.mostrarMensajeTextArea(mensaje);
-								System.out.println(mensaje.getMensaje());
+							//	System.out.println(mensaje.getMensaje());
 							//	System.out.println("LLEGA MENSAJE EN PERFECTAS CONDICIONES");
 							}
 						}
@@ -122,7 +102,7 @@ public class Cliente implements IComunicacion {
 				} catch (BindException e) {
 					observador.mostrarPuertoEnUso();
 				} catch (IOException | ClassNotFoundException e) {
-					System.out.println(e.getLocalizedMessage());
+				//	System.out.println(e.getLocalizedMessage());
 				}
 			}
 		}.start();
