@@ -5,8 +5,6 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import controlador.Controlador;
 import controlador.IComunicacion;
@@ -22,9 +20,6 @@ public class Cliente implements IComunicacion {
 	private int puertoCliente;
 	private int puertoAConectar;
 	private String ipAConectar, ipLocal;
-	private ObjectOutputStream os;
-	private ObjectInputStream is;
-	private boolean listo = false;
 	private IComunicacion observador;
 	private String claveEncriptacion;
 	
@@ -71,14 +66,13 @@ public class Cliente implements IComunicacion {
 					ServerSocket socketEsperaMensajes = new ServerSocket(puertoCliente);
 					while (true) {
 						Socket mensajeServidor = socketEsperaMensajes.accept();
-						is = new ObjectInputStream(mensajeServidor.getInputStream());
+						ObjectInputStream is = new ObjectInputStream(mensajeServidor.getInputStream());
 						Mensaje mensaje = (Mensaje) is.readObject();
 						if (mensaje != null) {
 							if (mensaje.getMensaje().equals("/enCharla/")) {
 								observador.mostrarUsuarioOcupado();
 							} else if (mensaje.getMensaje().equals("/cerrar/")) {
-								observador.mostrarCierreSesion();// entra mensaje de servidor, entonces MUESTRO
-								// cerrarConversacion();
+								observador.mostrarCierreSesion(); 
 								observador.cerrarInstancia();
 							} else if (mensaje.getMensaje().equals("/rechazar/")) {
 								observador.mostrarUsuarioNoDisponible();
@@ -92,15 +86,12 @@ public class Cliente implements IComunicacion {
 								observador.mostrarConexionErronea();
 							} else if (mensaje.getConexiones() != null) {
 								Controlador c = Controlador.getInstancia();
-							//	System.out.println("llega al menos " + mensaje.getConexiones().size());
 								c.actualizarListaConectados(mensaje.getConexiones());
 							} else {
 								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),
 										claveEncriptacion);
 								mensaje.setMensaje(desencriptado);
 								observador.mostrarMensajeTextArea(mensaje);
-							//	System.out.println(mensaje.getMensaje());
-							//	System.out.println("LLEGA MENSAJE EN PERFECTAS CONDICIONES");
 							}
 						}
 					}

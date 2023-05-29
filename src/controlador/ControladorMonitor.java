@@ -7,7 +7,6 @@ import java.awt.event.WindowListener;
 import controlador.ControladorServer;
 import controlador.IComunicacion;
 import modelo.Monitor;
-import modelo.chat.Mensaje;
 import ventana.IVista;
 import ventana.VentanaMonitor;
 

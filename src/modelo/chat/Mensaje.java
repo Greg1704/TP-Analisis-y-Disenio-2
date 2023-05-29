@@ -3,7 +3,6 @@ package modelo.chat;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import modelo.Server;
 import modelo.Server.ManejaConexiones;
 
 public class Mensaje implements Serializable{
@@ -43,8 +42,4 @@ public class Mensaje implements Serializable{
 	public ArrayList<ManejaConexiones> getConexiones() {
 		return conexiones;
 	}
-	
-	
-
-	
 }

@@ -21,7 +21,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import controlador.Controlador;
-import modelo.Cliente;
 import modelo.Server.ManejaConexiones;
 import modelo.chat.Mensaje;
 
