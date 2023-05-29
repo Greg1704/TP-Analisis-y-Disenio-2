@@ -14,10 +14,12 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import controlador.ControladorServer;
 import controlador.IComunicacion;
 import controlador.IConectados;
+import modelo.chat.Chat;
+import modelo.chat.IChat;
+import modelo.chat.Mensaje;
 
 public class Server implements IConsultaEstado, IConectados, IChat, IReconectar, Serializable {
 
@@ -83,15 +85,14 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 																									// primario
 								ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 								out.writeObject(true);
-
 								out.close();
 								socket.close();
-
+								cambioCantConectados(conexiones.size());
 							} catch (Exception e) {
 								
 							}
 					}
-				}, 0, 5000);
+				}, 0, 2500);
 			}
 		}.start();
 	}

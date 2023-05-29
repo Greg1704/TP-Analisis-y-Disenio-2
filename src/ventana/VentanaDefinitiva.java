@@ -22,8 +22,8 @@ import javax.swing.border.LineBorder;
 
 import controlador.Controlador;
 import modelo.Cliente;
-import modelo.Mensaje;
 import modelo.Server.ManejaConexiones;
+import modelo.chat.Mensaje;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;

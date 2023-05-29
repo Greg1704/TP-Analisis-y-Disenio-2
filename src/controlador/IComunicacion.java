@@ -1,6 +1,6 @@
 package controlador;
 
-import modelo.Mensaje;
+import modelo.chat.Mensaje;
 
 public interface IComunicacion {
 	 public void mostrarIntentoDeConexion(String ip,int puerto);

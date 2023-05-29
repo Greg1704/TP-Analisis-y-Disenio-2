@@ -1,4 +1,4 @@
-package modelo;
+package modelo.chat;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,7 +33,5 @@ public class Chat implements Serializable {
 	public int getPuerto2() {
 		return puerto2;
 	}
-	
-	
 	
 }

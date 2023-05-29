@@ -54,7 +54,6 @@ public class Monitor {
 					while (true) {
 						Socket socket = servSocket.accept();
 						Monitor.getInstance().setActivo(true);
-						System.out.println("latidos");
 					}
 				} catch (Exception e) {
 					System.exit(0);

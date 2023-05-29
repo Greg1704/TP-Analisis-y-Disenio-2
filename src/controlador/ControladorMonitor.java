@@ -6,8 +6,8 @@ import java.awt.event.WindowListener;
 
 import controlador.ControladorServer;
 import controlador.IComunicacion;
-import modelo.Mensaje;
 import modelo.Monitor;
+import modelo.chat.Mensaje;
 import ventana.IVista;
 import ventana.VentanaMonitor;
 
@@ -75,7 +75,6 @@ public class ControladorMonitor implements ActionListener, WindowListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.cerrarMonitor)) {
 			System.exit(0);
-	}
-		
+		}
 	}
 }

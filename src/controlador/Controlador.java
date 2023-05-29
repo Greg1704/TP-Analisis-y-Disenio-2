@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import modelo.Cliente;
-import modelo.Mensaje;
 import modelo.Server.ManejaConexiones;
+import modelo.chat.Mensaje;
 import modelo.Encriptacion;
 import ventana.*;
 

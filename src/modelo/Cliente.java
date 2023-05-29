@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import controlador.Controlador;
 import controlador.IComunicacion;
+import modelo.chat.Mensaje;
 
 import java.net.BindException;
 import java.net.InetAddress;
@@ -40,7 +41,6 @@ public class Cliente implements IComunicacion {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//conecta();
 		this.maneja();
 	}
     

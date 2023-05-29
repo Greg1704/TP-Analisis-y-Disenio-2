@@ -47,8 +47,6 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 		nuevoValor=sumaOresta;
 		String nuevaCadena = cadena[0] + ": " + nuevoValor;
 		this.vs.setLblCantidadConectados(nuevaCadena);
-		System.out.println(nuevoValor + " nueva cadena = " + nuevaCadena);
-		System.out.println("Se esta ejecutando el cambio de contador en el controlador");
 	}
 
 	@Override

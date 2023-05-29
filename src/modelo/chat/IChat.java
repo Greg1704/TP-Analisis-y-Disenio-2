@@ -1,4 +1,4 @@
-package modelo;
+package modelo.chat;
 
 public interface IChat {
 	public void nuevoChat(String ip1, int puerto1, int puerto2);
