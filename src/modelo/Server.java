@@ -35,6 +35,13 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		conexiones = new ArrayList<ManejaConexiones>(); 
 		this.cs = cs;
 		this.correrServer();
+		InetAddress localHost;
+		try {
+			localHost = InetAddress.getLocalHost();
+			this.ipServer = localHost.getHostAddress();
+		} catch (UnknownHostException e) {
+		}
+
 	}
 	
 	public void correrServer() {
@@ -49,7 +56,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 						identificador(cliente);
 					}
 				} catch (BindException e) {
-					primario = false;
+					setPrimario(false);
 					esperaFalloHeartBeat();
 					recibirActualizacionInformacion();
 				} catch (IOException e) {
@@ -97,7 +104,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 					serverSocket = new ServerSocket(puertoSecundario);
 					Socket monitor = serverSocket.accept(); // linea en la que espera conexion del monitor para avisarle
 					serverSocket.close();
-					setPrimario();
+					setPrimario(true);
 					reconecta();
 					
 				} catch (IOException e) {
@@ -105,11 +112,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 				}
 			}
 		}.start();
-	}
-	
-	public void resetThreads() {
-		
-		
 	}
 	
 	public void mandarActualizacionInformacion() { // mandarle la informacion actualizada al servidor secundario
@@ -273,7 +275,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		int i = 0;
 		while (i < conexiones.size() && conexiones.get(i).getPuerto() != puerto) {
 			i++;
-			
 		}
 		if (i < conexiones.size()) { // se encontro que alguien usaba
 																					// el puerto
@@ -287,19 +288,12 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		try {
 			ObjectInputStream is = new ObjectInputStream(cliente.getInputStream());
 			Mensaje mensaje = (Mensaje) is.readObject();
-			System.out.println("el mensaje que entra por identificador es " + mensaje.getMensaje());
-			/*
-			String[] cadena = mensaje.getMensaje().split("/");
-			int puerto = Integer.parseInt(cadena[2]);
-			*/
 			if (disponibilidadPuerto(mensaje.getPuertoEmisor())) { // es una nueva conexion ? 
-				//System.out.println("entra if 1");
 				ManejaConexiones m = new ManejaConexiones(cliente, mensaje);
 				conexiones.add(m);
 				this.cambioCantConectados(conexiones.size());
 			} else {
 				if (!mensaje.getMensaje().contains("/puerto/")) { // entra un mensaje en el que existe un cliente con ese puerto, me fijo si es alguien queriendo registrarse con ese mismo puerto
-				//	System.out.println("entra if 2");
 					int indice = buscaIndicePropio(mensaje);
 					if (indice!=-1) {
 						conexiones.get(indice).maneja(cliente, mensaje);
@@ -309,7 +303,6 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 				}
 			}
 		} catch (IOException e) {
-		//	System.out.println("no pasa nunca");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -326,16 +319,10 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 
 	public void reparte(Mensaje mensaje) {
 		for (ManejaConexiones cliente : conexiones) {
-		//	System.out.println("entro al reparte");
-		//	System.out.println(mensaje.getMensaje());
 			if (cliente.getPuerto() == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona que mando el mensaje
 				cliente.mandarMensaje(mensaje, mensaje.getPuertoEmisor());
-			//	System.out.println("entro al reparte1");
-			//	System.out.println(mensaje.getMensaje());
 			} else if (cliente.puertoOtroUsuario == mensaje.getPuertoEmisor()) { // mandarle el mensaje a la persona destino
 				cliente.mandarMensaje(mensaje, cliente.getPuerto());
-			//	System.out.println("entro al reparte2");
-			//	System.out.println(mensaje.getMensaje());
 			}
 		}
 	}
@@ -384,13 +371,11 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 			} catch (UnknownHostException e) {
 				System.out.println("no se q pasa al obtener la ip");
 			}
-			this.nombre = nombre;
 			maneja(cliente, mensaje);
 		}
 
 		public void maneja(Socket cliente, Mensaje mensaje) {
 			if (mensaje != null) {
-				System.out.print("el mensaje que entra por maneja es " + mensaje.getMensaje());
 				if (mensaje.getMensaje().equals("/cerrar/")) {
 					reparte(mensaje);
 					desconectaChat(mensaje);
@@ -535,6 +520,12 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		public String toString() {
 			return "nombre = " + this.nombre + " ip = " + this.ip + " puerto = " + this.puerto;
 		}
+
+		@Override
+		public void mostrarMensajeNoEnviado(Mensaje mensaje) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 		
 		/*
@@ -565,8 +556,8 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 		return primario;
 	}
 
-	public void setPrimario() {
-		this.primario = true;
+	public void setPrimario(boolean primario) {
+		this.primario = primario;
 	}
 
 	public ArrayList<Chat> getChats() {

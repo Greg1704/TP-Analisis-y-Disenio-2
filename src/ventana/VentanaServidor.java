@@ -149,6 +149,7 @@ public class VentanaServidor extends JFrame implements MouseListener, KeyListene
 
 	public void setLblCantidadConectados(String lblCantidadConectados) {
 		this.lblCantidadConectados.setText(lblCantidadConectados);
+		System.out.println(getLblCantidadConectados());
 	}
 	
 	public void fusilarVentana() {

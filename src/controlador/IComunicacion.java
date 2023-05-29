@@ -12,6 +12,7 @@ public interface IComunicacion {
 	 public void mostrarConexxionErroneaServer();
 	 public void mostrarPuertoErroneo();
 	 public void mostrarPuertoEnUso();
+	 public void mostrarMensajeNoEnviado(Mensaje mensaje);
 	 public void cerrarInstancia();
 	 public void aceptaInicioSesion();
 	 public void mandarMensaje(Mensaje mensaje);

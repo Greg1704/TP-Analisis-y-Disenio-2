@@ -16,9 +16,9 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 	private static ControladorServer instancia = null;
 	
 	public ControladorServer() {
-		server = new Server(this);
 		vs = new VentanaServidor();
 		this.vs.setControlador(this);
+		server = new Server(this);
 	}
 	
 	public static ControladorServer getInstancia() {
@@ -47,6 +47,8 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 		nuevoValor=sumaOresta;
 		String nuevaCadena = cadena[0] + ": " + nuevoValor;
 		this.vs.setLblCantidadConectados(nuevaCadena);
+		System.out.println(nuevoValor + " nueva cadena = " + nuevaCadena);
+		System.out.println("Se esta ejecutando el cambio de contador en el controlador");
 	}
 
 	@Override

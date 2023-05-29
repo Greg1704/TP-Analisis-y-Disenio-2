@@ -50,16 +50,19 @@ public class Cliente implements IComunicacion {
 	
 	@Override
 	public void mandarMensaje(Mensaje mensaje) {
-		try {
-			Socket cliente = new Socket(ipAConectar, puertoAConectar);
-			ObjectOutputStream os1 = new ObjectOutputStream(cliente.getOutputStream());
-			os1.writeObject(mensaje);
-			os1.flush();
-			cliente.close();
-		} catch (IOException e) {
-		//	System.out.println(e.getLocalizedMessage());
-		} // SE MANDA DIRECTAMENTE A SERVIDOR. SE VE EN LA VENTANA EL MENSAJE ENVIADO YA QUE SE RECIBE DEL SERVIDOR LUEGO (EN LA PARTE DONDE SE INVOCA REPARTE())
-	}
+			Socket cliente;
+			try {
+				cliente = new Socket(ipAConectar, puertoAConectar);
+				ObjectOutputStream os1 = new ObjectOutputStream(cliente.getOutputStream());
+				os1.writeObject(mensaje);
+				os1.flush();
+				cliente.close();
+			} catch (UnknownHostException e) {
+				observador.mostrarMensajeNoEnviado(mensaje);
+			} catch (IOException e) {
+				observador.mostrarMensajeNoEnviado(mensaje);
+			}
+		}
 
 	public void maneja() {
 		new Thread() {
@@ -201,6 +204,12 @@ public class Cliente implements IComunicacion {
 
 	@Override
 	public void mandarMensaje(Mensaje mensaje, int puerto) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mostrarMensajeNoEnviado(Mensaje mensaje) {
 		// TODO Auto-generated method stub
 		
 	}	

@@ -11,7 +11,7 @@ import modelo.Monitor;
 import ventana.IVista;
 import ventana.VentanaMonitor;
 
-public class ControladorMonitor implements ActionListener, IComunicacion, WindowListener {
+public class ControladorMonitor implements ActionListener, WindowListener {
 
 	Monitor monitor;
 	VentanaMonitor vm;
@@ -38,8 +38,7 @@ public class ControladorMonitor implements ActionListener, IComunicacion, Window
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		System.exit(0);
 	}
 
 	@Override
@@ -73,89 +72,10 @@ public class ControladorMonitor implements ActionListener, IComunicacion, Window
 	}
 
 	@Override
-	public void mostrarIntentoDeConexion(String ip, int puerto) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarMensajeTextArea(Mensaje mensaje) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarUsuarioOcupado() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarUsuarioNoDisponible() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarCierreSesion() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarConexionErronea() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarConexxionErroneaServer() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarPuertoErroneo() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mostrarPuertoEnUso() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void cerrarInstancia() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void aceptaInicioSesion() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals(IVista.cerrarMonitor)) {
 			System.exit(0);
 	}
 		
 	}
-
-	@Override
-	public void mandarMensaje(Mensaje mensaje, int puerto) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mandarMensaje(Mensaje mensaje) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

@@ -77,7 +77,6 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 			this.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
-			System.out.println(mensaje.getMensaje());
 			this.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/aceptar/", cliente.getIpLocal(), this.puerto);
@@ -220,6 +219,15 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 		this.v.actualizarListaConectados(conexiones);
 	}
 
-
-
+	@Override
+	public void mostrarMensajeNoEnviado(Mensaje mensaje) {
+		int reintentar = JOptionPane.YES_NO_OPTION;
+		JOptionPane.showConfirmDialog(null, "El mensaje no se ha podido enviar. ¿Quiere reintentar enviarlo?", "ERROR",
+				reintentar);
+		if (reintentar == JOptionPane.YES_OPTION) {
+			cliente.mandarMensaje(mensaje);
+		} else {
+			System.out.println("");
+		}
+	}
 }
