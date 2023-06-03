@@ -273,6 +273,7 @@ public class VentanaCliente extends JFrame implements MouseListener, IVistaClien
 			ManejaConexiones cliente = (ManejaConexiones) this.listConectados.getSelectedValue();
 			this.textFieldIp.setText(c.getIpLocal());
 			this.textFieldPuerto.setText(Integer.toString(cliente.getPuerto()));
+			this.btnConectar.setEnabled(true);
 		}
 	}
 

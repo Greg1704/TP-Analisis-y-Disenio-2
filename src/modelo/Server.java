@@ -93,7 +93,7 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 								
 							}
 					}
-				}, 0, 2500);
+				}, 0, 3500);
 			}
 		}.start();
 	}

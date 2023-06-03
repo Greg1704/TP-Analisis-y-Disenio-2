@@ -24,6 +24,7 @@ public class ControladorCliente implements ActionListener, IComunicacion, Window
 	private int puerto;
 	private Cliente cliente;
 	private int puertoServidor = 11000;
+	private int contadorFallos = 0;
 	
 	private ControladorCliente () {
 		String puertoTexto = JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)");
@@ -74,6 +75,7 @@ public class ControladorCliente implements ActionListener, IComunicacion, Window
 				this.mostrarPuertoErroneo();
 			}
 		} else if(e.getActionCommand().equals(IVistaCliente.enviarMensaje)) {
+			contadorFallos = 0;
 			String encriptado = Encriptacion.encriptadoMensaje(v.getTextFieldChatMensajeUsuario(), cliente.getClaveEncriptacion());
 			Mensaje mensaje = new Mensaje(encriptado, cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
@@ -223,13 +225,16 @@ public class ControladorCliente implements ActionListener, IComunicacion, Window
 
 	@Override
 	public void mostrarMensajeNoEnviado(Mensaje mensaje) {
-		int reintentar = JOptionPane.YES_NO_OPTION;
-		JOptionPane.showConfirmDialog(null, "El mensaje no se ha podido enviar. ¿Quiere reintentar enviarlo?", "ERROR",
-				reintentar);
-		if (reintentar == JOptionPane.YES_OPTION) {
-			cliente.mandarMensaje(mensaje);
+		contadorFallos++;
+		if (contadorFallos < 4) {
+			if (JOptionPane.showConfirmDialog(null, "El mensaje no pudo ser enviado. Quiere reintentar?", "ERROR",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				cliente.mandarMensaje(mensaje);
+			} else {
+				
+			}
 		} else {
-			System.out.println("");
+			System.exit(0);
 		}
 	}
 }
