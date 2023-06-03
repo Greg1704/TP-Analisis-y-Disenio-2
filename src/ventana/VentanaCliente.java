@@ -31,7 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.JList;
 import javax.swing.border.TitledBorder;
 
-public class VentanaCliente extends JFrame implements MouseListener, IVista, KeyListener  {
+public class VentanaCliente extends JFrame implements MouseListener, IVistaCliente, KeyListener  {
 
 	private JPanel contentPane;
 	private JTabbedPane tabbedPane;

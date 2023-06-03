@@ -7,7 +7,7 @@ import java.awt.event.WindowListener;
 import controlador.ControladorServer;
 import controlador.interfaces.IComunicacion;
 import modelo.Monitor;
-import ventana.IVista;
+import ventana.IVistaMonitor;
 import ventana.VentanaMonitor;
 
 public class ControladorMonitor implements ActionListener, WindowListener {
@@ -72,7 +72,7 @@ public class ControladorMonitor implements ActionListener, WindowListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals(IVista.cerrarMonitor)) {
+		if(e.getActionCommand().equals(IVistaMonitor.cerrarMonitor)) {
 			System.exit(0);
 		}
 	}

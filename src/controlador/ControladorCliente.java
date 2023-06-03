@@ -60,7 +60,7 @@ public class ControladorCliente implements ActionListener, IComunicacion, Window
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals(IVista.intentoDeConexion)) {
+		if (e.getActionCommand().equals(IVistaCliente.intentoDeConexion)) {
 			if (puertoServidor != Integer.parseInt(v.getTextFieldPuerto())) {
 				String claveCripto = JOptionPane.showInputDialog("Ingrese clave del chat de 8 caracteres");
 				while(claveCripto.length()!=8) {
@@ -72,18 +72,18 @@ public class ControladorCliente implements ActionListener, IComunicacion, Window
 			} else {
 				this.mostrarPuertoErroneo();
 			}
-		} else if(e.getActionCommand().equals(IVista.enviarMensaje)) {
+		} else if(e.getActionCommand().equals(IVistaCliente.enviarMensaje)) {
 			String encriptado = Encriptacion.encriptadoMensaje(v.getTextFieldChatMensajeUsuario(), cliente.getClaveEncriptacion());
 			Mensaje mensaje = new Mensaje(encriptado, cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
-		} else if(e.getActionCommand().equals(IVista.cerrarSesion)) {
+		} else if(e.getActionCommand().equals(IVistaCliente.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
-		} else if(e.getActionCommand().equals(IVista.aceptarSolicitud)) {
+		} else if(e.getActionCommand().equals(IVistaCliente.aceptarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/aceptar/", cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
 			this.vs.desaparece();
-		}else if(e.getActionCommand().equals(IVista.rechazarSolicitud)) {
+		}else if(e.getActionCommand().equals(IVistaCliente.rechazarSolicitud)) {
 			Mensaje mensaje = new Mensaje("/rechazar/", cliente.getIpLocal(), this.puerto);
 			this.mandarMensaje(mensaje);
 			vs.desaparece();

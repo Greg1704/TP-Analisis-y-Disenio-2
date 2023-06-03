@@ -15,7 +15,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 
-public class VentanaMonitor extends JFrame implements MouseListener,IVista {
+public class VentanaMonitor extends JFrame implements MouseListener,IVistaMonitor {
 
 	private JPanel contentPane;
 	private JLabel lblMonitor;

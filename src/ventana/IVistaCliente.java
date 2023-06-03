@@ -1,6 +1,6 @@
 package ventana;
 
-public interface IVista {
+public interface IVistaCliente {
 	//Ventana Busqueda
 	
 	static final String intentoDeConexion = "Intento de conexion con otro usuario";
@@ -15,11 +15,4 @@ public interface IVista {
 	static final String aceptarSolicitud = "Aceptar solicitud de sesion";
 	static final String rechazarSolicitud = "Rechazar solicitud de sesion";
 	
-	//Ventana Server
-	
-	static final String cerrarServidor = "Cerrando Servidor";
-	
-	//Ventana Monitor
-	
-	static final String cerrarMonitor = "Cerrando Monitor";
 }

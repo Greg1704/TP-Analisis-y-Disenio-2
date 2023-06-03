@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 import controlador.interfaces.IConectados;
 import modelo.Server;
-import ventana.IVista;
+import ventana.IVistaServer;
 import ventana.VentanaServidor;
 
 public class ControladorServer implements ActionListener, WindowListener,IConectados, Serializable { // la interfaz IOBservador es util para el new Server
@@ -31,7 +31,7 @@ public class ControladorServer implements ActionListener, WindowListener,IConect
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals(IVista.cerrarServidor)) {
+		if(e.getActionCommand().equals(IVistaServer.cerrarServidor)) {
 			if (server.isPrimario()) {
 				this.server.cerrarServidor();
 				

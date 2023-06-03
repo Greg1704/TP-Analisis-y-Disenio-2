@@ -14,7 +14,7 @@ import controlador.ControladorCliente;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 
-public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IVista{
+public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IVistaCliente{
 
 	public JLabel getLblIp() {
 		return lblIp;

@@ -18,7 +18,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 
-public class VentanaServidor extends JFrame implements MouseListener, KeyListener,IVista {
+public class VentanaServidor extends JFrame implements MouseListener, KeyListener,IVistaServer {
 
 	private JPanel contentPane;
 	private JPanel panelServer;
