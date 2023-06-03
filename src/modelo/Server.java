@@ -101,16 +101,15 @@ public class Server implements IConsultaEstado, IConectados, IChat, IReconectar,
 	public void esperaFalloHeartBeat() { // metodo que usa el servidor secundario para esperar notificacion del monitor
 		new Thread() {
 			public void run() {
-				ServerSocket serverSocket;
 				try {
-					serverSocket = new ServerSocket(puertoSecundario);
+					ServerSocket serverSocket = new ServerSocket(puertoSecundario);
 					Socket monitor = serverSocket.accept(); // linea en la que espera conexion del monitor para avisarle
 					serverSocket.close();
 					setPrimario(true);
 					reconecta();
 					
 				} catch (IOException e) {
-					System.out.println(e.getLocalizedMessage());
+					System.exit(0);
 				}
 			}
 		}.start();
