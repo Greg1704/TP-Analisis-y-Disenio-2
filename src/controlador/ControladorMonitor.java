@@ -5,7 +5,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import controlador.ControladorServer;
-import controlador.IComunicacion;
+import controlador.interfaces.IComunicacion;
 import modelo.Monitor;
 import ventana.IVista;
 import ventana.VentanaMonitor;

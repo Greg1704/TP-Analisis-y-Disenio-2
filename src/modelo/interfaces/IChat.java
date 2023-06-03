@@ -1,4 +1,6 @@
-package modelo.chat;
+package modelo.interfaces;
+
+import modelo.chat.Mensaje;
 
 public interface IChat {
 	public void nuevoChat(String ip1, int puerto1, int puerto2);

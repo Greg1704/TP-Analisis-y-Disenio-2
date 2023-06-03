@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import controlador.Controlador;
-import controlador.IComunicacion;
+import controlador.interfaces.IComunicacion;
 import modelo.chat.Mensaje;
 
 import java.net.BindException;

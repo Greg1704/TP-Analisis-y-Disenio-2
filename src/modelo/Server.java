@@ -14,11 +14,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import controlador.ControladorServer;
-import controlador.IComunicacion;
-import controlador.IConectados;
+import controlador.interfaces.IComunicacion;
+import controlador.interfaces.IConectados;
 import modelo.chat.Chat;
-import modelo.chat.IChat;
 import modelo.chat.Mensaje;
+import modelo.interfaces.IChat;
+import modelo.interfaces.IConsultaEstado;
+import modelo.interfaces.IReconectar;
 
 public class Server implements IConsultaEstado, IConectados, IChat, IReconectar, Serializable {
 

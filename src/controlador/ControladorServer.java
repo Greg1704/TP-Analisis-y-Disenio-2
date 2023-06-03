@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.Serializable;
 
+import controlador.interfaces.IConectados;
 import modelo.Server;
 import ventana.IVista;
 import ventana.VentanaServidor;

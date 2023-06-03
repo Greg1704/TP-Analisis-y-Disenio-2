@@ -1,4 +1,4 @@
-package modelo;
+package modelo.interfaces;
 
 import modelo.chat.Mensaje;
 

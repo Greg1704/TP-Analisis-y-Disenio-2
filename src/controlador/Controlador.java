@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import controlador.interfaces.IComunicacion;
 import modelo.Cliente;
 import modelo.Server.ManejaConexiones;
 import modelo.chat.Mensaje;
