@@ -23,6 +23,7 @@ import javax.swing.border.LineBorder;
 import controlador.ControladorCliente;
 import modelo.Server.ManejaConexiones;
 import modelo.chat.Mensaje;
+import ventana.interfaces.IVistaCliente;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;

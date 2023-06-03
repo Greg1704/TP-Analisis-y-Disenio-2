@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controlador.ControladorMonitor;
+import ventana.interfaces.IVistaMonitor;
 
 import javax.swing.JLabel;
 import java.awt.Font;

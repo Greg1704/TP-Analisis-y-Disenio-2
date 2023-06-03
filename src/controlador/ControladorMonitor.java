@@ -7,8 +7,8 @@ import java.awt.event.WindowListener;
 import controlador.ControladorServer;
 import controlador.interfaces.IComunicacion;
 import modelo.Monitor;
-import ventana.IVistaMonitor;
 import ventana.VentanaMonitor;
+import ventana.interfaces.IVistaMonitor;
 
 public class ControladorMonitor implements ActionListener, WindowListener {
 

@@ -14,6 +14,7 @@ import modelo.Server.ManejaConexiones;
 import modelo.chat.Mensaje;
 import modelo.Encriptacion;
 import ventana.*;
+import ventana.interfaces.IVistaCliente;
 
 public class ControladorCliente implements ActionListener, IComunicacion, WindowListener {
 

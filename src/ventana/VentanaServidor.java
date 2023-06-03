@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controlador.ControladorServer;
+import ventana.interfaces.IVistaServer;
 
 import javax.swing.JLabel;
 import java.awt.Font;

@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controlador.ControladorCliente;
+import ventana.interfaces.IVistaCliente;
 
 import javax.swing.JLabel;
 import javax.swing.JButton;

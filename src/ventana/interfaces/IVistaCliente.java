@@ -1,4 +1,4 @@
-package ventana;
+package ventana.interfaces;
 
 public interface IVistaCliente {
 	//Ventana Busqueda

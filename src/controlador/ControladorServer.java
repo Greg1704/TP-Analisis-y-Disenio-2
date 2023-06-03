@@ -8,8 +8,8 @@ import java.io.Serializable;
 
 import controlador.interfaces.IConectados;
 import modelo.Server;
-import ventana.IVistaServer;
 import ventana.VentanaServidor;
+import ventana.interfaces.IVistaServer;
 
 public class ControladorServer implements ActionListener, WindowListener,IConectados, Serializable { // la interfaz IOBservador es util para el new Server
 	private Server server;
