@@ -1,10 +1,10 @@
 package ejecutor;
 
-import controlador.Controlador;
+import controlador.ControladorCliente;
 
 public class Ejecutor {
 
 	public static void main(String[] args) {
-		Controlador.getInstancia();
+		ControladorCliente.getInstancia();
 	}
 }

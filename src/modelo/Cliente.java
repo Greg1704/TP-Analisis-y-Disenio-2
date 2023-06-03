@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import controlador.Controlador;
+import controlador.ControladorCliente;
 import controlador.interfaces.IComunicacion;
 import modelo.chat.Mensaje;
 
@@ -85,7 +85,7 @@ public class Cliente implements IComunicacion {
 							} else if (mensaje.getMensaje().equals("/erroneo/")) {
 								observador.mostrarConexionErronea();
 							} else if (mensaje.getConexiones() != null) {
-								Controlador c = Controlador.getInstancia();
+								ControladorCliente c = ControladorCliente.getInstancia();
 								c.actualizarListaConectados(mensaje.getConexiones());
 							} else {
 								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),

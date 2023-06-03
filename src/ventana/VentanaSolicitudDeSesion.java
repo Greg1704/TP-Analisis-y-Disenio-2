@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import controlador.Controlador;
+import controlador.ControladorCliente;
 
 import javax.swing.JLabel;
 import javax.swing.JButton;
@@ -30,7 +30,7 @@ public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IV
 	private JLabel lblTexto;
 	private JButton btnAceptar;
 	private JButton btnRechazar;
-	private Controlador c;
+	private ControladorCliente c;
 
 	/**
 	 * Launch the application.
@@ -83,7 +83,7 @@ public class VentanaSolicitudDeSesion extends JFrame implements MouseListener,IV
 		this.panel.add(this.btnRechazar);
 	}
 	
-	public void setControlador(Controlador c) {
+	public void setControlador(ControladorCliente c) {
 		this.c = c;
 		setDefault();
 	}

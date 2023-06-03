@@ -20,7 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import controlador.Controlador;
+import controlador.ControladorCliente;
 import modelo.Server.ManejaConexiones;
 import modelo.chat.Mensaje;
 
@@ -31,7 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.JList;
 import javax.swing.border.TitledBorder;
 
-public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, KeyListener  {
+public class VentanaCliente extends JFrame implements MouseListener, IVista, KeyListener  {
 
 	private JPanel contentPane;
 	private JTabbedPane tabbedPane;
@@ -52,7 +52,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	private JButton btnCerrarSesion;
 	private JPanel panelBusquedaComponentes;
 	private JTextField textFieldChatMensajeUsuario;
-	private Controlador c;
+	private ControladorCliente c;
 	private JLabel lblPuertoReferencia;
 	private JPanel panelListaConectados;
 	private JScrollPane scrollPaneConectados;
@@ -66,7 +66,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VentanaDefinitiva frame = new VentanaDefinitiva();
+					VentanaCliente frame = new VentanaCliente();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -78,7 +78,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 	/**
 	 * Create the frame.
 	 */
-	public VentanaDefinitiva() {
+	public VentanaCliente() {
 		
 		this.setVisible(true);
 		
@@ -188,7 +188,7 @@ public class VentanaDefinitiva extends JFrame implements MouseListener, IVista, 
 		
 	}
 	
-	public void setControlador(Controlador c) {
+	public void setControlador(ControladorCliente c) {
 		this.c = c;
 		this.addWindowListener(c);
 		setDefault();

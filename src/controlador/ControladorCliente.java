@@ -15,16 +15,16 @@ import modelo.chat.Mensaje;
 import modelo.Encriptacion;
 import ventana.*;
 
-public class Controlador implements ActionListener, IComunicacion, WindowListener {
+public class ControladorCliente implements ActionListener, IComunicacion, WindowListener {
 
-	private VentanaDefinitiva v;
+	private VentanaCliente v;
 	private VentanaSolicitudDeSesion vs;
-	private static Controlador instancia = null;
+	private static ControladorCliente instancia = null;
 	private int puerto;
 	private Cliente cliente;
 	private int puertoServidor = 11000;
 	
-	private Controlador () {
+	private ControladorCliente () {
 		String puertoTexto = JOptionPane.showInputDialog("Ingrese el puerto que desea usar(valor mayor a 1024)");
 		if (puertoTexto != null && !puertoTexto.equals("")) {
 			while (puertoTexto == null || puertoTexto.equals("") || puertoTexto.length()>5 || Integer.parseInt(puertoTexto)<1025 || Integer.parseInt(puertoTexto)>65534) {
@@ -40,7 +40,7 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 			String nombreCliente = JOptionPane.showInputDialog("Ingrese el nombre de usuario que desee utilizar");
 			this.puerto = Integer.parseInt(puertoTexto);
 			cliente = new Cliente("localhost", puertoServidor, puerto, nombreCliente, this);
-			this.v = new VentanaDefinitiva();
+			this.v = new VentanaCliente();
 			this.vs = new VentanaSolicitudDeSesion();
 			this.v.setControlador(this);
 			this.vs.setControlador(this);
@@ -52,9 +52,9 @@ public class Controlador implements ActionListener, IComunicacion, WindowListene
 		}
 	}
 	
-	public static Controlador getInstancia() {
+	public static ControladorCliente getInstancia() {
 		if (instancia == null)
-			instancia = new Controlador();
+			instancia = new ControladorCliente();
 		return instancia;
 	}
 	
