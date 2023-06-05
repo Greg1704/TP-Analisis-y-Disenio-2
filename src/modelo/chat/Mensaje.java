@@ -3,18 +3,22 @@ package modelo.chat;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import modelo.Encriptacion;
+import modelo.IEncriptacion;
 import modelo.Server.ManejaConexiones;
 
 public class Mensaje implements Serializable{
 	private String mensaje = "";
 	private String ipEmisor;
 	private int puertoEmisor;
-	private  ArrayList<ManejaConexiones> conexiones = null;
+	private ArrayList<ManejaConexiones> conexiones = null;
+	private IEncriptacion iEncriptacion;
 	
 	public Mensaje(String mensaje, String ipEmisor, int puertoEmisor) {
 		this.mensaje = mensaje;
 		this.ipEmisor = ipEmisor;
 		this.puertoEmisor = puertoEmisor;
+		this.iEncriptacion = Encriptacion.getInstancia();
 	}
 	
 	public Mensaje(ArrayList<ManejaConexiones> a, String ipEmisor, int puertoEmisor) {
@@ -42,4 +46,15 @@ public class Mensaje implements Serializable{
 	public ArrayList<ManejaConexiones> getConexiones() {
 		return conexiones;
 	}
+	
+	public void encriptar(String clave) {
+		String aux = iEncriptacion.encriptadoMensaje(this.getMensaje(), clave);
+		this.mensaje = aux;
+	}
+	
+	public void desencriptar(String clave) {
+		String aux = iEncriptacion.desencriptadoMensaje(this.getMensaje(), clave);
+		this.mensaje = aux;
+	}
+	
 }

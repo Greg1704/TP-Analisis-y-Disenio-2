@@ -76,8 +76,8 @@ public class ControladorCliente implements ActionListener, IComunicacion, Window
 			}
 		} else if(e.getActionCommand().equals(IVistaCliente.enviarMensaje)) {
 			contadorFallos = 0;
-			String encriptado = Encriptacion.encriptadoMensaje(v.getTextFieldChatMensajeUsuario(), cliente.getClaveEncriptacion());
-			Mensaje mensaje = new Mensaje(encriptado, cliente.getIpLocal(), this.puerto);
+			Mensaje mensaje = new Mensaje(v.getTextFieldChatMensajeUsuario(), cliente.getIpLocal(), this.puerto);
+			mensaje.encriptar(cliente.getClaveEncriptacion());
 			this.mandarMensaje(mensaje);
 		} else if(e.getActionCommand().equals(IVistaCliente.cerrarSesion)) {
 			Mensaje mensaje = new Mensaje("/cerrar/", cliente.getIpLocal(), this.puerto);

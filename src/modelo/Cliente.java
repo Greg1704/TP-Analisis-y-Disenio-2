@@ -53,8 +53,10 @@ public class Cliente implements IComunicacion {
 				os1.flush();
 				cliente.close();
 			} catch (UnknownHostException e) {
+				System.out.println(e.getLocalizedMessage());
 				observador.mostrarMensajeNoEnviado(mensaje);
 			} catch (IOException e) {
+				System.out.println(e.getLocalizedMessage());
 				observador.mostrarMensajeNoEnviado(mensaje);
 			}
 		}
@@ -88,9 +90,7 @@ public class Cliente implements IComunicacion {
 								ControladorCliente c = ControladorCliente.getInstancia();
 								c.actualizarListaConectados(mensaje.getConexiones());
 							} else {
-								String desencriptado = Encriptacion.desencriptadoMensaje(mensaje.getMensaje(),
-										claveEncriptacion);
-								mensaje.setMensaje(desencriptado);
+								mensaje.desencriptar(claveEncriptacion);
 								observador.mostrarMensajeTextArea(mensaje);
 							}
 						}
