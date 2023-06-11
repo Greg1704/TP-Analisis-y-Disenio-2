@@ -6,6 +6,8 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import modelo.interfaces.IEncriptacion;
+
 public class Encriptacion implements IEncriptacion, Serializable {
 	
 	private static Encriptacion instance = null;

@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import modelo.Encriptacion;
-import modelo.IEncriptacion;
 import modelo.Server.ManejaConexiones;
+import modelo.interfaces.IEncriptacion;
 
 public class Mensaje implements Serializable{
 	private String mensaje = "";

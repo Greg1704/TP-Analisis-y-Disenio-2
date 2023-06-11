@@ -1,4 +1,4 @@
-package modelo;
+package modelo.interfaces;
 
 public interface IEncriptacion {
 	public String encriptadoMensaje(String mensaje, String clave);
