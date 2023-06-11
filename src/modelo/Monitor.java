@@ -8,7 +8,9 @@ import java.net.SocketException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Monitor {
+import modelo.interfaces.IComunicacionMonitor;
+
+public class Monitor implements IComunicacionMonitor {
 	private boolean activo = true;
 	private Timer t = new Timer();
 	private static int puertoLatidosPrimario = 10000;
@@ -22,7 +24,7 @@ public class Monitor {
 	}
 	
 	private Monitor() {
-		this.t.scheduleAtFixedRate(new TimerTask() { // el task se ejecutará cada 1000ms (1s) y la ejecucion de latidos dura 5 segundos, cuando no se recibe mensaje, se pasa a modo secundario
+		this.t.scheduleAtFixedRate(new TimerTask() { 
 				
 				@Override
 				public void run() {
@@ -50,7 +52,7 @@ public class Monitor {
 		new Thread() {
 			public void run() {
 				try {
-					ServerSocket servSocket = new ServerSocket(puertoLatidosPrimario); // PUERTO MONITOR ES 12000 // PUERTO PRIMARIO ES 11000
+					ServerSocket servSocket = new ServerSocket(puertoLatidosPrimario); 
 					while (true) {
 						Socket socket = servSocket.accept();
 						Monitor.getInstance().setActivo(true);
